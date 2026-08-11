@@ -1,0 +1,110 @@
+:root {
+  --bg: #14110f;
+  --panel: #1d1916;
+  --panel2: #241f1a;
+  --border: #332b24;
+  --text: #f3ede6;
+  --muted: #a89f94;
+  --accent: #e4577f;
+  --gold: #e0b36a;
+  --ok: #7bc47f;
+  --pluta: #a97fd6;
+  --kn-font: "Noto Sans Kannada", "Nirmala UI", "Lohit Kannada", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(180deg, #241f1a, #1d1916);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), #b03a5e);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo svg { width: 20px; height: 20px; }
+.brand h1 { margin: 0; font-size: 17px; letter-spacing: .5px; }
+.brand h1 span { color: var(--accent); }
+.brand .tag { margin: 0; font-size: 11px; color: var(--muted); }
+
+/* ---------- Layout ---------- */
+.wrap { max-width: 1160px; margin: 0 auto; padding: 22px 20px 60px; }
+h2.sec { font-size: 15px; color: var(--muted); font-weight: 600; margin: 26px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ---------- Input / output columns ---------- */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+
+textarea {
+  width: 100%; min-height: 300px; resize: vertical;
+  background: var(--panel2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px; font-size: 19px; font-family: var(--kn-font); line-height: 1.9;
+}
+textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+.output { min-height: 300px; }
+.outline {
+  border-bottom: 1px solid var(--border); padding: 10px 2px 14px;
+  font-family: var(--kn-font); font-size: 19px; line-height: 2;
+}
+.outline:last-child { border-bottom: none; }
+.outline .line-no { color: var(--muted); font-size: 11px; display: block; margin-bottom: 2px; font-family: system-ui; }
+
+.sym { font-family: var(--kn-font); font-size: 21px; margin: 0 1px; }
+.sym .ak { display: inline-block; }
+.sym .ak .badge { display: block; text-align: center; font-size: 12px; line-height: 1.1; font-family: system-ui; height: 15px; }
+.sym .ak .ch { display: block; }
+.sym .laghu .badge { color: var(--ok); }
+.sym .guru .badge { color: var(--gold); }
+.sym .pluta .badge { color: var(--pluta); }
+.sym .none .badge { color: transparent; }
+.sym .sp { display: inline-block; width: .5em; }
+.legend { font-size: 11px; color: var(--muted); }
+
+.metra-line { margin-top: 6px; font-size: 13px; color: var(--muted); font-family: system-ui; }
+.metra-line b { color: var(--text); }
+
+/* ---------- controls ---------- */
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 4px; }
+.chk { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: var(--text); user-select: none; }
+.chk input { width: 16px; height: 16px; accent-color: var(--accent); }
+.btn {
+  background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+  padding: 8px 14px; border-radius: 9px; font-size: 13px; cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+.hint { font-size: 11px; color: var(--muted); }
+
+/* ---------- accordion ---------- */
+details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin: 6px 0; }
+summary { padding: 12px 14px; cursor: pointer; font-weight: 600; color: var(--gold); }
+details[open] summary { border-bottom: 1px solid var(--border); }
+details .body { padding: 12px 16px; color: var(--muted); font-size: 14px; }
+details .body li { margin: 8px 0; }
+details .body .ex { color: var(--text); font-family: var(--kn-font); }
+
+/* ---------- legend chips ---------- */
+.legend-row { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; font-size: 13px; }
+.legend-row .chip { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+.legend-row .chip .box { font-family: system-ui; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: var(--panel2); }
+.laghu-c { color: var(--ok); } .guru-c { color: var(--gold); } .pluta-c { color: var(--pluta); }
+.none-c { color: var(--muted); }
