@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ಛಂದಸ್ಸು — ಮಾತ್ರೆ-ಲಘು-ಗುರು · Raaga Studio</title>
+  <title>Raaga Studio · ಛಂದಸ್ಸು &amp; Master Check</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,11 +16,16 @@
     </div>
     <div class="brand">
       <h1>Raaga Studio · <span>ಛಂದಸ್ಸು</span></h1>
-      <p class="tag">ಮಾತ್ರೆ · ಲಘು · ಗುರು — ಕನ್ನಡ ದೀವಿಗೆ ಸ್ಕ್ಯಾನರ್</p>
+      <p class="tag">ಮಾತ್ರೆ · ಲಘು · ಗುರು — Master Check audio QA</p>
     </div>
+    <nav class="tabnav" role="tablist" aria-label="Studio tools">
+      <button type="button" class="tab active" data-tab="prosody" role="tab" aria-selected="true">ಛಂದಸ್ಸು</button>
+      <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false">Master Check</button>
+    </nav>
   </header>
 
-  <main class="wrap">
+  <!-- ═══════════════ PROSODY TAB ═══════════════ -->
+  <main class="wrap" id="tab-prosody">
     <h2 class="sec">ಸ್ಕ್ಯಾನರ್ (Scanner)</h2>
 
     <div class="legend-row">
@@ -53,10 +58,63 @@
 
     <h2 class="sec">ನಿಯಮಗಳು (ಮಾತ್ರೆ-ಲಘು-ಗುರು)</h2>
     <div id="rules"></div>
+  </main>
 
+  <!-- ═══════════════ MASTER CHECK TAB ═══════════════ -->
+  <main class="wrap" id="tab-master" hidden>
+    <h2 class="sec">Master Check — Audio Quality Analysis</h2>
+    <p class="mc-intro">
+      Drop a master (WAV, FLAC, AIFF, MP3, OGG…) for loudness (LUFS / dBTP), dynamic range,
+      clipping, spectrum, stereo/phase, silence &amp; noise, and metadata checks.
+      Analysis runs entirely in your browser — files never leave this device.
+    </p>
+
+    <div class="controls mc-controls">
+      <label class="hint" for="mc-genre">Genre reference</label>
+      <select id="mc-genre" class="mc-select" aria-label="Genre reference for DR thresholds"></select>
+      <button class="btn primary" id="mc-browse" type="button">Browse files</button>
+      <button class="btn" id="mc-clear" type="button">Clear</button>
+      <button class="btn" id="mc-export-json" type="button" disabled>Export JSON</button>
+      <button class="btn" id="mc-export-pdf" type="button" disabled>Export PDF</button>
+      <input type="file" id="mc-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a,.aac,.caf" multiple hidden>
+    </div>
+
+    <div id="mc-dropzone" class="mc-dropzone" tabindex="0" role="button"
+         aria-label="Drop audio files here or click to browse">
+      <div class="mc-drop-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M24 6v24M24 6l-8 8M24 6l8 8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 32v6a4 4 0 004 4h24a4 4 0 004-4v-6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="mc-drop-title">Drag &amp; drop audio masters here</div>
+      <div class="mc-drop-sub">WAV · FLAC · AIFF · MP3 · OGG · AAC — single tracks or batch album/EP</div>
+    </div>
+
+    <div id="mc-progress-wrap" class="mc-progress-wrap" hidden>
+      <div class="mc-progress-track"><div id="mc-progress-bar" class="mc-progress-bar"></div></div>
+      <div id="mc-progress-label" class="hint">Analyzing…</div>
+    </div>
+
+    <div id="mc-file-list"></div>
+    <div id="mc-dashboard" class="mc-dashboard" hidden></div>
+
+    <h2 class="sec">What Master Check analyzes</h2>
+    <div class="mc-feature-grid">
+      <div class="panel mc-feat"><h4>1. File format</h4><p>Container, bit depth, sample rate, integrity, lossy vs lossless, size vs duration.</p></div>
+      <div class="panel mc-feat"><h4>2. Loudness (LUFS / dBTP)</h4><p>Integrated, short-term, momentary LUFS, True Peak, LRA, and platform gain (Spotify, Apple, YouTube…).</p></div>
+      <div class="panel mc-feat"><h4>3. Dynamic range</h4><p>DR value, crest factor, genre thresholds, brick-wall / over-compression detection.</p></div>
+      <div class="panel mc-feat"><h4>4. Clipping &amp; distortion</h4><p>Digital overs, inter-sample peaks, clipped sample count, severity rating.</p></div>
+      <div class="panel mc-feat"><h4>5. Frequency spectrum</h4><p>20 Hz–20 kHz curve, sub-bass, low-end buildup, HF roll-off, DC offset.</p></div>
+      <div class="panel mc-feat"><h4>6. Stereo field</h4><p>Correlation, mono compatibility, Mid/Side balance, L/R imbalance, phase issues.</p></div>
+      <div class="panel mc-feat"><h4>7. Silence &amp; noise</h4><p>Head/tail silence, abrupt edges, noise floor, clicks/pops.</p></div>
+      <div class="panel mc-feat"><h4>8. Metadata</h4><p>Title, artist, album, ISRC format, artwork presence, missing tags.</p></div>
+    </div>
   </main>
 
   <script src="js/prosody.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/master-check.js"></script>
+  <script src="js/master-check-app.js"></script>
 </body>
 </html>

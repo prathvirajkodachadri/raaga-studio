@@ -1,0 +1,666 @@
+/**
+ * master-check-app.js — UI controller for Master Check audio QA.
+ */
+'use strict';
+
+(function () {
+  var MC = window.MASTER_CHECK;
+  if (!MC) {
+    console.error('MASTER_CHECK engine missing');
+    return;
+  }
+
+  var dropzone = document.getElementById('mc-dropzone');
+  var fileInput = document.getElementById('mc-file');
+  var browseBtn = document.getElementById('mc-browse');
+  var clearBtn = document.getElementById('mc-clear');
+  var genreEl = document.getElementById('mc-genre');
+  var progressWrap = document.getElementById('mc-progress-wrap');
+  var progressBar = document.getElementById('mc-progress-bar');
+  var progressLabel = document.getElementById('mc-progress-label');
+  var dashboard = document.getElementById('mc-dashboard');
+  var fileListEl = document.getElementById('mc-file-list');
+  var exportJsonBtn = document.getElementById('mc-export-json');
+  var exportPdfBtn = document.getElementById('mc-export-pdf');
+  var queue = []; // { file, report?, status }
+  var activeReport = null;
+
+  // ─── Nav tabs ────────────────────────────────────────────────────────────
+  var tabs = document.querySelectorAll('[data-tab]');
+  var panels = {
+    prosody: document.getElementById('tab-prosody'),
+    master: document.getElementById('tab-master')
+  };
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-tab');
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      Object.keys(panels).forEach(function (k) {
+        if (panels[k]) panels[k].hidden = k !== id;
+      });
+      try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    });
+  });
+  // deep link
+  var hash = (location.hash || '').replace('#', '');
+  if (hash === 'master') {
+    var mbtn = document.querySelector('[data-tab="master"]');
+    if (mbtn) mbtn.click();
+  }
+
+  // ─── Genre options ───────────────────────────────────────────────────────
+  if (genreEl) {
+    var ghtml = '';
+    Object.keys(MC.GENRE_DR).forEach(function (k) {
+      var g = MC.GENRE_DR[k];
+      ghtml += '<option value="' + k + '"' + (k === 'general' ? ' selected' : '') + '>' +
+        escapeHtml(g.name) + ' (DR ' + g.min + '–' + g.max + ')</option>';
+    });
+    genreEl.innerHTML = ghtml;
+  }
+
+  // ─── File intake ─────────────────────────────────────────────────────────
+  function acceptFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    var audio = files.filter(function (f) {
+      return /^audio\//.test(f.type) || /\.(wav|wave|flac|mp3|ogg|opus|aiff|aif|aac|m4a|caf|webm)$/i.test(f.name);
+    });
+    if (!audio.length) {
+      flash('Please drop an audio file (WAV, FLAC, MP3, AIFF, OGG…).');
+      return;
+    }
+    audio.forEach(function (f) {
+      queue.push({ file: f, report: null, status: 'queued' });
+    });
+    renderFileList();
+    processQueue();
+  }
+
+  if (browseBtn && fileInput) {
+    browseBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      acceptFiles(fileInput.files);
+      fileInput.value = '';
+    });
+  }
+
+  if (dropzone) {
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      dropzone.addEventListener(ev, function (e) {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+      dropzone.addEventListener(ev, function (e) {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+    dropzone.addEventListener('drop', function (e) {
+      acceptFiles(e.dataTransfer.files);
+    });
+    dropzone.addEventListener('click', function (e) {
+      if (e.target.closest('button')) return;
+      fileInput.click();
+    });
+    dropzone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      queue = [];
+      activeReport = null;
+      dashboard.innerHTML = '';
+      dashboard.hidden = true;
+      fileListEl.innerHTML = '';
+      progressWrap.hidden = true;
+      exportJsonBtn.disabled = true;
+      exportPdfBtn.disabled = true;
+    });
+  }
+
+  var processing = false;
+  function processQueue() {
+    if (processing) return;
+    var next = queue.find(function (q) { return q.status === 'queued'; });
+    if (!next) return;
+    processing = true;
+    next.status = 'running';
+    renderFileList();
+    progressWrap.hidden = false;
+    progressBar.style.width = '0%';
+    progressLabel.textContent = 'Analyzing ' + next.file.name + '…';
+
+    MC.analyzeFile(next.file, {
+      genre: genreEl ? genreEl.value : 'general',
+      onProgress: function (p, msg) {
+        progressBar.style.width = Math.round(p * 100) + '%';
+        progressLabel.textContent = msg + ' — ' + next.file.name;
+      }
+    }).then(function (report) {
+      next.report = report;
+      next.status = 'done';
+      activeReport = report;
+      renderFileList();
+      renderDashboard(report);
+      exportJsonBtn.disabled = false;
+      exportPdfBtn.disabled = false;
+      progressBar.style.width = '100%';
+      progressLabel.textContent = 'Done — ' + next.file.name;
+      setTimeout(function () { progressWrap.hidden = true; }, 800);
+      processing = false;
+      processQueue();
+    }).catch(function (err) {
+      next.status = 'error';
+      next.error = String(err && err.message || err);
+      renderFileList();
+      progressLabel.textContent = 'Error: ' + next.error;
+      processing = false;
+      processQueue();
+    });
+  }
+
+  function renderFileList() {
+    if (!fileListEl) return;
+    if (!queue.length) { fileListEl.innerHTML = ''; return; }
+    var html = '<div class="mc-files">';
+    queue.forEach(function (q, i) {
+      var score = q.report ? q.report.overallScore : '—';
+      var grade = q.report ? q.report.grade : '—';
+      var st = q.status;
+      var cls = st === 'done' ? 'done' : st === 'error' ? 'err' : st === 'running' ? 'run' : 'q';
+      html += '<button type="button" class="mc-file-chip ' + cls + (q.report === activeReport ? ' active' : '') +
+        '" data-idx="' + i + '">' +
+        '<span class="nm">' + escapeHtml(q.file.name) + '</span>' +
+        '<span class="sc">' + (st === 'done' ? (grade + ' · ' + score) : st) + '</span></button>';
+    });
+    html += '</div>';
+    fileListEl.innerHTML = html;
+    fileListEl.querySelectorAll('.mc-file-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = +btn.getAttribute('data-idx');
+        if (queue[idx] && queue[idx].report) {
+          activeReport = queue[idx].report;
+          renderFileList();
+          renderDashboard(activeReport);
+        }
+      });
+    });
+  }
+
+  // ─── Dashboard render ────────────────────────────────────────────────────
+  function renderDashboard(r) {
+    dashboard.hidden = false;
+    var gCls = 'grade-' + (r.grade || 'F').toLowerCase();
+    var html = '';
+
+    // Overview
+    html += '<section class="mc-overview">';
+    html += '<div class="mc-score-card ' + gCls + '">';
+    html += '<div class="mc-grade">' + escapeHtml(r.grade || '—') + '</div>';
+    html += '<div class="mc-score-num">' + (r.overallScore != null ? r.overallScore : '—') + '<span>/100</span></div>';
+    html += '<div class="mc-grade-label">' + escapeHtml(r.gradeLabel || '') + '</div>';
+    html += '</div>';
+    html += '<div class="mc-overview-meta">';
+    html += '<h3>' + escapeHtml(r.fileName || 'Untitled') + '</h3>';
+    html += '<div class="mc-meta-grid">';
+    html += metaItem('Format', (r.format && r.format.formatName) || '—');
+    html += metaItem('Duration', MC.fmtDur(r.duration));
+    html += metaItem('Sample rate', r.sampleRate ? (r.sampleRate / 1000).toFixed(1) + ' kHz' : '—');
+    html += metaItem('Channels', r.channelCount === 1 ? 'Mono' : r.channelCount === 2 ? 'Stereo' : (r.channelCount + ' ch'));
+    html += metaItem('Size', r.format ? MC.fmtBytes(r.format.size) : '—');
+    html += metaItem('Bit depth', r.format && r.format.bitDepth != null ? r.format.bitDepth + '-bit' : 'decoded float32');
+    if (r.loudness) {
+      html += metaItem('Integrated', MC.fmtLufs(r.loudness.integrated));
+      html += metaItem('True Peak', MC.fmtDb(r.truePeak) + 'TP');
+      html += metaItem('DR', r.levels ? r.levels.dynamicRange.toFixed(1) + ' dB' : '—');
+      html += metaItem('LRA', isFinite(r.loudness.lra) ? r.loudness.lra.toFixed(1) + ' LU' : '—');
+    }
+    html += '</div>';
+    html += '<div class="mc-summary-pills">';
+    html += '<span class="pill pass">🟢 ' + (r.summary ? r.summary.pass : 0) + ' passed</span>';
+    html += '<span class="pill warn">🟡 ' + (r.summary ? r.summary.warn : 0) + ' warnings</span>';
+    html += '<span class="pill fail">🔴 ' + (r.summary ? r.summary.fail : 0) + ' failed</span>';
+    html += '</div>';
+    html += '</div></section>';
+
+    // Waveform + spectrogram
+    html += '<section class="mc-viz panel">';
+    html += '<div class="mc-viz-head"><h3>Waveform &amp; Spectrogram</h3>';
+    html += '<div class="mc-viz-legend"><span class="clip-leg">Clipping</span><span class="sil-leg">Silence</span></div></div>';
+    html += '<canvas id="mc-wave" class="mc-canvas" height="120"></canvas>';
+    html += '<canvas id="mc-spec" class="mc-canvas spec" height="140"></canvas>';
+    html += '</section>';
+
+    // Platform comparison
+    if (r.platforms && r.platforms.length) {
+      html += '<section class="mc-platforms panel">';
+      html += '<h3>Platform loudness comparison</h3>';
+      html += '<p class="hint">Predicted gain each platform applies after normalization (based on Integrated LUFS).</p>';
+      html += '<div class="mc-plat-grid">';
+      r.platforms.forEach(function (p) {
+        var gain = p.gain;
+        var dir = !isFinite(gain) ? 'na' : Math.abs(gain) < 0.5 ? 'ok' : gain > 0 ? 'up' : 'down';
+        html += '<div class="mc-plat ' + dir + '">';
+        html += '<div class="pn">' + escapeHtml(p.name) + '</div>';
+        html += '<div class="pt">Target ' + escapeHtml(p.targetLabel) + '</div>';
+        html += '<div class="pa">' + escapeHtml(p.action) + '</div>';
+        if (isFinite(gain)) {
+          html += '<div class="pg-bar"><div class="pg-fill" style="width:' +
+            clamp(Math.abs(gain) / 14 * 100, 4, 100) + '%"></div></div>';
+        }
+        html += '</div>';
+      });
+      html += '</div></section>';
+    }
+
+    // Category scores strip
+    if (r.categories) {
+      html += '<section class="mc-cat-strip">';
+      r.categories.forEach(function (c) {
+        if (c.weight === 0 && c.id === 'format') { /* still show */ }
+        var st = c.score >= 90 ? 'pass' : c.score >= 60 ? 'warn' : 'fail';
+        html += '<div class="mc-cat-chip ' + st + '"><span class="cn">' + escapeHtml(c.name) +
+          '</span><span class="cs">' + Math.round(c.score) + '</span></div>';
+      });
+      html += '</section>';
+    }
+
+    // Detailed accordion
+    html += '<section class="mc-details">';
+    html += '<h2 class="sec">Detailed report</h2>';
+    if (r.categories) {
+      r.categories.forEach(function (cat, ci) {
+        var open = ci < 2 ? ' open' : '';
+        var st = cat.score >= 90 ? 'pass' : cat.score >= 60 ? 'warn' : 'fail';
+        html += '<details class="mc-acc ' + st + '"' + open + '>';
+        html += '<summary><span class="dot"></span><span class="t">' + escapeHtml(cat.name) +
+          '</span><span class="badge">' + Math.round(cat.score) + ' · ' + cat.grade + '</span></summary>';
+        html += '<div class="body">';
+        cat.checks.forEach(function (ch) {
+          html += '<div class="mc-check ' + ch.status + '">';
+          html += '<div class="mc-check-top">';
+          html += '<span class="st-icon">' + statusIcon(ch.status) + '</span>';
+          html += '<span class="cn">' + escapeHtml(ch.name) + '</span>';
+          html += '<span class="cv">' + escapeHtml(String(ch.value)) + '</span>';
+          html += '</div>';
+          if (ch.detail) html += '<p class="cd">' + escapeHtml(ch.detail) + '</p>';
+          if (ch.meter) html += renderMeter(ch.meter, ch.status);
+          if (ch.recommendation) {
+            html += '<p class="crec">💡 ' + escapeHtml(ch.recommendation) + '</p>';
+          }
+          html += '</div>';
+        });
+        // Spectrum curve inside frequency category
+        if (cat.id === 'frequency' && r.spectrum && r.spectrum.curve) {
+          html += '<canvas class="mc-canvas spectrum-curve" id="mc-spectrum-curve" height="160"></canvas>';
+        }
+        // Correlation mini
+        if (cat.id === 'stereo' && r.stereo && r.stereo.correlationSeries && r.stereo.correlationSeries.length) {
+          html += '<canvas class="mc-canvas corr-curve" id="mc-corr-curve" height="80"></canvas>';
+        }
+        html += '</div></details>';
+      });
+    }
+    html += '</section>';
+
+    dashboard.innerHTML = html;
+
+    // Draw canvases after DOM insert
+    requestAnimationFrame(function () {
+      drawWaveform(document.getElementById('mc-wave'), r);
+      drawSpectrogram(document.getElementById('mc-spec'), r);
+      var sc = document.getElementById('mc-spectrum-curve');
+      if (sc) drawSpectrumCurve(sc, r);
+      var cc = document.getElementById('mc-corr-curve');
+      if (cc) drawCorr(cc, r);
+    });
+  }
+
+  function metaItem(k, v) {
+    return '<div class="mi"><span class="k">' + escapeHtml(k) + '</span><span class="v">' + escapeHtml(String(v)) + '</span></div>';
+  }
+
+  function statusIcon(st) {
+    if (st === 'pass') return '🟢';
+    if (st === 'warn') return '🟡';
+    return '🔴';
+  }
+
+  function renderMeter(m, status) {
+    // horizontal meter
+    var min = m.min, max = m.max, val = m.value;
+    if (!isFinite(val)) return '';
+    var pct = clamp((val - min) / (max - min) * 100, 0, 100);
+    var html = '<div class="mc-meter ' + status + '">';
+    html += '<div class="track"><div class="fill" style="width:' + pct + '%"></div>';
+    if (m.limit != null) {
+      var lp = clamp((m.limit - min) / (max - min) * 100, 0, 100);
+      html += '<div class="limit" style="left:' + lp + '%" title="limit"></div>';
+    }
+    if (m.limitLow != null) {
+      var lp2 = clamp((m.limitLow - min) / (max - min) * 100, 0, 100);
+      html += '<div class="limit low" style="left:' + lp2 + '%"></div>';
+    }
+    if (m.ok != null) {
+      var op = clamp((m.ok - min) / (max - min) * 100, 0, 100);
+      html += '<div class="limit ok" style="left:' + op + '%"></div>';
+    }
+    html += '</div>';
+    html += '<div class="mlab"><span>' + min + '</span><span>' +
+      (typeof val === 'number' ? val.toFixed(1) : val) + (m.unit ? ' ' + m.unit : '') +
+      '</span><span>' + max + '</span></div>';
+    html += '</div>';
+    return html;
+  }
+
+  // ─── Canvas drawings ─────────────────────────────────────────────────────
+  function fitCanvas(canvas) {
+    if (!canvas) return null;
+    var parent = canvas.parentElement;
+    var w = parent ? parent.clientWidth - 28 : 800;
+    var dpr = window.devicePixelRatio || 1;
+    var h = canvas.height; // css height attr
+    canvas.width = Math.floor(w * dpr);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  function drawWaveform(canvas, r) {
+    var f = fitCanvas(canvas);
+    if (!f || !r.waveform || !r.waveform.length) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    ctx.clearRect(0, 0, w, h);
+    // bg
+    ctx.fillStyle = '#1a1613';
+    ctx.fillRect(0, 0, w, h);
+
+    var mid = h / 2;
+    var peaks = r.waveform;
+    var n = peaks.length;
+
+    // silence regions tint
+    if (r.silence) {
+      ctx.fillStyle = 'rgba(123,196,127,0.08)';
+      var leadW = (r.silence.leadSec / Math.max(r.duration, 0.001)) * w;
+      var trailW = (r.silence.trailSec / Math.max(r.duration, 0.001)) * w;
+      ctx.fillRect(0, 0, leadW, h);
+      ctx.fillRect(w - trailW, 0, trailW, h);
+    }
+
+    // clipping markers
+    if (r.clipping && r.clipping.positions && r.sampleRate) {
+      ctx.fillStyle = 'rgba(228,87,127,0.55)';
+      r.clipping.positions.forEach(function (sample) {
+        var x = (sample / (r.sampleRate * r.duration)) * w;
+        ctx.fillRect(x, 0, 2, h);
+      });
+    }
+
+    // waveform
+    ctx.strokeStyle = '#e4577f';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (var i = 0; i < n; i++) {
+      var x = (i / n) * w;
+      var mn = peaks[i].min;
+      var mx = peaks[i].max;
+      var y1 = mid - mx * (mid - 4);
+      var y2 = mid - mn * (mid - 4);
+      ctx.moveTo(x, y1);
+      ctx.lineTo(x, y2);
+    }
+    ctx.stroke();
+
+    // center line
+    ctx.strokeStyle = 'rgba(168,159,148,0.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
+
+    // brickwall visual hint
+    if (r.overCompression && r.overCompression.brickwalled) {
+      ctx.fillStyle = 'rgba(224,179,106,0.12)';
+      ctx.fillRect(0, mid - mid * 0.85, w, mid * 1.7);
+    }
+  }
+
+  function drawSpectrogram(canvas, r) {
+    var f = fitCanvas(canvas);
+    if (!f || !r.spectrum || !r.spectrum.spectrogram) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    ctx.clearRect(0, 0, w, h);
+    var spec = r.spectrum.spectrogram;
+    var rows = spec.rows;
+    if (!rows || !rows.length) return;
+    var nT = rows.length;
+    var nF = rows[0].length;
+    // find range
+    var minD = Infinity, maxD = -Infinity;
+    for (var t = 0; t < nT; t++) {
+      for (var fq = 0; fq < nF; fq++) {
+        var v = rows[t][fq];
+        if (v < minD) minD = v;
+        if (v > maxD) maxD = v;
+      }
+    }
+    if (!isFinite(minD)) return;
+    var cellW = w / nT;
+    var cellH = h / nF;
+    for (var t = 0; t < nT; t++) {
+      for (var fq = 0; fq < nF; fq++) {
+        var v = rows[t][fq];
+        var norm = (v - minD) / Math.max(1e-6, maxD - minD);
+        ctx.fillStyle = heatColor(norm);
+        // freq axis bottom=low
+        ctx.fillRect(t * cellW, h - (fq + 1) * cellH, cellW + 0.5, cellH + 0.5);
+      }
+    }
+    ctx.fillStyle = 'rgba(243,237,230,0.55)';
+    ctx.font = '10px system-ui';
+    ctx.fillText('20 Hz', 6, h - 4);
+    ctx.fillText('20 kHz', 6, 12);
+  }
+
+  function heatColor(t) {
+    // dark → purple → pink → gold → white
+    t = clamp(t, 0, 1);
+    var r, g, b;
+    if (t < 0.25) {
+      var u = t / 0.25;
+      r = 20 + u * 40; g = 12 + u * 10; b = 30 + u * 80;
+    } else if (t < 0.5) {
+      var u = (t - 0.25) / 0.25;
+      r = 60 + u * 168; g = 22 + u * 30; b = 110 + u * 20;
+    } else if (t < 0.75) {
+      var u = (t - 0.5) / 0.25;
+      r = 228; g = 52 + u * 127; b = 130 - u * 60;
+    } else {
+      var u = (t - 0.75) / 0.25;
+      r = 228 + u * 27; g = 179 + u * 60; b = 70 + u * 160;
+    }
+    return 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
+  }
+
+  function drawSpectrumCurve(canvas, r) {
+    var f = fitCanvas(canvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#1a1613';
+    ctx.fillRect(0, 0, w, h);
+    var curve = r.spectrum.curve;
+    if (!curve || !curve.length) return;
+
+    // grid
+    ctx.strokeStyle = 'rgba(51,43,36,0.9)';
+    ctx.fillStyle = 'rgba(168,159,148,0.6)';
+    ctx.font = '10px system-ui';
+    var dbMin = -80, dbMax = 0;
+    for (var db = dbMin; db <= dbMax; db += 20) {
+      var y = h - ((db - dbMin) / (dbMax - dbMin)) * (h - 16) - 8;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      ctx.fillText(db + ' dB', 4, y - 2);
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#e0b36a';
+    ctx.lineWidth = 1.5;
+    for (var i = 0; i < curve.length; i++) {
+      var x = (i / (curve.length - 1)) * w;
+      var d = curve[i].dbRel; // already peak-relative 0..-N
+      var y = h - ((d - dbMin) / (dbMax - dbMin)) * (h - 16) - 8;
+      y = clamp(y, 0, h);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // freq labels
+    ctx.fillStyle = 'rgba(168,159,148,0.7)';
+    ['20', '100', '1k', '10k', '20k'].forEach(function (lab, i) {
+      var x = (i / 4) * w;
+      ctx.fillText(lab, x + 2, h - 2);
+    });
+  }
+
+  function drawCorr(canvas, r) {
+    var f = fitCanvas(canvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#1a1613';
+    ctx.fillRect(0, 0, w, h);
+    var series = r.stereo.correlationSeries;
+    // zero line
+    var y0 = h / 2;
+    ctx.strokeStyle = 'rgba(228,87,127,0.5)';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = '#7bc47f';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (var i = 0; i < series.length; i++) {
+      var x = (i / Math.max(1, series.length - 1)) * w;
+      var y = h - ((series[i].v + 1) / 2) * (h - 8) - 4;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(168,159,148,0.7)';
+    ctx.font = '10px system-ui';
+    ctx.fillText('Correlation over time (−1 … +1)', 6, 12);
+  }
+
+  // ─── Export ──────────────────────────────────────────────────────────────
+  if (exportJsonBtn) {
+    exportJsonBtn.addEventListener('click', function () {
+      if (!activeReport) return;
+      var json = MC.reportToJSON(activeReport);
+      downloadBlob(json, (activeReport.fileName || 'report').replace(/\.[^.]+$/, '') + '-master-check.json', 'application/json');
+    });
+  }
+
+  if (exportPdfBtn) {
+    exportPdfBtn.addEventListener('click', function () {
+      if (!activeReport) return;
+      // Print-friendly report window (user can Save as PDF)
+      var w = window.open('', '_blank');
+      if (!w) {
+        flash('Pop-up blocked — allow pop-ups to export the PDF report.');
+        return;
+      }
+      w.document.write(buildPrintableHtml(activeReport));
+      w.document.close();
+      setTimeout(function () { try { w.print(); } catch (e) {} }, 300);
+    });
+  }
+
+  function buildPrintableHtml(r) {
+    var rows = '';
+    (r.categories || []).forEach(function (cat) {
+      rows += '<h2>' + escapeHtml(cat.name) + ' — ' + Math.round(cat.score) + '/100 (' + cat.grade + ')</h2><table>';
+      rows += '<tr><th>Check</th><th>Status</th><th>Value</th><th>Notes</th></tr>';
+      cat.checks.forEach(function (ch) {
+        rows += '<tr class="' + ch.status + '"><td>' + escapeHtml(ch.name) + '</td><td>' +
+          ch.status.toUpperCase() + '</td><td>' + escapeHtml(String(ch.value)) + '</td><td>' +
+          escapeHtml(ch.recommendation || ch.detail || '') + '</td></tr>';
+      });
+      rows += '</table>';
+    });
+    var plats = '';
+    if (r.platforms) {
+      plats = '<h2>Platform comparison</h2><table><tr><th>Platform</th><th>Target</th><th>Action</th></tr>';
+      r.platforms.forEach(function (p) {
+        plats += '<tr><td>' + escapeHtml(p.name) + '</td><td>' + escapeHtml(p.targetLabel) +
+          '</td><td>' + escapeHtml(p.action) + '</td></tr>';
+      });
+      plats += '</table>';
+    }
+    return '<!doctype html><html><head><meta charset="utf-8"><title>Master Check — ' +
+      escapeHtml(r.fileName || '') + '</title><style>' +
+      'body{font-family:system-ui,sans-serif;padding:32px;color:#222}' +
+      'h1{margin:0 0 4px} .sub{color:#666;margin-bottom:24px}' +
+      'table{border-collapse:collapse;width:100%;margin:12px 0 28px;font-size:13px}' +
+      'th,td{border:1px solid #ddd;padding:6px 8px;text-align:left}' +
+      'th{background:#f4f4f4} tr.fail td{background:#ffe8ee} tr.warn td{background:#fff7e0}' +
+      'tr.pass td{background:#eefaf0} .score{font-size:42px;font-weight:700}' +
+      '</style></head><body>' +
+      '<h1>Raaga Studio · Master Check</h1>' +
+      '<p class="sub">' + escapeHtml(r.fileName || '') + ' · ' + escapeHtml(r.analyzedAt || '') + '</p>' +
+      '<p class="score">' + escapeHtml(r.grade) + ' · ' + r.overallScore + '/100</p>' +
+      '<p>' + escapeHtml(r.gradeLabel || '') + '</p>' +
+      '<p>🟢 ' + r.summary.pass + ' passed · 🟡 ' + r.summary.warn + ' warnings · 🔴 ' + r.summary.fail + ' failed</p>' +
+      plats + rows +
+      '<p style="color:#888;font-size:11px;margin-top:40px">Generated by Raaga Studio Master Check · Client-side analysis (ITU-R BS.1770-style LUFS). Not a substitute for certified metering.</p>' +
+      '</body></html>';
+  }
+
+  function downloadBlob(text, name, type) {
+    var blob = new Blob([text], { type: type });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 500);
+  }
+
+  function flash(msg) {
+    progressWrap.hidden = false;
+    progressBar.style.width = '0%';
+    progressLabel.textContent = msg;
+    setTimeout(function () { progressWrap.hidden = true; }, 2500);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  // Re-render canvases on resize
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      if (!activeReport) return;
+      drawWaveform(document.getElementById('mc-wave'), activeReport);
+      drawSpectrogram(document.getElementById('mc-spec'), activeReport);
+      var sc = document.getElementById('mc-spectrum-curve');
+      if (sc) drawSpectrumCurve(sc, activeReport);
+      var cc = document.getElementById('mc-corr-curve');
+      if (cc) drawCorr(cc, activeReport);
+    }, 150);
+  });
+})();
