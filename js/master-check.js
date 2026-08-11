@@ -1792,6 +1792,158 @@
     };
   }
 
+  // ─── Release-readiness checklist ─────────────────────────────────────────
+  // Turn the analysis into "can I distribute this master?" answers: lossless
+  // source, dBTP ≤ −1, dithering/bit depth, LUFS target, clipping, phase,
+  // silence, ISRC, metadata, artwork, noise floor.
+  function buildReleaseChecklist(ctx) {
+    var f = ctx.format;
+    var loud = ctx.loudness;
+    var clip = ctx.clipping;
+    var st = ctx.stereo;
+    var sil = ctx.silence;
+    var meta = ctx.metadata;
+    var tp = ctx.truePeak;
+    var tpDet = ctx.truePeakDetailed || { peakTime: null, overClusters: [] };
+
+    var checks = [];
+
+    function push(name, status, value, detail, advice) {
+      checks.push({ name: name, status: status, value: value, detail: detail, advice: advice });
+    }
+
+    // 1. Lossless source
+    push('Lossless source (WAV/FLAC)',
+      f.isLossy ? 'fail' : 'pass',
+      f.formatName + (f.isLossy ? ' (lossy)' : ''),
+      'Stores require lossless masters; lossy encodes can\'t be re-encoded cleanly.',
+      f.isLossy ? 'Export the final master as WAV 24-bit or FLAC from Cubase.' : null);
+
+    // 2. Bit depth / dithering
+    var bd = f.bitDepth;
+    var bdStatus = bd == null ? 'warn' : (bd >= 24 ? 'pass' : bd === 16 ? 'warn' : 'fail');
+    push('Bit depth & dithering',
+      bdStatus,
+      bd != null ? (bd + '-bit') : 'decoded float32',
+      'Master at 24-bit; dither only when downsampling to 16-bit for CD.',
+      bdStatus === 'pass' ? null
+        : bd === 16 ? 'If this is your delivery file, ensure dither was applied on the 24→16-bit conversion.'
+        : 'Re-export from Cubase at 24-bit minimum.');
+
+    // 3. True peak ≤ −1 dBTP
+    var tpStatus = !isFinite(tp) ? 'fail' : (tp > 0 ? 'fail' : tp > -1 ? 'warn' : 'pass');
+    push('True peak ≤ −1 dBTP',
+      tpStatus,
+      fmtDb(tp) + 'TP' + (isFinite(tpDet.peakTime) ? ' @ ' + fmtDur(tpDet.peakTime) : ''),
+      'Set the limiter ceiling to −1 dBTP (−1.5 if lossy encodes will be made).',
+      tpStatus !== 'pass' ? 'Lower the limiter ceiling and re-render — overs were found at ' +
+        (tpDet.overClusters && tpDet.overClusters.length
+          ? fmtTimesShort(tpDet.overClusters.map(function (o) { return o.time; }), 6)
+          : (isFinite(tpDet.peakTime) ? fmtDur(tpDet.peakTime) : 'the peak location')) + '.' : null);
+
+    // 4. No digital clipping
+    var clipStatus = clip.severity === 'None' ? 'pass' : clip.severity === 'Minor' ? 'warn' : 'fail';
+    push('No digital clipping',
+      clipStatus,
+      clip.severity + (clip.clippedSamples ? ' (' + clip.clippedSamples + ' samples)' : ''),
+      'Clipped masters distort on playback.',
+      clipStatus !== 'pass' ? 'Reduce master-bus gain or limiter drive and re-render without overs.' : null);
+
+    // 5. Loudness in platform range
+    var integ = loud.integrated;
+    var lufsStatus = !isFinite(integ) ? 'fail'
+      : (integ >= -16 && integ <= -9) ? 'pass'
+      : (integ >= -19 && integ <= -8) ? 'warn' : 'fail';
+    push('Loudness in release range',
+      lufsStatus,
+      fmtLufs(integ),
+      'Typical streaming range: −14 LUFS (Spotify/YouTube), −16 (Apple). No need to be louder.',
+      lufsStatus === 'pass' ? null
+        : !isFinite(integ) ? 'Could not measure integrated loudness.'
+        : integ > -9 ? 'Very loud master — platforms will turn it down; consider more headroom.'
+        : 'On the quiet side — bring it up toward −14 LUFS if your genre expects it.');
+
+    // 6. Loudness range / dynamics
+    var lra = loud.lra;
+    push('Healthy dynamics (LRA ≥ 3 LU)',
+      !isFinite(lra) ? 'warn' : (lra >= 3 ? 'pass' : 'warn'),
+      isFinite(lra) ? lra.toFixed(1) + ' LU' : '—',
+      'Very low LRA indicates brick-wall limiting.',
+      isFinite(lra) && lra < 3 ? 'Back off the limiter a little to restore dynamics.' : null);
+
+    // 7. Stereo / phase
+    var corrStatus = st.mono ? 'warn' : (st.correlation < 0 ? 'fail' : st.correlation < 0.3 ? 'warn' : 'pass');
+    push('Stereo phase safe',
+      corrStatus,
+      st.mono ? 'mono file' : 'corr ' + st.correlation.toFixed(3),
+      'Correlation below 0 cancels on mono playback (phones, clubs).',
+      st.mono ? 'Deliver stereo unless the release is intentionally mono.'
+        : corrStatus === 'fail' ? 'Phase issues detected — fix in the mix before release.'
+        : corrStatus === 'warn' ? 'Correlation is low — verify mono fold-down.' : null);
+
+    // 8. Head/tail silence
+    var silStatus = (sil.leadSec >= 0.1 && sil.trailSec >= 0.5) ? 'pass' : 'warn';
+    push('Head/tail silence OK',
+      silStatus,
+      sil.leadSec.toFixed(2) + ' s lead · ' + sil.trailSec.toFixed(2) + ' s tail',
+      'Platforms need clean starts/ends; keep ~2–3 s tail.',
+      silStatus === 'pass' ? null : 'Trim or add silence/fades so the track starts and ends cleanly.');
+
+    // 9. ISRC
+    var isrc = validateIsrc(meta.isrc);
+    var isrcStatus = !meta.isrc ? 'warn' : (isrc.valid ? 'pass' : 'fail');
+    push('ISRC code',
+      isrcStatus,
+      meta.isrc ? (isrc.valid ? isrc.formatted : 'invalid format') : 'missing',
+      'Required by stores for royalty tracking.',
+      isrcStatus === 'pass' ? null
+        : meta.isrc ? 'Fix the ISRC to CC-XXX-YY-NNNNN.'
+        : 'Add an ISRC in the Cubase export / tag editor before distribution.');
+
+    // 10. Metadata (title + artist)
+    var metaOk = meta.title && String(meta.title).trim() && meta.artist && String(meta.artist).trim();
+    push('Metadata (title & artist)',
+      metaOk ? 'pass' : 'fail',
+      (meta.title || '—') + ' / ' + (meta.artist || '—'),
+      'Stores show these tags everywhere.',
+      metaOk ? null : 'Embed title and artist in the file tags.');
+
+    // 11. Artwork
+    push('Artwork embedded',
+      meta.artwork ? 'pass' : 'warn',
+      meta.artwork ? 'present' : 'missing',
+      'Stores require ≥ 3000×3000 px, JPG/PNG.',
+      meta.artwork ? 'Verify the embedded art is ≥ 3000×3000 px.' : 'Attach 3000×3000 cover art (300 dpi JPG).');
+
+    // 12. Noise floor
+    var nf = sil.noiseFloorDb;
+    var nfStatus = !isFinite(nf) ? 'pass' : (nf <= -45 ? 'pass' : nf <= -40 ? 'warn' : 'fail');
+    push('Noise floor clean',
+      nfStatus,
+      isFinite(nf) ? nf.toFixed(1) + ' dBFS' : '—',
+      'Hiss/hum below −45 dBFS is acceptable.',
+      nfStatus !== 'pass' ? 'Clean up noise in the quiet sections (denoise or re-render).' : null);
+
+    var scores = checks.map(function (c) {
+      return c.status === 'pass' ? 100 : c.status === 'warn' ? 60 : 0;
+    });
+    var score = scores.length ? Math.round(scores.reduce(function (a, b) { return a + b; }, 0) / scores.length) : 0;
+    var fails = checks.filter(function (c) { return c.status === 'fail'; }).length;
+    var warns = checks.filter(function (c) { return c.status === 'warn'; }).length;
+
+    return {
+      checks: checks,
+      score: score,
+      ready: fails === 0 && score >= 90,
+      summary: { pass: checks.length - fails - warns, warn: warns, fail: fails }
+    };
+  }
+
+  function fmtTimesShort(times, limit) {
+    if (!times || !times.length) return '—';
+    return times.slice(0, limit).map(fmtDur).join(', ') + (times.length > limit ? '…' : '');
+  }
+
   // ─── Main analyze entry ──────────────────────────────────────────────────
   function getAudioContext() {
     var AC = root.AudioContext || root.webkitAudioContext;
@@ -1949,6 +2101,7 @@
 
         onProgress(0.97, 'Scoring…');
         var scored = buildChecks(analysisCtx);
+        var release = buildReleaseChecklist(analysisCtx);
 
         try { ctx.close(); } catch (e) {}
 
@@ -1979,6 +2132,7 @@
           summary: scored.summary,
           categories: scored.categories,
           platforms: scored.platforms,
+          release: release,
           analyzedAt: new Date().toISOString()
         };
       }).catch(function (err) {
@@ -2013,6 +2167,7 @@
             }]
           }],
           platforms: [],
+          release: { checks: [], score: 0, ready: false, summary: { pass: 0, warn: 0, fail: 1 } },
           waveform: [],
           spectrum: { curve: [], spectrogram: { rows: [] } },
           analyzedAt: new Date().toISOString()
@@ -2037,6 +2192,7 @@
     GENRE_DR: GENRE_DR,
     analyzeFile: analyzeFile,
     reportToJSON: reportToJSON,
+    buildReleaseChecklist: buildReleaseChecklist,
     gradeOf: gradeOf,
     gradeLabel: gradeLabel,
     fmtDb: fmtDb,

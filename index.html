@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="kn">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Raaga Studio · ಛಂದಸ್ಸು &amp; Master Check</title>
+  <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,12 +15,15 @@
       </svg>
     </div>
     <div class="brand">
-      <h1>Raaga Studio · <span>ಛಂದಸ್ಸು</span></h1>
-      <p class="tag">ಮಾತ್ರೆ · ಲಘು · ಗುರು — Master Check audio QA</p>
+      <h1>Raaga Studio · <span>Compose → Mix → Master</span></h1>
+      <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
       <button type="button" class="tab active" data-tab="prosody" role="tab" aria-selected="true">ಛಂದಸ್ಸು</button>
+      <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false">Suno Prompt</button>
+      <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false">Mix Check</button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false">Master Check</button>
+      <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false">Song Studio</button>
     </nav>
   </header>
 
@@ -60,12 +63,150 @@
     <div id="rules"></div>
   </main>
 
+  <!-- ═══════════════ SUNO PROMPT BUILDER TAB ═══════════════ -->
+  <main class="wrap" id="tab-suno" hidden>
+    <h2 class="sec">Suno Prompt Builder</h2>
+    <p class="mc-intro">
+      Assemble a ready-to-paste Suno prompt — genre, mood, tempo, vocal style, language,
+      key/raga, instrumentation and production details. Save your favourite prompt
+      <strong>recipes</strong> and reuse them for every song.
+      Tip: scan your Kannada lyrics in the <strong>ಛಂದಸ್ಸು</strong> tab first, then paste
+      them into the “extra details” field below.
+    </p>
+
+    <div class="pb-grid">
+      <div class="panel pb-form">
+        <div class="pb-field">
+          <label class="pb-label">Genre <em>(pick 1–3)</em></label>
+          <div class="pb-chips" id="sp-genres"></div>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label">Mood <em>(pick 1–3)</em></label>
+          <div class="pb-chips" id="sp-moods"></div>
+        </div>
+
+        <div class="pb-row">
+          <div class="pb-field">
+            <label class="pb-label" for="sp-tempo">Tempo</label>
+            <select id="sp-tempo" class="mc-select"></select>
+          </div>
+          <div class="pb-field">
+            <label class="pb-label" for="sp-key">Key / Scale</label>
+            <select id="sp-key" class="mc-select"></select>
+          </div>
+        </div>
+
+        <div class="pb-row">
+          <div class="pb-field">
+            <label class="pb-label" for="sp-vocals">Vocals</label>
+            <select id="sp-vocals" class="mc-select"></select>
+          </div>
+          <div class="pb-field">
+            <label class="pb-label" for="sp-language">Language</label>
+            <select id="sp-language" class="mc-select"></select>
+          </div>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label" for="sp-structure">Song structure</label>
+          <select id="sp-structure" class="mc-select"></select>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label">Instruments <em>(pick 1–4)</em></label>
+          <div class="pb-chips" id="sp-instruments"></div>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label">Production style <em>(pick 0–3)</em></label>
+          <div class="pb-chips" id="sp-prod"></div>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label" for="sp-extra">Extra details / lyrics</label>
+          <textarea id="sp-extra" class="pb-textarea" spellcheck="false"
+            placeholder="Paste your scanned Kannada lyrics, reference artists, vocal ornaments, production references…"></textarea>
+        </div>
+
+        <div class="pb-field">
+          <label class="pb-label">Prompt detail level</label>
+          <div class="pb-mode">
+            <label class="chk"><input type="radio" name="sp-mode" value="concise" checked><span>Concise</span></label>
+            <label class="chk"><input type="radio" name="sp-mode" value="detailed"><span>Detailed</span></label>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn primary" id="sp-generate" type="button">Generate prompt</button>
+          <button class="btn" id="sp-copy" type="button">Copy</button>
+          <button class="btn" id="sp-save-recipe" type="button">Save as recipe</button>
+          <a class="btn" id="sp-suno-link" href="https://suno.com/create" target="_blank" rel="noopener">Open suno.com ↗</a>
+        </div>
+
+        <div class="pb-field" style="margin-top:12px">
+          <label class="pb-label" for="sp-output">Your prompt</label>
+          <textarea id="sp-output" class="pb-textarea out" spellcheck="false" readonly
+            placeholder="Generated prompt appears here…"></textarea>
+        </div>
+      </div>
+
+      <div class="panel pb-recipes">
+        <h3 class="pb-panel-title">Prompt recipes</h3>
+        <p class="hint">Prebuilt + your saved prompts. Click to load, ✕ to delete.</p>
+        <div id="sp-recipe-name-wrap" class="pb-field" hidden>
+          <input id="sp-recipe-name" class="mc-select" style="width:100%" placeholder="Recipe name…" />
+        </div>
+        <div id="sp-recipes" class="pb-recipe-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════ MIX CHECK TAB ═══════════════ -->
+  <main class="wrap" id="tab-mix" hidden>
+    <h2 class="sec">Mix Check — Pre-Master Analysis</h2>
+    <p class="mc-intro">
+      Drop your <strong>mixdown</strong> (before mastering) to check it against mixing targets:
+      headroom (peaks ≤ −6 dBFS, integrated ≈ −18 to −14 LUFS), dynamics (crest/DR), stereo/phase,
+      low-end buildup and clipping. The verdict tells you whether the mix is
+      <strong>ready for mastering</strong> — no file ever leaves your browser.
+    </p>
+
+    <div class="controls mc-controls">
+      <label class="hint" for="mx-genre">Genre reference</label>
+      <select id="mx-genre" class="mc-select" aria-label="Genre reference for mix targets"></select>
+      <button class="btn primary" id="mx-browse" type="button">Browse files</button>
+      <button class="btn" id="mx-clear" type="button">Clear</button>
+      <input type="file" id="mx-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a,.aac,.caf" hidden>
+    </div>
+
+    <div id="mx-dropzone" class="mc-dropzone" tabindex="0" role="button"
+         aria-label="Drop your mixdown here or click to browse">
+      <div class="mc-drop-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M24 6v24M24 6l-8 8M24 6l8 8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 32v6a4 4 0 004 4h24a4 4 0 004-4v-6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="mc-drop-title">Drag &amp; drop your mixdown here</div>
+      <div class="mc-drop-sub">WAV · FLAC · AIFF · MP3 · OGG — the mix you’re about to master</div>
+    </div>
+
+    <div id="mx-progress-wrap" class="mc-progress-wrap" hidden>
+      <div class="mc-progress-track"><div id="mx-progress-bar" class="mc-progress-bar"></div></div>
+      <div id="mx-progress-label" class="hint">Analyzing…</div>
+    </div>
+
+    <div id="mx-results"></div>
+  </main>
+
   <!-- ═══════════════ MASTER CHECK TAB ═══════════════ -->
   <main class="wrap" id="tab-master" hidden>
     <h2 class="sec">Master Check — Audio Quality Analysis</h2>
     <p class="mc-intro">
       Drop a master (WAV, FLAC, AIFF, MP3, OGG…) for loudness (LUFS / dBTP), dynamic range,
-      clipping, spectrum, stereo/phase, silence &amp; noise, and metadata checks.
+      clipping, spectrum, stereo/phase, silence &amp; noise, metadata checks — plus a
+      <strong>release-ready checklist</strong> (dBTP ≤ −1, dithering, ISRC, artwork, platform targets).
       Analysis runs entirely in your browser — files never leave this device.
     </p>
 
@@ -108,7 +249,90 @@
       <div class="panel mc-feat"><h4>5. Frequency spectrum</h4><p>20 Hz–20 kHz curve, sub-bass, low-end buildup, HF roll-off, DC offset.</p></div>
       <div class="panel mc-feat"><h4>6. Stereo field</h4><p>Correlation, mono compatibility, Mid/Side balance, L/R imbalance, phase issues.</p></div>
       <div class="panel mc-feat"><h4>7. Silence &amp; noise</h4><p>Head/tail silence, abrupt edges, noise floor, clicks/pops.</p></div>
-      <div class="panel mc-feat"><h4>8. Metadata</h4><p>Title, artist, album, ISRC format, artwork presence, missing tags.</p></div>
+      <div class="panel mc-feat"><h4>8. Metadata + release</h4><p>Title, artist, album, ISRC, artwork — plus release-ready checklist (dithering, dBTP ≤ −1).</p></div>
+    </div>
+  </main>
+
+  <!-- ═══════════════ SONG STUDIO TAB ═══════════════ -->
+  <main class="wrap" id="tab-songs" hidden>
+    <h2 class="sec">Song Studio — Project Registry &amp; Workflow</h2>
+    <p class="mc-intro">
+      One card per song, tracking the whole journey: <strong>Idea → Composing → Suno → Mixing → Mastering →
+      Released</strong>. Keep the Suno prompt used, stem-export and mix/master checklists, session notes
+      and mix/master versions. Everything is saved locally in your browser and can be exported as JSON.
+    </p>
+
+    <div id="ss-strip" class="ss-strip"></div>
+
+    <div class="controls mc-controls">
+      <button class="btn primary" id="ss-add" type="button">+ New song</button>
+      <button class="btn" id="ss-export-all" type="button">Export all (JSON)</button>
+      <button class="btn" id="ss-import-btn" type="button">Import JSON</button>
+      <input type="file" id="ss-import" accept="application/json,.json" hidden>
+      <span class="hint">Saved to this browser only (localStorage)</span>
+    </div>
+
+    <div id="ss-list" class="ss-list"></div>
+
+    <div id="ss-editor" class="ss-editor" hidden>
+      <div class="ss-editor-head">
+        <h3 id="ss-editor-title">Edit song</h3>
+        <button class="btn" id="ss-close" type="button">✕ Close</button>
+      </div>
+
+      <div class="ss-form-grid">
+        <label class="ss-field">Title <input id="ss-title" class="mc-select" type="text" placeholder="Song title"></label>
+        <label class="ss-field">Artist <input id="ss-artist" class="mc-select" type="text" placeholder="Your name / band"></label>
+        <label class="ss-field">Genre <input id="ss-genre" class="mc-select" type="text" placeholder="Carnatic Fusion, Bhavageete…"></label>
+        <label class="ss-field">BPM <input id="ss-bpm" class="mc-select" type="text" placeholder="e.g. 96"></label>
+        <label class="ss-field">Key <input id="ss-key" class="mc-select" type="text" placeholder="e.g. C major / Hamsadhwani"></label>
+        <label class="ss-field">Status
+          <select id="ss-status" class="mc-select"></select>
+        </label>
+      </div>
+
+      <div class="ss-field">
+        <label class="pb-label" for="ss-links">Links (Suno song, files, project paths) — one per line</label>
+        <textarea id="ss-links" class="pb-textarea" spellcheck="false" placeholder="https://suno.com/song/…&#10;Cubase project: /music/songs/myname_v2.cpr"></textarea>
+      </div>
+
+      <div class="ss-field">
+        <label class="pb-label" for="ss-notes">Session notes</label>
+        <textarea id="ss-notes" class="pb-textarea" spellcheck="false" placeholder="What you changed, what to try next…"></textarea>
+      </div>
+
+      <div class="ss-chk-cols">
+        <div class="panel ss-chk">
+          <h4>Suno → Cubase export</h4>
+          <div id="ss-suno-chk"></div>
+        </div>
+        <div class="panel ss-chk">
+          <h4>Mix session</h4>
+          <div id="ss-mix-chk"></div>
+        </div>
+        <div class="panel ss-chk">
+          <h4>Master / release</h4>
+          <div id="ss-master-chk"></div>
+        </div>
+      </div>
+
+      <div class="panel ss-versions">
+        <h4>Versions &amp; mastering chain log</h4>
+        <div class="ss-ver-add">
+          <input id="ss-ver-name" class="mc-select" type="text" placeholder="e.g. Mix v2 / Master v1">
+          <input id="ss-ver-notes" class="mc-select" type="text" placeholder="Notes (chain, settings…)">
+          <button class="btn primary" id="ss-ver-add" type="button">Add</button>
+        </div>
+        <div id="ss-versions"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn primary" id="ss-save" type="button">Save song</button>
+        <button class="btn" id="ss-delete" type="button">Delete song</button>
+        <button class="btn" id="ss-export-one" type="button">Export this song</button>
+        <button class="btn" id="ss-goto-mix" type="button">→ Mix Check</button>
+        <button class="btn" id="ss-goto-master" type="button">→ Master Check</button>
+      </div>
     </div>
   </main>
 
@@ -116,5 +340,10 @@
   <script src="js/app.js"></script>
   <script src="js/master-check.js"></script>
   <script src="js/master-check-app.js"></script>
+  <script src="js/suno-prompts.js"></script>
+  <script src="js/mix-check.js"></script>
+  <script src="js/mix-check-app.js"></script>
+  <script src="js/song-studio.js"></script>
+  <script src="js/nav.js"></script>
 </body>
 </html>

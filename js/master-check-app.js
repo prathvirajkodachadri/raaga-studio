@@ -28,32 +28,6 @@
   var activeReport = null;
   var activeUrl = null;
 
-  // ─── Nav tabs ────────────────────────────────────────────────────────────
-  var tabs = document.querySelectorAll('[data-tab]');
-  var panels = {
-    prosody: document.getElementById('tab-prosody'),
-    master: document.getElementById('tab-master')
-  };
-  tabs.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var id = btn.getAttribute('data-tab');
-      tabs.forEach(function (b) {
-        var on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      Object.keys(panels).forEach(function (k) {
-        if (panels[k]) panels[k].hidden = k !== id;
-      });
-      try { history.replaceState(null, '', '#' + id); } catch (e) {}
-    });
-  });
-  var hash = (location.hash || '').replace('#', '');
-  if (hash === 'master') {
-    var mbtn = document.querySelector('[data-tab="master"]');
-    if (mbtn) mbtn.click();
-  }
-
   // ─── Genre options ───────────────────────────────────────────────────────
   if (genreEl) {
     var ghtml = '';
@@ -237,6 +211,33 @@
     html += '</div>';
     html += '</div></section>';
 
+    // Release-ready checklist (new in Master Check)
+    if (r.release) {
+      var rel = r.release;
+      var relCls = rel.ready ? 'pass' : (rel.summary.fail === 0 ? 'warn' : 'fail');
+      html += '<section class="mc-release panel ' + relCls + '">';
+      html += '<div class="mc-rel-head">';
+      html += '<h3>Release-ready checklist</h3>';
+      html += '<div class="mc-rel-score ' + relCls + '"><b>' + rel.score + '</b><span>/100</span></div>';
+      html += '</div>';
+      html += '<div class="mc-rel-bar"><div class="mc-rel-fill ' + relCls + '" style="width:' + clamp(rel.score, 0, 100) + '%"></div></div>';
+      html += '<p class="mc-rel-status">' + (rel.ready
+        ? '✅ This master is ready to release.'
+        : rel.summary.fail === 0
+          ? '⚠️ Minor gaps — address the warnings before distributing.'
+          : '🔴 Not release-ready — ' + rel.summary.fail + ' must-fix item(s).') + '</p>';
+      html += '<div class="mc-rel-grid">';
+      rel.checks.forEach(function (c) {
+        html += '<div class="mc-rel-item ' + c.status + '">';
+        html += '<span class="mc-rel-ico">' + (c.status === 'pass' ? '🟢' : c.status === 'warn' ? '🟡' : '🔴') + '</span>';
+        html += '<div class="mc-rel-body"><div class="mc-rel-name">' + escapeHtml(c.name) + '</div>';
+        html += '<div class="mc-rel-val">' + escapeHtml(String(c.value)) + '</div>';
+        if (c.advice) html += '<div class="mc-rel-advice">' + escapeHtml(c.advice) + '</div>';
+        html += '</div></div>';
+      });
+      html += '</div></section>';
+    }
+
     // Audio player with seek help — exact problem audition
     if (r.fileUrl || r.duration) {
       html += '<section class="mc-player panel">';
@@ -322,6 +323,51 @@
         html += '</div>';
       });
       html += '</div></section>';
+    }
+
+    // Mix ↔ Master comparison (uses the last mix analyzed in the Mix Check tab)
+    var mixSum = window.__mixSummary || null;
+    if (!mixSum) {
+      try { mixSum = JSON.parse(sessionStorage.getItem('raaga.lastMixSummary') || 'null'); } catch (e) { mixSum = null; }
+    }
+    if (mixSum && isFinite(r.loudness.integrated)) {
+      var cmpRows = [
+        { label: 'Integrated LUFS', mix: mixSum.integrated, master: r.loudness.integrated,
+          fmt: function (v) { return isFinite(v) ? v.toFixed(1) + ' LUFS' : '—'; },
+          exp: 'master louder (higher)', wantUp: true },
+        { label: 'True Peak (dBTP)', mix: mixSum.truePeak, master: r.truePeak,
+          fmt: function (v) { return isFinite(v) ? v.toFixed(1) + ' dBTP' : '—'; },
+          exp: 'master louder but ≤ −1', wantUp: true },
+        { label: 'Dynamic range (DR)', mix: mixSum.dr, master: r.levels ? r.levels.dynamicRange : null,
+          fmt: function (v) { return isFinite(v) ? v.toFixed(1) + ' dB' : '—'; },
+          exp: 'mix more dynamic (mastering compresses)', wantUp: false },
+        { label: 'Crest factor', mix: mixSum.crest, master: r.levels ? r.levels.crestFactor : null,
+          fmt: function (v) { return isFinite(v) ? v.toFixed(1) + ' dB' : '—'; },
+          exp: 'mix has more transient peaks', wantUp: false },
+        { label: 'Stereo correlation', mix: mixSum.correlation, master: r.stereo ? r.stereo.correlation : null,
+          fmt: function (v) { return v == null ? '—' : v.toFixed(2); },
+          exp: 'similar', wantUp: null }
+      ];
+      html += '<section class="mc-mixcmp panel">';
+      html += '<div class="mc-viz-head"><h3>Mix ↔ Master comparison</h3>' +
+        '<span class="hint">From the last Mix Check: ' + escapeHtml(mixSum.fileName || '—') + '</span></div>';
+      html += '<p class="hint">Green = change went the expected direction for a mastered track.</p>';
+      html += '<table class="mc-cmp-table"><thead><tr><th>Metric</th><th>Mix</th><th>Master</th><th>Change</th><th>Expected</th></tr></thead><tbody>';
+      cmpRows.forEach(function (row) {
+        var mixV = row.mix, masV = row.master;
+        var delta = (isFinite(mixV) && isFinite(masV)) ? (masV - mixV) : null;
+        var ok = null;
+        if (delta != null && row.wantUp != null) {
+          ok = row.wantUp ? delta >= 0 : delta <= 0;
+        }
+        html += '<tr><td>' + escapeHtml(row.label) + '</td>' +
+          '<td class="v">' + escapeHtml(row.fmt(mixV)) + '</td>' +
+          '<td class="v">' + escapeHtml(row.fmt(masV)) + '</td>' +
+          '<td class="' + (ok == null ? '' : ok ? 'delta-ok' : 'delta-odd') + '">' +
+          (delta == null ? '—' : (delta >= 0 ? '▲ +' : '▼ ') + Math.abs(delta).toFixed(1)) + '</td>' +
+          '<td class="exp">' + escapeHtml(row.exp) + '</td></tr>';
+      });
+      html += '</tbody></table></section>';
     }
 
     // Category scores strip

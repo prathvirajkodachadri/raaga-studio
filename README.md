@@ -1,29 +1,32 @@
-# Raaga Studio · ಛಂದಸ್ಸು + Master Check
+# Raaga Studio · Compose → Mix → Master
 
-A single-page, zero-dependency studio with two tools:
+A single-page, zero-dependency studio for a Kannada music artist's full workflow:
+**compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-1. **ಛಂದಸ್ಸು** — Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
-   [ಕನ್ನಡ ದೀವಿಗೆ article](https://kannadadeevige.blogspot.com/2013/11/blog-post_8282.html).
-2. **Master Check** — in-browser **audio master quality analysis** (LUFS, true peak,
-   dynamic range, clipping, spectrum, stereo/phase, silence/noise, metadata).
+Five tools in one page, no build step, no npm install. Files never leave the browser.
 
-No build step, no npm install. Files never leave the browser.
+## Tools
 
-## Features
+### 1. ಛಂದಸ್ಸು (Prosody)
+Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
+[ಕನ್ನಡ ದೀವಿಗೆ article](https://kannadadeevige.blogspot.com/2013/11/blog-post_8282.html).
+Scan your lyrics live while composing — every syllable is colour-marked with its
+mātra value, with the ಷಟ್ಪದಿ rule toggle and preloaded examples.
 
-### ಛಂದಸ್ಸು (Prosody)
+### 2. Suno Prompt Builder
+Assemble a ready-to-paste **Suno.com prompt**: genre (Carnatic Fusion, Bhavageete,
+Devotional…), mood, tempo, key/raga (Hamsadhwani, Mohanam, Kalyani…), vocal style,
+language, song structure, instruments (tanpura, mridangam, bansuri, veena…) and
+production style. Save favourite prompt **recipes** locally and reload them for
+every song. Concise or detailed mode.
 
-- **Live scanner** — every syllable is colour-marked (ಲಘು green, ಗುರು gold,
-  ಪ್ಲುತ purple) with a mātra badge; the symbols-only string and mātra total
-  are shown per line.
-- **ಷಟ್ಪದಿ toggle** — in the 3rd and 6th lines of a poem the final syllable
-  counts as ಗುರು even if it is ಲಘು.
-- **Preloaded examples** — the full example table from the article, plus a
-  sample Kannada stanza.
-- **Rules reference** — an accordion summarising all six rules from the article.
+### 3. Mix Check (pre-master)
+Drop your **mixdown** (before mastering) and get a "ready for mastering?" verdict:
+headroom (integrated ≈ −18 to −14 LUFS, peaks ≤ −6 dBFS), crest factor / DR,
+clipping, stereo correlation & phase, low-end buildup, noise floor. Reuses the
+same analysis engine with **mixing targets** instead of mastering targets.
 
-### Master Check (Audio QA)
-
+### 4. Master Check (audio QA + release checklist)
 Drop a master (WAV / FLAC / AIFF / MP3 / OGG…) and get:
 
 | Category | What it checks |
@@ -37,29 +40,48 @@ Drop a master (WAV / FLAC / AIFF / MP3 / OGG…) and get:
 | **Stereo** | Correlation, mono compatibility, Mid/Side, L/R balance, phase issues |
 | **Silence & noise** | Head/tail silence, abrupt edges, noise floor, clicks/pops |
 | **Metadata** | Title, artist, album, ISRC format, artwork presence |
+| **Release-ready** | Lossless source, bit depth/dithering, dBTP ≤ −1, LUFS range, LRA, phase, silence, ISRC, metadata, artwork, noise floor → score /100 + ✅ release verdict |
+
+**Extras:** exact problem timeline (clipping / true-peak / clicks / phase / abrupt
+edges as clickable timestamps), waveform + spectrogram with markers, **Mix ↔ Master
+comparison** (uses the last mix from the Mix Check tab), JSON or print-to-PDF export.
 
 **Scoring:** weighted average (Loudness 25%, DR 20%, Clipping 20%, Frequency 10%,
 Stereo 10%, Silence 10%, Metadata 5%) → grade A–F.
 
-**Export:** JSON report or print-to-PDF.
+### 5. Song Studio (project registry & workflow)
+One card per song tracking **Idea → Composing → Suno → Mixing → Mastering → Released**:
 
-Genre reference modes: Pop/EDM, Rock, Hip-Hop/Trap, Jazz/Classical, General.
+- Song registry with BPM / key / genre / status and Suno links
+- **Suno → Cubase export checklist** (stems, naming, sample rate, grid alignment)
+- **Mix session checklist** (gain staging, mono check, headroom, bounce)
+- **Master / release checklist** (Mix Check first, dBTP ≤ −1, ISRC, artwork, exports)
+- Session notes + **version log** (Mix v1, Master v2… with the chain you used)
+- Export all songs / one song as JSON, re-import anywhere; stored in localStorage
 
 ## Structure
 
 ```
 raaga-studio/
-├── index.html                 # dual-tab UI (prosody + master check)
+├── index.html                 # 5-tab UI (prosody · suno · mix · master · songs)
 ├── css/style.css              # dark studio theme
 ├── js/
 │   ├── prosody.js             # Kannada prosody engine
 │   ├── app.js                 # prosody UI controller
-│   ├── master-check.js        # audio analysis engine (Web Audio API)
-│   └── master-check-app.js    # master check UI controller
+│   ├── master-check.js        # audio analysis engine (Web Audio API) + release checklist
+│   ├── master-check-app.js    # master check UI controller
+│   ├── suno-prompts.js        # Suno prompt builder + recipe library
+│   ├── mix-check.js           # mix-target assessment engine
+│   ├── mix-check-app.js       # mix check tab controller
+│   ├── song-studio.js         # project registry, checklists, versions
+│   └── nav.js                 # shared tab navigation
 ├── sample_audio/              # optional test fixtures
+├── docs/
+│   └── features-roadmap.md    # full feature roadmap (19 ideas)
 └── test/
     ├── prosody_test.js        # Node prosody suite (33 checks)
-    └── master_check_test.js   # Node unit tests for scoring helpers
+    ├── master_check_test.js   # Node unit tests for scoring helpers (23 checks)
+    └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers (24 checks)
 ```
 
 ## Run
@@ -69,17 +91,18 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# Master Check tab: http://localhost:8000#master
+# deep links: #suno #mix #master #songs
 ```
 
-> **Note:** Master Check needs the Web Audio API (modern Chrome, Firefox, Safari, Edge).
-> Some codecs (e.g. FLAC) depend on browser decode support.
+> **Note:** Mix Check and Master Check need the Web Audio API (modern Chrome,
+> Firefox, Safari, Edge). Some codecs (e.g. FLAC) depend on browser decode support.
 
 ## Tests
 
 ```bash
 node test/prosody_test.js
 node test/master_check_test.js
+node test/ui_smoke_test.js
 ```
 
 ## Prosody rules implemented
