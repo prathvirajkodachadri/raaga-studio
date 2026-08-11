@@ -1,5 +1,7 @@
 /**
  * master-check-app.js — UI controller for Master Check audio QA.
+ * Now with exact problem locations: clipping times, true-peak overs,
+ * clicks/pops, phase issues, abrupt edges shown as clickable timeline.
  */
 'use strict';
 
@@ -22,8 +24,9 @@
   var fileListEl = document.getElementById('mc-file-list');
   var exportJsonBtn = document.getElementById('mc-export-json');
   var exportPdfBtn = document.getElementById('mc-export-pdf');
-  var queue = []; // { file, report?, status }
+  var queue = []; // { file, url, report?, status }
   var activeReport = null;
+  var activeUrl = null;
 
   // ─── Nav tabs ────────────────────────────────────────────────────────────
   var tabs = document.querySelectorAll('[data-tab]');
@@ -45,7 +48,6 @@
       try { history.replaceState(null, '', '#' + id); } catch (e) {}
     });
   });
-  // deep link
   var hash = (location.hash || '').replace('#', '');
   if (hash === 'master') {
     var mbtn = document.querySelector('[data-tab="master"]');
@@ -74,7 +76,8 @@
       return;
     }
     audio.forEach(function (f) {
-      queue.push({ file: f, report: null, status: 'queued' });
+      var url = URL.createObjectURL(f);
+      queue.push({ file: f, url: url, report: null, status: 'queued' });
     });
     renderFileList();
     processQueue();
@@ -115,8 +118,10 @@
 
   if (clearBtn) {
     clearBtn.addEventListener('click', function () {
+      queue.forEach(function (q) { try { URL.revokeObjectURL(q.url); } catch (e) {} });
       queue = [];
       activeReport = null;
+      if (activeUrl) { try { URL.revokeObjectURL(activeUrl); } catch (e) {} activeUrl = null; }
       dashboard.innerHTML = '';
       dashboard.hidden = true;
       fileListEl.innerHTML = '';
@@ -145,6 +150,7 @@
         progressLabel.textContent = msg + ' — ' + next.file.name;
       }
     }).then(function (report) {
+      report.fileUrl = next.url;
       next.report = report;
       next.status = 'done';
       activeReport = report;
@@ -219,7 +225,7 @@
     html += metaItem('Bit depth', r.format && r.format.bitDepth != null ? r.format.bitDepth + '-bit' : 'decoded float32');
     if (r.loudness) {
       html += metaItem('Integrated', MC.fmtLufs(r.loudness.integrated));
-      html += metaItem('True Peak', MC.fmtDb(r.truePeak) + 'TP');
+      html += metaItem('True Peak', MC.fmtDb(r.truePeak) + 'TP @ ' + MC.fmtDur((r.truePeakDetailed && r.truePeakDetailed.peakTime) || 0));
       html += metaItem('DR', r.levels ? r.levels.dynamicRange.toFixed(1) + ' dB' : '—');
       html += metaItem('LRA', isFinite(r.loudness.lra) ? r.loudness.lra.toFixed(1) + ' LU' : '—');
     }
@@ -231,11 +237,68 @@
     html += '</div>';
     html += '</div></section>';
 
-    // Waveform + spectrogram
+    // Audio player with seek help — exact problem audition
+    if (r.fileUrl || r.duration) {
+      html += '<section class="mc-player panel">';
+      html += '<div class="mc-player-head"><h3>Preview & Seek to Problem</h3><span class="hint">Click any timestamp to jump — audio stays in browser</span></div>';
+      if (r.fileUrl) {
+        html += '<audio id="mc-audio" controls preload="metadata" src="' + r.fileUrl + '" style="width:100%"></audio>';
+      } else {
+        html += '<div class="hint">Audio preview not available for this file.</div>';
+      }
+      html += '<div class="mc-player-legend"><span class="pl"><i class="dot clip"></i> Clip</span><span class="pl"><i class="dot tp"></i> True Peak</span><span class="pl"><i class="dot click"></i> Click</span><span class="pl"><i class="dot phase"></i> Phase</span><span class="pl"><i class="dot abrupt"></i> Abrupt</span></div>';
+      html += '</section>';
+    }
+
+    // Problem timeline — exact locations
+    var markers = r.markers || [];
+    if (markers.length) {
+      html += '<section class="mc-timeline panel">';
+      html += '<div class="mc-viz-head"><h3>Exact Problem Locations (' + markers.length + ')</h3><span class="hint">Click time to seek in preview & waveform</span></div>';
+      html += '<div class="mc-tl-track" id="mc-tl-track"><div class="tl-bg"></div>';
+      // position markers on timeline
+      markers.forEach(function (m) {
+        var pct = clamp((m.time / Math.max(r.duration, 0.001)) * 100, 0, 100);
+        html += '<button type="button" class="tl-marker ' + m.type + ' ' + m.severity + '" style="left:' + pct + '%" data-time="' + m.time + '" title="' + escapeHtml(m.label + ' @ ' + MC.fmtDur(m.time)) + '"><span class="tl-tip">' + escapeHtml(m.label) + '</span></button>';
+      });
+      html += '</div>';
+      html += '<div class="mc-tl-list">';
+      // group by type
+      var grouped = {};
+      markers.forEach(function (m) { (grouped[m.type] = grouped[m.type] || []).push(m); });
+      var order = ['clip', 'truepeak', 'click', 'phase', 'abrupt-start', 'abrupt-end'];
+      order.forEach(function (type) {
+        var list = grouped[type] || [];
+        if (!list.length) return;
+        list.sort(function (a, b) { return a.time - b.time; });
+        html += '<div class="tl-group"><span class="tl-glabel">' + typeLabel(type) + ' — ' + list.length + '</span><div class="tl-tags">';
+        list.slice(0, 30).forEach(function (m) {
+          html += '<button class="mc-time-tag ' + m.severity + ' ' + m.type + '" data-time="' + m.time + '">' + MC.fmtDur(m.time) + '</button>';
+        });
+        if (list.length > 30) html += '<span class="hint">+' + (list.length - 30) + ' more in JSON</span>';
+        html += '</div></div>';
+      });
+      // any other types
+      Object.keys(grouped).forEach(function (type) {
+        if (order.indexOf(type) >= 0) return;
+        var list = grouped[type];
+        html += '<div class="tl-group"><span class="tl-glabel">' + typeLabel(type) + ' — ' + list.length + '</span><div class="tl-tags">';
+        list.slice(0, 20).forEach(function (m) {
+          html += '<button class="mc-time-tag ' + m.severity + '" data-time="' + m.time + '">' + MC.fmtDur(m.time) + '</button>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      html += '</section>';
+    } else {
+      html += '<section class="mc-timeline panel no-issues"><div class="mc-viz-head"><h3>No localized issues</h3></div><p class="hint">No clipping, true-peak overs, clicks or phase problems detected with sample-accurate location. Clean master!</p></section>';
+    }
+
+    // Waveform + spectrogram — now with multi-type markers
     html += '<section class="mc-viz panel">';
-    html += '<div class="mc-viz-head"><h3>Waveform &amp; Spectrogram</h3>';
-    html += '<div class="mc-viz-legend"><span class="clip-leg">Clipping</span><span class="sil-leg">Silence</span></div></div>';
-    html += '<canvas id="mc-wave" class="mc-canvas" height="120"></canvas>';
+    html += '<div class="mc-viz-head"><h3>Waveform & Spectrogram — Problems Marked</h3>';
+    html += '<div class="mc-viz-legend"><span class="clip-leg">Clipping</span><span class="tp-leg">True Peak</span><span class="click-leg">Click</span><span class="phase-leg">Phase</span><span class="sil-leg">Silence</span></div></div>';
+    html += '<canvas id="mc-wave" class="mc-canvas" height="140"></canvas>';
     html += '<canvas id="mc-spec" class="mc-canvas spec" height="140"></canvas>';
     html += '</section>';
 
@@ -265,7 +328,6 @@
     if (r.categories) {
       html += '<section class="mc-cat-strip">';
       r.categories.forEach(function (c) {
-        if (c.weight === 0 && c.id === 'format') { /* still show */ }
         var st = c.score >= 90 ? 'pass' : c.score >= 60 ? 'warn' : 'fail';
         html += '<div class="mc-cat-chip ' + st + '"><span class="cn">' + escapeHtml(c.name) +
           '</span><span class="cs">' + Math.round(c.score) + '</span></div>';
@@ -273,12 +335,12 @@
       html += '</section>';
     }
 
-    // Detailed accordion
+    // Detailed accordion — now shows exact times per check
     html += '<section class="mc-details">';
-    html += '<h2 class="sec">Detailed report</h2>';
+    html += '<h2 class="sec">Detailed report — exact locations where available</h2>';
     if (r.categories) {
       r.categories.forEach(function (cat, ci) {
-        var open = ci < 2 ? ' open' : '';
+        var open = ci < 3 ? ' open' : '';
         var st = cat.score >= 90 ? 'pass' : cat.score >= 60 ? 'warn' : 'fail';
         html += '<details class="mc-acc ' + st + '"' + open + '>';
         html += '<summary><span class="dot"></span><span class="t">' + escapeHtml(cat.name) +
@@ -292,17 +354,26 @@
           html += '<span class="cv">' + escapeHtml(String(ch.value)) + '</span>';
           html += '</div>';
           if (ch.detail) html += '<p class="cd">' + escapeHtml(ch.detail) + '</p>';
+          if (ch.locationSummary) html += '<p class="cd loc"><strong>Exact:</strong> ' + escapeHtml(ch.locationSummary) + '</p>';
+          if (ch.locations && ch.locations.length) {
+            html += '<div class="loc-list">';
+            ch.locations.slice(0, 24).forEach(function (loc) {
+              var t = loc.time;
+              if (!isFinite(t)) return;
+              html += '<button class="mc-time-tag sm ' + (loc.type || '') + ' ' + ch.status + '" data-time="' + t + '" title="' + escapeHtml((loc.label || '') + ' @ ' + MC.fmtDur(t)) + '">' + MC.fmtDur(t) + (loc.label ? ' ' + escapeHtml(loc.label).slice(0, 22) : '') + '</button>';
+            });
+            if (ch.locations.length > 24) html += '<span class="hint">+' + (ch.locations.length - 24) + ' more</span>';
+            html += '</div>';
+          }
           if (ch.meter) html += renderMeter(ch.meter, ch.status);
           if (ch.recommendation) {
             html += '<p class="crec">💡 ' + escapeHtml(ch.recommendation) + '</p>';
           }
           html += '</div>';
         });
-        // Spectrum curve inside frequency category
         if (cat.id === 'frequency' && r.spectrum && r.spectrum.curve) {
           html += '<canvas class="mc-canvas spectrum-curve" id="mc-spectrum-curve" height="160"></canvas>';
         }
-        // Correlation mini
         if (cat.id === 'stereo' && r.stereo && r.stereo.correlationSeries && r.stereo.correlationSeries.length) {
           html += '<canvas class="mc-canvas corr-curve" id="mc-corr-curve" height="80"></canvas>';
         }
@@ -313,6 +384,24 @@
 
     dashboard.innerHTML = html;
 
+    // Bind seekers
+    var audioEl = document.getElementById('mc-audio');
+    dashboard.querySelectorAll('[data-time]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var t = parseFloat(el.getAttribute('data-time'));
+        if (!isFinite(t)) return;
+        if (audioEl) {
+          try { audioEl.currentTime = t; audioEl.play().catch(function () {}); } catch (e) {}
+          audioEl.focus();
+        }
+        // visual scroll to waveform
+        var wave = document.getElementById('mc-wave');
+        if (wave) wave.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // update playhead in waveform
+        highlightTime(t, r.duration);
+      });
+    });
+
     // Draw canvases after DOM insert
     requestAnimationFrame(function () {
       drawWaveform(document.getElementById('mc-wave'), r);
@@ -321,7 +410,44 @@
       if (sc) drawSpectrumCurve(sc, r);
       var cc = document.getElementById('mc-corr-curve');
       if (cc) drawCorr(cc, r);
+
+      if (audioEl) {
+        audioEl.addEventListener('timeupdate', function () {
+          highlightTime(audioEl.currentTime, r.duration);
+        });
+      }
     });
+  }
+
+  function typeLabel(type) {
+    var map = {
+      'clip': '🔴 Clipping',
+      'truepeak': '🟠 True Peak over 0 dBTP',
+      'click': '🟡 Click / Pop',
+      'phase': '🟣 Phase / Out-of-phase',
+      'abrupt-start': '⚠️ Abrupt start',
+      'abrupt-end': '⚠️ Abrupt end',
+      'silence': 'Silence',
+      'abrupt': 'Abrupt'
+    };
+    return map[type] || type;
+  }
+
+  var lastHighlightT = -1;
+  function highlightTime(currentT, duration) {
+    // draw playhead over waveform? We store and redraw cheaply — update CSS track if exists?
+    // Simpler: move a overlay div if we find tl-track
+    var track = document.getElementById('mc-tl-track');
+    if (!track) return;
+    var existing = track.querySelector('.tl-playhead');
+    if (!existing) {
+      existing = document.createElement('div');
+      existing.className = 'tl-playhead';
+      track.appendChild(existing);
+    }
+    var pct = clamp((currentT / Math.max(duration, 0.001)) * 100, 0, 100);
+    existing.style.left = pct + '%';
+    lastHighlightT = currentT;
   }
 
   function metaItem(k, v) {
@@ -335,7 +461,6 @@
   }
 
   function renderMeter(m, status) {
-    // horizontal meter
     var min = m.min, max = m.max, val = m.value;
     if (!isFinite(val)) return '';
     var pct = clamp((val - min) / (max - min) * 100, 0, 100);
@@ -367,7 +492,7 @@
     var parent = canvas.parentElement;
     var w = parent ? parent.clientWidth - 28 : 800;
     var dpr = window.devicePixelRatio || 1;
-    var h = canvas.height; // css height attr
+    var h = canvas.height;
     canvas.width = Math.floor(w * dpr);
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
@@ -381,28 +506,60 @@
     if (!f || !r.waveform || !r.waveform.length) return;
     var ctx = f.ctx, w = f.w, h = f.h;
     ctx.clearRect(0, 0, w, h);
-    // bg
     ctx.fillStyle = '#1a1613';
     ctx.fillRect(0, 0, w, h);
 
     var mid = h / 2;
     var peaks = r.waveform;
     var n = peaks.length;
+    var duration = r.duration || 1;
 
     // silence regions tint
     if (r.silence) {
       ctx.fillStyle = 'rgba(123,196,127,0.08)';
-      var leadW = (r.silence.leadSec / Math.max(r.duration, 0.001)) * w;
-      var trailW = (r.silence.trailSec / Math.max(r.duration, 0.001)) * w;
+      var leadW = (r.silence.leadSec / Math.max(duration, 0.001)) * w;
+      var trailW = (r.silence.trailSec / Math.max(duration, 0.001)) * w;
       ctx.fillRect(0, 0, leadW, h);
       ctx.fillRect(w - trailW, 0, trailW, h);
     }
 
-    // clipping markers
-    if (r.clipping && r.clipping.positions && r.sampleRate) {
+    // phase issue tint
+    if (r.stereo && r.stereo.phaseIssueTimes) {
+      ctx.fillStyle = 'rgba(169,127,214,0.18)';
+      r.stereo.phaseIssueTimes.forEach(function (ph) {
+        var x0 = (ph.startTime / duration) * w;
+        var x1 = (ph.endTime / duration) * w;
+        ctx.fillRect(x0, 0, Math.max(2, x1 - x0), h);
+      });
+    }
+
+    // markers: clips (red), truepeak (orange), clicks (yellow), abrupt (amber)
+    var markers = r.markers || [];
+    markers.forEach(function (m) {
+      var x = (m.time / Math.max(duration, 0.001)) * w;
+      if (m.type === 'clip') {
+        ctx.fillStyle = 'rgba(228,87,127,0.75)';
+        ctx.fillRect(x, 0, 2.5, h);
+      } else if (m.type === 'truepeak') {
+        ctx.fillStyle = 'rgba(224,179,106,0.9)';
+        ctx.fillRect(x, 0, 2, h);
+        // little triangle top
+        ctx.beginPath(); ctx.moveTo(x - 4, 0); ctx.lineTo(x + 4, 0); ctx.lineTo(x, 8); ctx.fill();
+      } else if (m.type === 'click') {
+        ctx.fillStyle = 'rgba(224,200,90,0.95)';
+        ctx.beginPath(); ctx.arc(x, 10, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillRect(x, 10, 1, h - 20);
+      } else if (m.type.indexOf('abrupt') === 0) {
+        ctx.fillStyle = 'rgba(255,220,100,0.6)';
+        ctx.fillRect(x, 0, 2, h);
+      }
+    });
+
+    // legacy clipping positions (redundant)
+    if (r.clipping && r.clipping.positions && r.sampleRate && (!markers.length)) {
       ctx.fillStyle = 'rgba(228,87,127,0.55)';
       r.clipping.positions.forEach(function (sample) {
-        var x = (sample / (r.sampleRate * r.duration)) * w;
+        var x = (sample / (r.sampleRate * duration)) * w;
         ctx.fillRect(x, 0, 2, h);
       });
     }
@@ -415,8 +572,8 @@
       var x = (i / n) * w;
       var mn = peaks[i].min;
       var mx = peaks[i].max;
-      var y1 = mid - mx * (mid - 4);
-      var y2 = mid - mn * (mid - 4);
+      var y1 = mid - mx * (mid - 8);
+      var y2 = mid - mn * (mid - 8);
       ctx.moveTo(x, y1);
       ctx.lineTo(x, y2);
     }
@@ -427,10 +584,29 @@
     ctx.beginPath();
     ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
 
-    // brickwall visual hint
     if (r.overCompression && r.overCompression.brickwalled) {
       ctx.fillStyle = 'rgba(224,179,106,0.12)';
       ctx.fillRect(0, mid - mid * 0.85, w, mid * 1.7);
+    }
+
+    // time labels + playhead if exists
+    ctx.fillStyle = 'rgba(168,159,148,0.5)';
+    ctx.font = '10px system-ui';
+    ctx.fillText('0:00', 4, h - 4);
+    ctx.fillText(MC.fmtDur(duration), w - 48, h - 4);
+
+    // clickable overlay hint for seeking — store map for click handler
+    canvas.style.cursor = 'crosshair';
+    if (!canvas._bound) {
+      canvas._bound = true;
+      canvas.addEventListener('click', function (e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var t = (x / rect.width) * duration;
+        var audioEl = document.getElementById('mc-audio');
+        if (audioEl) { try { audioEl.currentTime = t; audioEl.play().catch(function () {}); } catch (e2) {} }
+        highlightTime(t, duration);
+      });
     }
   }
 
@@ -444,7 +620,6 @@
     if (!rows || !rows.length) return;
     var nT = rows.length;
     var nF = rows[0].length;
-    // find range
     var minD = Infinity, maxD = -Infinity;
     for (var t = 0; t < nT; t++) {
       for (var fq = 0; fq < nF; fq++) {
@@ -461,7 +636,6 @@
         var v = rows[t][fq];
         var norm = (v - minD) / Math.max(1e-6, maxD - minD);
         ctx.fillStyle = heatColor(norm);
-        // freq axis bottom=low
         ctx.fillRect(t * cellW, h - (fq + 1) * cellH, cellW + 0.5, cellH + 0.5);
       }
     }
@@ -472,7 +646,6 @@
   }
 
   function heatColor(t) {
-    // dark → purple → pink → gold → white
     t = clamp(t, 0, 1);
     var r, g, b;
     if (t < 0.25) {
@@ -500,8 +673,6 @@
     ctx.fillRect(0, 0, w, h);
     var curve = r.spectrum.curve;
     if (!curve || !curve.length) return;
-
-    // grid
     ctx.strokeStyle = 'rgba(51,43,36,0.9)';
     ctx.fillStyle = 'rgba(168,159,148,0.6)';
     ctx.font = '10px system-ui';
@@ -511,20 +682,17 @@
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       ctx.fillText(db + ' dB', 4, y - 2);
     }
-
     ctx.beginPath();
     ctx.strokeStyle = '#e0b36a';
     ctx.lineWidth = 1.5;
     for (var i = 0; i < curve.length; i++) {
       var x = (i / (curve.length - 1)) * w;
-      var d = curve[i].dbRel; // already peak-relative 0..-N
+      var d = curve[i].dbRel;
       var y = h - ((d - dbMin) / (dbMax - dbMin)) * (h - 16) - 8;
       y = clamp(y, 0, h);
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
-
-    // freq labels
     ctx.fillStyle = 'rgba(168,159,148,0.7)';
     ['20', '100', '1k', '10k', '20k'].forEach(function (lab, i) {
       var x = (i / 4) * w;
@@ -540,12 +708,21 @@
     ctx.fillStyle = '#1a1613';
     ctx.fillRect(0, 0, w, h);
     var series = r.stereo.correlationSeries;
-    // zero line
     var y0 = h / 2;
     ctx.strokeStyle = 'rgba(228,87,127,0.5)';
     ctx.setLineDash([4, 4]);
     ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
     ctx.setLineDash([]);
+
+    // shade phase issues
+    if (r.stereo && r.stereo.phaseIssueTimes) {
+      ctx.fillStyle = 'rgba(169,127,214,0.22)';
+      r.stereo.phaseIssueTimes.forEach(function (ph) {
+        var x0 = (ph.startTime / r.duration) * w;
+        var x1 = (ph.endTime / r.duration) * w;
+        ctx.fillRect(x0, 0, Math.max(2, x1 - x0), h);
+      });
+    }
 
     ctx.strokeStyle = '#7bc47f';
     ctx.lineWidth = 1.5;
@@ -558,7 +735,7 @@
     ctx.stroke();
     ctx.fillStyle = 'rgba(168,159,148,0.7)';
     ctx.font = '10px system-ui';
-    ctx.fillText('Correlation over time (−1 … +1)', 6, 12);
+    ctx.fillText('Correlation over time (−1 … +1) — dips below 0 are exact phase problem times', 6, 12);
   }
 
   // ─── Export ──────────────────────────────────────────────────────────────
@@ -573,7 +750,6 @@
   if (exportPdfBtn) {
     exportPdfBtn.addEventListener('click', function () {
       if (!activeReport) return;
-      // Print-friendly report window (user can Save as PDF)
       var w = window.open('', '_blank');
       if (!w) {
         flash('Pop-up blocked — allow pop-ups to export the PDF report.');
@@ -589,14 +765,25 @@
     var rows = '';
     (r.categories || []).forEach(function (cat) {
       rows += '<h2>' + escapeHtml(cat.name) + ' — ' + Math.round(cat.score) + '/100 (' + cat.grade + ')</h2><table>';
-      rows += '<tr><th>Check</th><th>Status</th><th>Value</th><th>Notes</th></tr>';
+      rows += '<tr><th>Check</th><th>Status</th><th>Value</th><th>Where (exact time)</th><th>Notes</th></tr>';
       cat.checks.forEach(function (ch) {
+        var loc = '';
+        if (ch.locations && ch.locations.length) loc = ch.locations.slice(0, 10).map(function (l) { return MC.fmtDur(l.time); }).join(', ');
+        else if (ch.locationSummary) loc = ch.locationSummary;
         rows += '<tr class="' + ch.status + '"><td>' + escapeHtml(ch.name) + '</td><td>' +
-          ch.status.toUpperCase() + '</td><td>' + escapeHtml(String(ch.value)) + '</td><td>' +
+          ch.status.toUpperCase() + '</td><td>' + escapeHtml(String(ch.value)) + '</td><td>' + escapeHtml(loc) + '</td><td>' +
           escapeHtml(ch.recommendation || ch.detail || '') + '</td></tr>';
       });
       rows += '</table>';
     });
+    var markersHtml = '';
+    if (r.markers && r.markers.length) {
+      markersHtml = '<h2>Exact Problem Timeline</h2><table><tr><th>Time</th><th>Type</th><th>Label</th></tr>';
+      r.markers.forEach(function (m) {
+        markersHtml += '<tr><td>' + escapeHtml(MC.fmtDur(m.time)) + '</td><td>' + escapeHtml(m.type) + '</td><td>' + escapeHtml(m.label) + '</td></tr>';
+      });
+      markersHtml += '</table>';
+    }
     var plats = '';
     if (r.platforms) {
       plats = '<h2>Platform comparison</h2><table><tr><th>Platform</th><th>Target</th><th>Action</th></tr>';
@@ -615,13 +802,13 @@
       'th{background:#f4f4f4} tr.fail td{background:#ffe8ee} tr.warn td{background:#fff7e0}' +
       'tr.pass td{background:#eefaf0} .score{font-size:42px;font-weight:700}' +
       '</style></head><body>' +
-      '<h1>Raaga Studio · Master Check</h1>' +
-      '<p class="sub">' + escapeHtml(r.fileName || '') + ' · ' + escapeHtml(r.analyzedAt || '') + '</p>' +
+      '<h1>Raaga Studio · Master Check — with Exact Locations</h1>' +
+      '<p class="sub">' + escapeHtml(r.fileName || '') + ' · ' + escapeHtml(r.analyzedAt || '') + ' · ' + MC.fmtDur(r.duration) + '</p>' +
       '<p class="score">' + escapeHtml(r.grade) + ' · ' + r.overallScore + '/100</p>' +
       '<p>' + escapeHtml(r.gradeLabel || '') + '</p>' +
       '<p>🟢 ' + r.summary.pass + ' passed · 🟡 ' + r.summary.warn + ' warnings · 🔴 ' + r.summary.fail + ' failed</p>' +
-      plats + rows +
-      '<p style="color:#888;font-size:11px;margin-top:40px">Generated by Raaga Studio Master Check · Client-side analysis (ITU-R BS.1770-style LUFS). Not a substitute for certified metering.</p>' +
+      plats + markersHtml + rows +
+      '<p style="color:#888;font-size:11px;margin-top:40px">Generated by Raaga Studio Master Check · Client-side analysis (ITU-R BS.1770-style LUFS) with sample-accurate problem locations.</p>' +
       '</body></html>';
   }
 
@@ -649,7 +836,6 @@
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-  // Re-render canvases on resize
   var resizeTimer;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);

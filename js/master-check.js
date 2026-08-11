@@ -587,29 +587,62 @@
 
   // ─── True peak (4× oversample via Catmull-Rom interpolation) ─────────────
   function truePeakDbTP(channels) {
+    return truePeakDetailed(channels, 0).dbTP;
+  }
+
+  function truePeakDetailed(channels, sr) {
+    sr = sr || 44100;
     var peak = 0;
+    var peakSample = 0;
+    var overs = []; // samples where |truePeak| > 1.0 (0 dBTP), and > -1dBTP
+    var overThreshold = Math.pow(10, -1 / 20); // -1 dBTP
     for (var c = 0; c < channels.length; c++) {
       var ch = channels[c];
       var n = ch.length;
       for (var i = 0; i < n - 1; i++) {
         var a = ch[i], b = ch[i + 1];
         var a0 = Math.abs(a), b0 = Math.abs(b);
-        if (a0 > peak) peak = a0;
-        if (b0 > peak) peak = b0;
+        if (a0 > peak) { peak = a0; peakSample = i; }
+        if (b0 > peak) { peak = b0; peakSample = i + 1; }
         // 3 interpolated points
         for (var k = 1; k < 4; k++) {
           var t = k / 4;
-          // Catmull-Rom / cubic with neighbors when available
           var ym1 = i > 0 ? ch[i - 1] : a;
           var yp2 = i + 2 < n ? ch[i + 2] : b;
           var t2 = t * t, t3 = t2 * t;
           var y = 0.5 * ((2 * a) + (-ym1 + b) * t + (2 * ym1 - 5 * a + 4 * b - yp2) * t2 + (-ym1 + 3 * a - 3 * b + yp2) * t3);
           var ay = Math.abs(y);
-          if (ay > peak) peak = ay;
+          if (ay > peak) { peak = ay; peakSample = i + t; }
+          if (ay >= 1.0 || ay >= overThreshold) {
+            // sample positions where we exceed safe ceiling
+            if (overs.length < 300 && ay >= 1.0) {
+              overs.push({ sample: i + t, time: (i + t) / sr, amp: ay });
+            } else if (overs.length < 150 && ay >= overThreshold) {
+              // also capture near overs if no hard overs yet
+              if (overs.length < 100 || ay >= 1.0) {
+                overs.push({ sample: i + t, time: (i + t) / sr, amp: ay });
+              }
+            }
+          }
         }
       }
     }
-    return db(peak);
+    // merge/dedup overs to clusters (group within 50ms)
+    var clustered = [];
+    overs.sort(function (a, b) { return a.time - b.time; });
+    var lastT = -999;
+    for (var oi = 0; oi < overs.length; oi++) {
+      var o = overs[oi];
+      if (o.time - lastT > 0.05) { clustered.push(o); lastT = o.time; }
+    }
+    return {
+      dbTP: db(peak),
+      linear: peak,
+      peakSample: peakSample,
+      peakTime: peakSample / sr,
+      overs: overs,          // all overs > 0 dBTP
+      overClusters: clustered // deduped for timeline
+    };
   }
 
   // ─── Peak / RMS / crest / DR ─────────────────────────────────────────────
@@ -682,7 +715,8 @@
   }
 
   // ─── Clipping detection ──────────────────────────────────────────────────
-  function detectClipping(channels) {
+  function detectClipping(channels, sr) {
+    sr = sr || 44100;
     var nCh = channels.length;
     var n = channels[0].length;
     var thresh = 0.999; // near full scale
@@ -691,7 +725,9 @@
     var inRun = false;
     var maxRun = 0;
     var runLen = 0;
-    var clipPositions = []; // times later
+    var clipPositions = []; // sample indices (limited for waveform)
+    var clipTimes = []; // { sample, time, runLen }
+    var runStartIdx = 0;
 
     for (var i = 0; i < n; i++) {
       var hit = false;
@@ -704,18 +740,40 @@
           inRun = true;
           runLen = 1;
           clipRuns++;
-          if (clipPositions.length < 50) clipPositions.push(i);
+          runStartIdx = i;
+          if (clipPositions.length < 200) clipPositions.push(i);
         } else {
           runLen++;
         }
       } else {
         if (inRun) {
           if (runLen > maxRun) maxRun = runLen;
+          // store this run
+          if (clipTimes.length < 300) {
+            clipTimes.push({
+              sample: runStartIdx,
+              time: runStartIdx / sr,
+              duration: runLen / sr,
+              runLength: runLen,
+              endTime: (runStartIdx + runLen) / sr
+            });
+          }
           inRun = false;
         }
       }
     }
-    if (inRun && runLen > maxRun) maxRun = runLen;
+    if (inRun) {
+      if (runLen > maxRun) maxRun = runLen;
+      if (clipTimes.length < 300) {
+        clipTimes.push({
+          sample: runStartIdx,
+          time: runStartIdx / sr,
+          duration: runLen / sr,
+          runLength: runLen,
+          endTime: (runStartIdx + runLen) / sr
+        });
+      }
+    }
 
     var severity = 'None';
     if (clippedSamples === 0) severity = 'None';
@@ -728,7 +786,9 @@
       clipRuns: clipRuns,
       maxRun: maxRun,
       severity: severity,
-      positions: clipPositions
+      positions: clipPositions, // sample indices (backward compat)
+      times: clipTimes,         // exact time locations
+      worstTime: clipTimes.length ? clipTimes.reduce(function (a, b) { return a.runLength > b.runLength ? a : b; }).time : null
     };
   }
 
@@ -910,7 +970,8 @@
   }
 
   // ─── Stereo field ────────────────────────────────────────────────────────
-  function analyzeStereo(channels) {
+  function analyzeStereo(channels, sr) {
+    sr = sr || 44100;
     if (channels.length < 2) {
       return {
         mono: true,
@@ -920,7 +981,8 @@
         sideRms: 0,
         lrBalanceDb: 0,
         phaseIssues: false,
-        correlationSeries: []
+        correlationSeries: [],
+        phaseIssueTimes: []
       };
     }
     var L = channels[0], R = channels[1];
@@ -948,10 +1010,13 @@
     var sideRms = Math.sqrt(sumSide2 / n);
     var width = midRms > 0 ? (sideRms / midRms) : 0;
 
-    // Correlation over time (1s windows)
-    var srEst = n; // caller will scale — we use sample index; series uses fraction
+    // Correlation over time (1s windows -> ~100 points)
     var win = Math.max(1, Math.floor(n / 100));
     var series = [];
+    var phaseIssueTimes = [];
+    var inPhaseIssue = false;
+    var phaseStart = 0;
+
     for (var i = 0; i + win <= n; i += win) {
       var sLR = 0, sL2 = 0, sR2 = 0;
       for (var j = 0; j < win; j++) {
@@ -960,7 +1025,37 @@
       }
       var d = Math.sqrt(sL2 * sR2);
       var c = d > 0 ? sLR / d : 1;
-      series.push({ t: i / n, v: c });
+      series.push({ t: i / n, v: c, sample: i });
+
+      if (c < 0) {
+        if (!inPhaseIssue) {
+          inPhaseIssue = true;
+          phaseStart = i;
+        }
+      } else {
+        if (inPhaseIssue) {
+          // end of region
+          phaseIssueTimes.push({
+            startSample: phaseStart,
+            endSample: i,
+            startTime: phaseStart / sr,
+            endTime: i / sr,
+            duration: (i - phaseStart) / sr,
+            minCorrelation: series.slice(-Math.floor((i - phaseStart) / win) - 1).reduce(function (mn, pt) { return pt.v < mn ? pt.v : mn; }, 1)
+          });
+          inPhaseIssue = false;
+        }
+      }
+    }
+    if (inPhaseIssue) {
+      phaseIssueTimes.push({
+        startSample: phaseStart,
+        endSample: n,
+        startTime: phaseStart / sr,
+        endTime: n / sr,
+        duration: (n - phaseStart) / sr,
+        minCorrelation: -1
+      });
     }
     var minCorr = 1;
     for (var i = 0; i < series.length; i++) if (series[i].v < minCorr) minCorr = series[i].v;
@@ -974,7 +1069,8 @@
       sideRms: sideRms,
       lrBalanceDb: bal,
       phaseIssues: corr < 0 || minCorr < 0,
-      correlationSeries: series
+      correlationSeries: series,
+      phaseIssueTimes: phaseIssueTimes
     };
   }
 
@@ -1000,7 +1096,6 @@
     }
 
     var silenceThresh = Math.pow(10, -50 / 20); // -50 dBFS
-    var noiseFloorThresh = Math.pow(10, -60 / 20);
 
     // Leading silence
     var lead = 0;
@@ -1015,16 +1110,24 @@
 
     // Abrupt start: first non-silent sample jumps high without ramp
     var abruptStart = false;
+    var abruptStartTime = null;
     if (lead < env.length) {
       var first = env[lead];
-      if (db(first) > -18 && leadSec < 0.02) abruptStart = true;
+      if (db(first) > -18 && leadSec < 0.02) {
+        abruptStart = true;
+        abruptStartTime = (lead * hop) / sr;
+      }
     }
 
     // Abrupt end
     var abruptEnd = false;
+    var abruptEndTime = null;
     if (idx >= 0) {
       var last = env[idx];
-      if (db(last) > -18 && trailSec < 0.05) abruptEnd = true;
+      if (db(last) > -18 && trailSec < 0.05) {
+        abruptEnd = true;
+        abruptEndTime = (idx * hop) / sr;
+      }
     }
 
     // Noise floor: median of quietest 10% of envelope (excluding pure digital silence)
@@ -1038,19 +1141,30 @@
 
     // Click/pop detection: sudden spikes in derivative of envelope
     var clicks = 0;
+    var clickTimes = [];
+    var clickDetails = [];
     for (var i = 2; i < env.length - 2; i++) {
       var prev = (env[i - 2] + env[i - 1]) / 2;
       var next = (env[i + 1] + env[i + 2]) / 2;
       var local = env[i];
       if (local > 0.05 && local > prev * 8 && local > next * 8 && prev < 0.02 && next < 0.02) {
         clicks++;
+        var t = (i * hop) / sr;
+        if (clickTimes.length < 300) {
+          clickTimes.push(t);
+          clickDetails.push({
+            time: t,
+            sample: i * hop,
+            amplitude: local,
+            prev: prev,
+            next: next,
+            ratio: local / Math.max(prev, next, 1e-12)
+          });
+        }
       }
     }
 
-    // Hum detection heuristic: strong 50/60 Hz relative energy — approximate via short FFT of quiet regions
     var humLikely = false;
-    // use overall spectrum ratio if available later; simple time-domain notch energy
-    // Skip heavy work — flag only if noise floor high
     var hissLikely = isFinite(noiseFloorDb) && noiseFloorDb > -55 && noiseFloorDb < -30;
 
     return {
@@ -1058,9 +1172,13 @@
       leadSec: leadSec,
       trailSec: trailSec,
       abruptStart: abruptStart,
+      abruptStartTime: abruptStartTime,
       abruptEnd: abruptEnd,
+      abruptEndTime: abruptEndTime,
       noiseFloorDb: noiseFloorDb,
       clicks: clicks,
+      clickTimes: clickTimes,
+      clickDetails: clickDetails,
       hissLikely: hissLikely,
       humLikely: humLikely,
       envelope: downsampleEnv(env, hop, sr, 500)
@@ -1125,7 +1243,7 @@
     return { brickwalled: brickwalled, flags: flags };
   }
 
-  // ─── Scoring ─────────────────────────────────────────────────────────────
+  // ─── Scoring + exact location enrichment ────────────────────────────────
   function buildChecks(ctx) {
     var f = ctx.format;
     var loud = ctx.loudness;
@@ -1138,9 +1256,23 @@
     var genreKey = ctx.genre || 'general';
     var genre = GENRE_DR[genreKey] || GENRE_DR.general;
     var tp = ctx.truePeak;
+    var tpDetailed = ctx.truePeakDetailed || { dbTP: tp, peakTime: null, overClusters: [] };
     var over = ctx.overCompression;
+    var markers = ctx.markers || [];
 
     var categories = [];
+
+    // helper to shorten times list for UI (first N)
+    function fmtTimes(times, limit) {
+      limit = limit || 12;
+      if (!times || !times.length) return null;
+      var slice = times.slice(0, limit);
+      return slice.map(function (t) {
+        if (typeof t === 'number') return fmtDur(t);
+        if (t.time != null) return fmtDur(t.time) + (t.runLength ? ' (' + t.runLength + ' smp)' : '');
+        return fmtDur(t);
+      }).join(', ') + (times.length > limit ? ' +' + (times.length - limit) + ' more' : '');
+    }
 
     // 1. File format
     var fmtChecks = [];
@@ -1156,7 +1288,6 @@
       recommendation: f.isLossy ? 'Export a lossless master (WAV 24-bit / FLAC) for distribution.' : null
     });
     var bd = f.bitDepth;
-    // WebAudio often decodes to float32 — report container bit depth if known, else decoded
     var bdLabel = bd != null ? (bd + '-bit') : '32-bit float (decoded)';
     var bdSt = 'pass';
     if (bd != null && bd < 16) bdSt = 'fail';
@@ -1187,9 +1318,8 @@
       status: (f.integrity === 'ok' && ctx.decodeOk) ? 'pass' : 'fail',
       recommendation: (f.integrity === 'ok' && ctx.decodeOk) ? null : 'Re-export the file; it may be truncated or corrupted.'
     });
-    // File size reasonableness
     var expectedBytesPerSec = sr * ctx.channelCount * ((bd || 16) / 8);
-    if (f.isLossy) expectedBytesPerSec = 320000 / 8; // ~320kbps
+    if (f.isLossy) expectedBytesPerSec = 320000 / 8;
     var expected = expectedBytesPerSec * ctx.duration;
     var ratio = f.size / Math.max(1, expected);
     var sizeSt = 'pass';
@@ -1205,7 +1335,7 @@
     categories.push({
       id: 'format',
       name: 'File Format Validation',
-      weight: 0, // not in overall weights list — fold into metadata-ish; we'll give small weight
+      weight: 0,
       checks: fmtChecks
     });
 
@@ -1237,14 +1367,25 @@
       meter: { value: loud.momentaryMax, min: -30, max: 0, unit: 'LUFS' }
     });
     var tpSt = !isFinite(tp) ? 'fail' : (tp > 0 ? 'fail' : (tp > -1.0 ? 'warn' : 'pass'));
+    // enrich true peak with exact locations
+    var tpLocStr = '';
+    var tpLoc = [];
+    if (tpDetailed && tpDetailed.overClusters && tpDetailed.overClusters.length) {
+      tpLoc = tpDetailed.overClusters;
+      tpLocStr = fmtTimes(tpLoc.map(function (o) { return o.time; }), 8);
+    }
+    var tpPeakDesc = 'True peak at ' + (isFinite(tpDetailed.peakTime) ? fmtDur(tpDetailed.peakTime) : '—') + ' = ' + fmtDb(tp) + 'TP';
+    if (tpLocStr) tpPeakDesc += ' — overs at ' + tpLocStr;
     loudChecks.push({
       id: 'truepeak',
       name: 'True Peak (dBTP)',
-      value: fmtDb(tp) + 'TP',
-      detail: 'Flag if exceeds −1.0 dBTP (inter-sample safe ceiling).',
+      value: fmtDb(tp) + 'TP' + (isFinite(tpDetailed.peakTime) ? ' @ ' + fmtDur(tpDetailed.peakTime) : ''),
+      detail: 'Flag if exceeds −1.0 dBTP. ' + (tpLocStr ? 'Overs detected at: ' + tpLocStr : 'No overs detected.'),
       status: tpSt,
-      recommendation: tpSt !== 'pass' ? 'Lower limiter ceiling to −1.0 dBTP (or −1.5 for lossy encode headroom).' : null,
-      meter: { value: tp, min: -6, max: 3, unit: 'dBTP', limit: -1 }
+      recommendation: tpSt !== 'pass' ? 'Lower limiter ceiling to −1.0 dBTP (or −1.5 for lossy encode headroom). Check at ' + (tpLocStr || fmtDur(tpDetailed.peakTime) || 'peak location') + '.' : null,
+      meter: { value: tp, min: -6, max: 3, unit: 'dBTP', limit: -1 },
+      locations: tpLoc.map(function (o) { return { time: o.time, label: fmtDb(db(o.amp)) + 'TP', type: 'truepeak' }; }),
+      locationSummary: tpPeakDesc
     });
     loudChecks.push({
       id: 'lra',
@@ -1254,7 +1395,6 @@
       status: (!isFinite(loud.lra) ? 'warn' : loud.lra < 3 ? 'warn' : 'pass')
     });
 
-    // Platform comparisons
     var platforms = PLATFORMS.map(function (p) {
       var gain = p.target - integ;
       if (p.targetMin != null && isFinite(integ)) {
@@ -1327,35 +1467,40 @@
     // 4. Clipping
     var clipChecks = [];
     var digSt = clip.severity === 'None' ? 'pass' : clip.severity === 'Minor' ? 'warn' : 'fail';
+    var clipTimesStr = fmtTimes(clip.times || [], 10);
     clipChecks.push({
       id: 'digital-clip',
       name: 'Digital clipping',
       value: clip.clippedSamples === 0
         ? 'None'
-        : (clip.clippedSamples + ' samples · ' + clip.clipRuns + ' regions · max run ' + clip.maxRun),
-      detail: 'Consecutive samples near 0 dBFS.',
+        : (clip.clippedSamples + ' samples · ' + clip.clipRuns + ' regions · max run ' + clip.maxRun + (clip.worstTime != null ? ' @ ' + fmtDur(clip.worstTime) : '')),
+      detail: 'Consecutive samples near 0 dBFS.' + (clipTimesStr ? ' Locations: ' + clipTimesStr : ''),
       status: digSt,
-      recommendation: digSt !== 'pass' ? 'Reduce output gain / limiter ceiling; re-render without overs.' : null
+      recommendation: digSt !== 'pass' ? 'Reduce output gain / limiter ceiling; re-render without overs. Worst at ' + (clip.worstTime != null ? fmtDur(clip.worstTime) : clipTimesStr || 'first clips') + '.' : null,
+      locations: (clip.times || []).map(function (c) { return { time: c.time, endTime: c.endTime, label: c.runLength + ' smp clip', type: 'clip', duration: c.duration }; }),
+      locationSummary: clipTimesStr ? 'Clipping at ' + clipTimesStr : null
     });
     var ispSt = tp > 0 ? 'fail' : tp > -1 ? 'warn' : 'pass';
+    // inter-sample peaks location summary same as true peak
     clipChecks.push({
       id: 'isp',
       name: 'Inter-sample peaks',
-      value: fmtDb(tp) + 'TP',
-      detail: 'True Peak above 0 dBTP can distort on DACs and lossy encoders.',
-      status: ispSt
+      value: fmtDb(tp) + 'TP @ ' + (isFinite(tpDetailed.peakTime) ? fmtDur(tpDetailed.peakTime) : '—'),
+      detail: 'True Peak above 0 dBTP can distort on DACs and lossy encoders.' + (tpLocStr ? ' Overs at: ' + tpLocStr : ''),
+      status: ispSt,
+      locations: tpLoc.map(function (o) { return { time: o.time, label: fmtDb(db(o.amp)) + 'TP', type: 'truepeak' }; })
     });
     clipChecks.push({
       id: 'severity',
       name: 'Severity rating',
-      value: clip.severity,
+      value: clip.severity + (clip.worstTime != null ? ' — worst @ ' + fmtDur(clip.worstTime) : ''),
       detail: 'None / Minor / Major / Critical',
       status: digSt
     });
     clipChecks.push({
       id: 'distortion',
       name: 'Distortion artifacts',
-      value: (clip.severity === 'Major' || clip.severity === 'Critical') ? 'Likely (clipping)' : 'None detected',
+      value: (clip.severity === 'Major' || clip.severity === 'Critical') ? 'Likely (clipping @ ' + (clipTimesStr || fmtDur(clip.worstTime) || 'multiple') + ')' : 'None detected',
       detail: 'Based on clipping density and true-peak overs.',
       status: (clip.severity === 'Major' || clip.severity === 'Critical') ? 'fail' : 'pass'
     });
@@ -1368,7 +1513,6 @@
 
     // 5. Frequency
     var freqChecks = [];
-    // Sub-bass presence
     var subSt = spec.subBassRatio < 0.0005 ? 'warn' : 'pass';
     freqChecks.push({
       id: 'subbass',
@@ -1378,12 +1522,7 @@
       status: subSt,
       recommendation: subSt === 'warn' ? 'Little energy in sub-bass — intentional for some genres; otherwise check high-pass filters.' : null
     });
-    var lowEndSt = spec.lowEndRatio > 0.15 ? 'warn' : (spec.lowEndRatio > 0.35 ? 'fail' : 'pass');
-    // lowEnd is 20-30 only — ratios are small; use db relative
-    // Better: compare lowEndDb to mid
-    var lowBuildup = (spec.lowEndDb - (10 * Math.log10(Math.max(spec.midRatio * (spec.subBassDb ? 1 : 1), 1e-20))));
-    // simpler heuristic: if absolute low-end band is hotter than -20 relative peak and dominates
-    lowEndSt = spec.lowEndRatio > spec.midRatio * 0.5 && spec.lowEndRatio > 0.02 ? 'warn' : 'pass';
+    var lowEndSt = spec.lowEndRatio > spec.midRatio * 0.5 && spec.lowEndRatio > 0.02 ? 'warn' : 'pass';
     if (spec.lowEndRatio > spec.midRatio && spec.lowEndRatio > 0.05) lowEndSt = 'fail';
     freqChecks.push({
       id: 'low-buildup',
@@ -1394,7 +1533,6 @@
       recommendation: lowEndSt !== 'pass' ? 'Apply a gentle high-pass (20–30 Hz) to remove inaudible rumble.' : null
     });
     var hfSt = spec.highEndRatio < 1e-6 ? 'warn' : 'pass';
-    // lack of energy above 16k
     if (spec.airRatio + spec.highEndRatio < 1e-5) hfSt = 'warn';
     freqChecks.push({
       id: 'hf-rolloff',
@@ -1413,7 +1551,6 @@
       status: dcSt,
       recommendation: dcSt !== 'pass' ? 'Apply a DC blocker / high-pass at ~5–10 Hz.' : null
     });
-    // Spectral balance rough
     var balNote = 'Low ' + (spec.lowRatio * 100).toFixed(1) + '% · Mid ' + (spec.midRatio * 100).toFixed(1) +
       '% · Presence ' + (spec.presenceRatio * 100).toFixed(1) + '% · Air ' + (spec.airRatio * 100).toFixed(1) + '%';
     freqChecks.push({
@@ -1443,22 +1580,26 @@
       });
     } else {
       var corrSt = st.correlation < 0 ? 'fail' : (st.correlation < 0.3 ? 'warn' : 'pass');
+      var phaseTimesStr = fmtTimes((st.phaseIssueTimes || []).map(function (p) { return p.startTime; }), 8);
       stChecks.push({
         id: 'correlation',
         name: 'Stereo correlation',
-        value: st.correlation.toFixed(3) + ' (min ' + (st.minCorrelation != null ? st.minCorrelation.toFixed(3) : '—') + ')',
-        detail: '1 = mono, 0 = uncorrelated, < 0 = phase issues.',
+        value: st.correlation.toFixed(3) + ' (min ' + (st.minCorrelation != null ? st.minCorrelation.toFixed(3) : '—') + ')' + (phaseTimesStr ? ' issues @ ' + phaseTimesStr : ''),
+        detail: '1 = mono, 0 = uncorrelated, < 0 = phase issues.' + (phaseTimesStr ? ' Phase problems at: ' + phaseTimesStr : ''),
         status: corrSt,
-        recommendation: corrSt === 'fail' ? 'Phase problems detected — check mid/side, stereo wideners, and multi-mic phase.' : null,
-        meter: { value: st.correlation, min: -1, max: 1, unit: '', limitLow: 0 }
+        recommendation: corrSt === 'fail' ? 'Phase problems detected at ' + (phaseTimesStr || 'multiple points') + ' — check mid/side, stereo wideners, and multi-mic phase.' : null,
+        meter: { value: st.correlation, min: -1, max: 1, unit: '', limitLow: 0 },
+        locations: (st.phaseIssueTimes || []).map(function (p) { return { time: p.startTime, endTime: p.endTime, label: 'phase ' + p.duration.toFixed(2) + 's', type: 'phase' }; }),
+        locationSummary: phaseTimesStr ? 'Phase issues at ' + phaseTimesStr : null
       });
       stChecks.push({
         id: 'mono-compat',
         name: 'Mono compatibility',
-        value: st.phaseIssues ? 'Poor (correlation drops below 0)' : 'Good',
+        value: st.phaseIssues ? 'Poor (correlation drops below 0) @ ' + (phaseTimesStr || '—') : 'Good',
         detail: 'Flags if correlation drops below 0 (phase cancellation risk).',
         status: st.phaseIssues ? 'fail' : 'pass',
-        recommendation: st.phaseIssues ? 'Check the mix in mono; fix out-of-phase elements.' : null
+        recommendation: st.phaseIssues ? 'Check the mix in mono at ' + (phaseTimesStr || 'flagged regions') + '; fix out-of-phase elements.' : null,
+        locations: (st.phaseIssueTimes || []).map(function (p) { return { time: p.startTime, endTime: p.endTime, type: 'phase' }; })
       });
       var msRatio = st.midRms > 0 ? st.sideRms / st.midRms : 0;
       stChecks.push({
@@ -1481,9 +1622,10 @@
       stChecks.push({
         id: 'phase-cancel',
         name: 'Phase cancellation',
-        value: st.phaseIssues ? 'Detected' : 'Not detected',
+        value: st.phaseIssues ? 'Detected @ ' + (phaseTimesStr || 'multiple') : 'Not detected',
         detail: 'Based on negative correlation regions.',
-        status: st.phaseIssues ? 'fail' : 'pass'
+        status: st.phaseIssues ? 'fail' : 'pass',
+        locations: (st.phaseIssueTimes || []).map(function (p) { return { time: p.startTime, endTime: p.endTime, type: 'phase' }; })
       });
     }
     categories.push({
@@ -1493,7 +1635,7 @@
       checks: stChecks
     });
 
-    // 7. Silence & noise
+    // 7. Silence & noise — now with precise click locations + abrupt timestamps
     var silChecks = [];
     var leadSt = (sil.leadSec >= 0.3 && sil.leadSec <= 1.5) ? 'pass' :
                  (sil.leadSec >= 0.1 && sil.leadSec < 3) ? 'warn' : 'fail';
@@ -1504,7 +1646,8 @@
       value: sil.leadSec.toFixed(2) + ' s',
       detail: 'Recommended 0.5–1.0 s of clean silence/head.',
       status: leadSt,
-      recommendation: leadSt !== 'pass' ? 'Aim for ~0.5–1 s of silence (or natural room tone) before the first transient.' : null
+      recommendation: leadSt !== 'pass' ? 'Aim for ~0.5–1 s of silence (or natural room tone) before the first transient.' : null,
+      locations: [{ time: 0, endTime: sil.leadSec, label: 'leading silence', type: 'silence' }]
     });
     var trailSt = (sil.trailSec >= 1.5 && sil.trailSec <= 4) ? 'pass' :
                   (sil.trailSec >= 0.5 && sil.trailSec < 6) ? 'warn' : 'fail';
@@ -1514,17 +1657,23 @@
       value: sil.trailSec.toFixed(2) + ' s',
       detail: 'Recommended 2–3 s of tail silence.',
       status: trailSt,
-      recommendation: trailSt !== 'pass' ? 'Leave ~2–3 s after the last sound so platforms don’t truncate the reverb tail.' : null
+      recommendation: trailSt !== 'pass' ? 'Leave ~2–3 s after the last sound so platforms don’t truncate the reverb tail.' : null,
+      locations: [{ time: sil.duration - sil.trailSec, endTime: sil.duration, label: 'trailing silence', type: 'silence' }]
     });
+    var abruptTimes = [];
+    if (sil.abruptStart) abruptTimes.push({ time: sil.abruptStartTime || sil.leadSec, label: 'abrupt start' });
+    if (sil.abruptEnd) abruptTimes.push({ time: sil.abruptEndTime || (sil.duration - sil.trailSec), label: 'abrupt end' });
+    var abruptStr = abruptTimes.map(function (a) { return fmtDur(a.time); }).join(', ');
     silChecks.push({
       id: 'abrupt',
       name: 'Abrupt start / end',
       value: (sil.abruptStart || sil.abruptEnd)
-        ? ((sil.abruptStart ? 'Abrupt start' : '') + (sil.abruptStart && sil.abruptEnd ? ' · ' : '') + (sil.abruptEnd ? 'Abrupt end' : ''))
+        ? ((sil.abruptStart ? 'Abrupt start @ ' + fmtDur(sil.abruptStartTime || 0) : '') + (sil.abruptStart && sil.abruptEnd ? ' · ' : '') + (sil.abruptEnd ? 'Abrupt end @ ' + fmtDur(sil.abruptEndTime || sil.duration) : ''))
         : 'OK',
-      detail: 'Detects missing fades.',
+      detail: 'Detects missing fades.' + (abruptStr ? ' At ' + abruptStr : ''),
       status: (sil.abruptStart || sil.abruptEnd) ? 'warn' : 'pass',
-      recommendation: (sil.abruptStart || sil.abruptEnd) ? 'Add short fade-in/fade-out to avoid clicks.' : null
+      recommendation: (sil.abruptStart || sil.abruptEnd) ? 'Add short fade-in/out at ' + abruptStr + ' to avoid clicks.' : null,
+      locations: abruptTimes.map(function (a) { return { time: a.time, label: a.label, type: 'abrupt' }; })
     });
     var nfSt = !isFinite(sil.noiseFloorDb) ? 'pass' :
                (sil.noiseFloorDb > -40 ? 'fail' : sil.noiseFloorDb > -55 ? 'warn' : 'pass');
@@ -1537,13 +1686,16 @@
       recommendation: nfSt !== 'pass' ? 'Denoise carefully or re-record noisy sections; check grounding/hum.' : null
     });
     var clickSt = sil.clicks === 0 ? 'pass' : sil.clicks < 3 ? 'warn' : 'fail';
+    var clickStr = fmtTimes(sil.clickTimes || [], 10);
     silChecks.push({
       id: 'clicks',
       name: 'Clicks / pops / glitches',
-      value: sil.clicks === 0 ? 'None detected' : (sil.clicks + ' possible event(s)'),
-      detail: 'Transient spikes in near-silence.',
+      value: sil.clicks === 0 ? 'None detected' : (sil.clicks + ' possible event(s)' + (clickStr ? ' @ ' + clickStr : '')),
+      detail: 'Transient spikes in near-silence.' + (clickStr ? ' Locations: ' + clickStr : ''),
       status: clickSt,
-      recommendation: clickSt !== 'pass' ? 'Inspect waveform at flagged regions; remove clicks manually or with a declicker.' : null
+      recommendation: clickSt !== 'pass' ? 'Inspect waveform at ' + (clickStr || 'flagged times') + '; remove clicks manually or with a declicker.' : null,
+      locations: (sil.clickDetails || []).map(function (d) { return { time: d.time, label: 'click ×' + d.ratio.toFixed(1), type: 'click', amp: d.amplitude }; }),
+      locationSummary: clickStr ? 'Clicks at ' + clickStr : null
     });
     categories.push({
       id: 'silence',
@@ -1601,19 +1753,12 @@
       recommendation: meta.artwork ? 'Verify artwork is ≥ 3000×3000 px for store delivery.' :
         'Embed high-resolution cover art (≥ 3000×3000).'
     });
-    // Note: browser may not see tags on WAV without LIST/INFO
     categories.push({
       id: 'metadata',
       name: 'Metadata Check',
       weight: 0.05,
       checks: metaChecks
     });
-
-    // Re-weight: format gets 0 weight in suggested list — redistribute by adding format into scoring with 0
-    // Suggested weights sum to 1.0 without format. We'll score format separately but include at 0 in overall,
-    // OR give format a small presence by folding. Spec says:
-    // Loudness 25, DR 20, Clip 20, Freq 10, Stereo 10, Silence 10, Metadata 5.
-    // Format is extra — include as informational with weight 0, still show in UI.
 
     // Compute scores
     var totalW = 0;
@@ -1634,7 +1779,6 @@
         totalW += cat.weight;
       }
     });
-    // If format has weight 0, overall uses only weighted cats
     var overall = totalW > 0 ? acc / totalW : 0;
 
     return {
@@ -1643,7 +1787,8 @@
       grade: gradeOf(overall),
       gradeLabel: gradeLabel(gradeOf(overall)),
       summary: { pass: passN, warn: warnN, fail: failN },
-      platforms: platforms
+      platforms: platforms,
+      markers: markers
     };
   }
 
@@ -1686,26 +1831,101 @@
         var loudness = meanSquareGated(channels, sr);
 
         onProgress(0.55, 'True peak & dynamics…');
-        var tp = truePeakDbTP(channels);
+        var tpDetailed = truePeakDetailed(channels, sr);
+        var tp = tpDetailed.dbTP;
         var levels = analyzeLevels(channels, sr);
-        var clipping = detectClipping(channels);
+        var clipping = detectClipping(channels, sr);
         var over = detectOverCompression(levels, clipping, loudness);
 
         onProgress(0.7, 'Spectrum & stereo…');
         var spectrum = analyzeSpectrum(channels, sr);
-        var stereo = analyzeStereo(channels);
+        var stereo = analyzeStereo(channels, sr);
         // fix stereo series time to seconds
         if (stereo.correlationSeries) {
           stereo.correlationSeries = stereo.correlationSeries.map(function (p) {
-            return { t: p.t * duration, v: p.v };
+            return { t: p.t * duration, sample: p.sample, v: p.v };
           });
         }
 
         onProgress(0.85, 'Silence & noise…');
         var silence = analyzeSilenceNoise(channels, sr);
 
-        onProgress(0.92, 'Building waveform…');
+        onProgress(0.92, 'Building waveform & problem timeline…');
         var waveform = buildWaveform(channels, 900);
+
+        // Build exact problem timeline for UI — precise locations where issues occur
+        var markers = [];
+        // Clipping markers
+        if (clipping.times) {
+          clipping.times.forEach(function (c) {
+            markers.push({
+              time: c.time,
+              endTime: c.endTime,
+              type: 'clip',
+              severity: clipping.severity === 'Critical' ? 'fail' : clipping.severity === 'Major' ? 'fail' : 'warn',
+              label: 'Clipping ' + c.runLength + ' samples',
+              sample: c.sample
+            });
+          });
+        }
+        // True peak overs
+        if (tpDetailed.overClusters) {
+          tpDetailed.overClusters.forEach(function (o) {
+            markers.push({
+              time: o.time,
+              type: 'truepeak',
+              severity: o.amp >= 1.0 ? 'fail' : 'warn',
+              label: 'True Peak ' + fmtDb(db(o.amp)) + 'TP overs at ' + fmtDur(o.time),
+              amp: o.amp,
+              sample: o.sample
+            });
+          });
+        }
+        // Clicks
+        if (silence.clickDetails) {
+          silence.clickDetails.forEach(function (d) {
+            markers.push({
+              time: d.time,
+              type: 'click',
+              severity: 'warn',
+              label: 'Click/pop spike ×' + d.ratio.toFixed(1),
+              sample: d.sample,
+              amp: d.amplitude
+            });
+          });
+        }
+        // Abrupt edges
+        if (silence.abruptStart) {
+          markers.push({
+            time: silence.abruptStartTime || silence.leadSec,
+            type: 'abrupt-start',
+            severity: 'warn',
+            label: 'Abrupt start — no fade-in'
+          });
+        }
+        if (silence.abruptEnd) {
+          markers.push({
+            time: silence.abruptEndTime != null ? silence.abruptEndTime : (silence.duration - silence.trailSec),
+            type: 'abrupt-end',
+            severity: 'warn',
+            label: 'Abrupt end — no fade-out'
+          });
+        }
+        // Phase issues
+        if (stereo.phaseIssueTimes) {
+          stereo.phaseIssueTimes.forEach(function (ph) {
+            markers.push({
+              time: ph.startTime,
+              endTime: ph.endTime,
+              type: 'phase',
+              severity: 'fail',
+              label: 'Phase issue corr < 0 for ' + ph.duration.toFixed(2) + 's',
+              duration: ph.duration
+            });
+          });
+        }
+        // Sort by time
+        markers.sort(function (a, b) { return a.time - b.time; });
 
         var analysisCtx = {
           format: format,
@@ -1716,12 +1936,14 @@
           decodeOk: true,
           loudness: loudness,
           truePeak: tp,
+          truePeakDetailed: tpDetailed,
           levels: levels,
           clipping: clipping,
           overCompression: over,
           spectrum: spectrum,
           stereo: stereo,
           silence: silence,
+          markers: markers,
           genre: options.genre || 'general'
         };
 
@@ -1741,6 +1963,7 @@
           duration: duration,
           loudness: loudness,
           truePeak: tp,
+          truePeakDetailed: tpDetailed,
           levels: levels,
           clipping: clipping,
           overCompression: over,
@@ -1748,6 +1971,7 @@
           stereo: stereo,
           silence: silence,
           waveform: waveform,
+          markers: markers,
           genre: analysisCtx.genre,
           overallScore: scored.overallScore,
           grade: scored.grade,
