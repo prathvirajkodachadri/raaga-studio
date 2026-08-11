@@ -486,6 +486,59 @@ details .body .ex { color: var(--text); font-family: var(--kn-font); }
   line-height: 1.45;
 }
 
+/* ─── Player + Timeline — exact location UI ────────────────────────────── */
+.mc-player { margin-bottom: 16px; }
+.mc-player-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+.mc-player h3 { margin:0; font-size:14px; }
+.mc-player audio { margin:8px 0; filter: invert(0.92) hue-rotate(180deg); }
+.mc-player-legend { display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--muted); }
+.mc-player-legend .pl { display:inline-flex; align-items:center; gap:5px; }
+.mc-player-legend .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+.mc-player-legend .dot.clip { background:#e4577f; }
+.mc-player-legend .dot.tp { background:#e0b36a; }
+.mc-player-legend .dot.click { background:#d4c05a; }
+.mc-player-legend .dot.phase { background:#a97fd6; }
+.mc-player-legend .dot.abrupt { background:#ffb86b; }
+
+/* timeline */
+.mc-timeline { margin-bottom:16px; }
+.mc-timeline.no-issues { border-style:dashed; }
+.mc-tl-track { position:relative; height:42px; background:#1a1613; border:1px solid var(--border); border-radius:10px; margin:8px 0 12px; overflow:hidden; }
+.mc-tl-track .tl-bg { position:absolute; inset:0; background: linear-gradient(90deg, rgba(224,179,106,0.06), rgba(228,87,127,0.06)); }
+.tl-marker { position:absolute; top:0; bottom:0; width:3px; border:none; cursor:pointer; padding:0; transform:translateX(-50%); }
+.tl-marker.clip { background:#e4577f; }
+.tl-marker.truepeak { background:#e0b36a; width:3px; }
+.tl-marker.click { background:#d4c05a; width:4px; border-radius:2px; }
+.tl-marker.phase { background:rgba(169,127,214,0.9); width:8px; opacity:0.7; }
+.tl-marker.abrupt-start, .tl-marker.abrupt-end, .tl-marker.abrupt { background:#ffb86b; width:3px; }
+.tl-marker.fail { box-shadow:0 0 8px currentColor; }
+.tl-marker .tl-tip { position:absolute; bottom:100%; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:10px; background:var(--panel2); color:var(--text); border:1px solid var(--border); padding:2px 6px; border-radius:6px; opacity:0; pointer-events:none; transition:opacity .15s; margin-bottom:4px; }
+.tl-marker:hover .tl-tip { opacity:1; }
+.tl-playhead { position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; z-index:5; }
+
+.mc-tl-list { display:flex; flex-direction:column; gap:8px; }
+.tl-group { display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+.tl-glabel { font-size:12px; font-weight:700; color:var(--text); min-width:180px; }
+.tl-tags { display:flex; flex-wrap:wrap; gap:6px; }
+
+.mc-time-tag { background:var(--panel2); color:var(--text); border:1px solid var(--border); border-radius:999px; padding:3px 10px; font-size:11px; cursor:pointer; font-variant-numeric:tabular-nums; transition:border-color .15s, background .15s; }
+.mc-time-tag:hover { border-color:var(--accent); background:rgba(228,87,127,0.12); }
+.mc-time-tag.fail { border-color:rgba(228,87,127,0.45); color:#ffb0c5; }
+.mc-time-tag.warn { border-color:rgba(224,179,106,0.45); color:#f5d9a5; }
+.mc-time-tag.clip { border-color:rgba(228,87,127,0.5); }
+.mc-time-tag.truepeak { border-color:rgba(224,179,106,0.5); }
+.mc-time-tag.click { border-color:rgba(212,192,90,0.6); }
+.mc-time-tag.phase { border-color:rgba(169,127,214,0.6); color:#d0b4f0; }
+.mc-time-tag.sm { padding:2px 8px; font-size:10px; }
+.mc-time-tag.sm:hover { transform:translateY(-1px); }
+
+.loc-list { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.mc-check .cd.loc { color:var(--gold); font-size:12px; margin-top:6px; }
+.mc-viz-legend .tp-leg::before, .mc-viz-legend .click-leg::before, .mc-viz-legend .phase-leg::before { content:''; display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
+.mc-viz-legend .tp-leg::before { background:#e0b36a; }
+.mc-viz-legend .click-leg::before { background:#d4c05a; }
+.mc-viz-legend .phase-leg::before { background:rgba(169,127,214,0.7); }
+
 /* print helpers (when exporting) */
 @media print {
   .topbar, .mc-dropzone, .mc-controls, .mc-feature-grid { display: none !important; }
