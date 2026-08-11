@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ಛಂದಸ್ಸು — ಮಾತ್ರೆ-ಲಘು-ಗುರು · Raaga Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+        <path d="M2 14c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+      </svg>
+    </div>
+    <div class="brand">
+      <h1>Raaga Studio · <span>ಛಂದಸ್ಸು</span></h1>
+      <p class="tag">ಮಾತ್ರೆ · ಲಘು · ಗುರು — ಕನ್ನಡ ದೀವಿಗೆ ಸ್ಕ್ಯಾನರ್</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2 class="sec">ಸ್ಕ್ಯಾನರ್ (Scanner)</h2>
+
+    <div class="legend-row">
+      <span class="chip"><span class="box laghu-c">U</span> ಲಘು · 1 ಮಾತ್ರೆ</span>
+      <span class="chip"><span class="box guru-c">—</span> ಗುರು · 2 ಮಾತ್ರೆ</span>
+      <span class="chip"><span class="box pluta-c">3</span> ಪ್ಲುತ · 3 ಮಾತ್ರೆ</span>
+      <span class="chip"><span class="box none-c">·</span> ಚಿಹ್ನೆ ಇಲ್ಲ (halant)</span>
+    </div>
+
+    <div class="controls">
+      <label class="chk">
+        <input type="checkbox" id="shatpadi">
+        <span>ಷಟ್ಪದಿ (3ನೇ &amp; 6ನೇ ಸಾಲಿನ ಕೊನೆಯ ಅಕ್ಷರವನ್ನು ಗುರುವೆಂದು)</span>
+      </label>
+      <button class="btn primary" id="loadDemo">ಲೋಡ್ ಉದಾಹರಣೆಗಳು</button>
+      <button class="btn" id="clear">ಅಳಿಸು</button>
+      <span class="hint">Kannada text → live ಮಾತ್ರೆ-ಲಘು-ಗುರು marking</span>
+    </div>
+
+    <div class="cols">
+      <div class="panel">
+        <label for="input" class="hint">ಕನ್ನಡ ಪದ್ಯ / ಸಾಲುಗಳು</label>
+        <textarea id="input" spellcheck="false" placeholder="ಕನ್ನಡದಲ್ಲಿ ಬರೆಯಿರಿ…"></textarea>
+      </div>
+      <div class="panel output">
+        <span class="hint">ಗುರುತು ಮಾಡಿದ ಫಲಿತಾಂಶ</span>
+        <div id="result"></div>
+      </div>
+    </div>
+
+    <h2 class="sec">ನಿಯಮಗಳು (ಮಾತ್ರೆ-ಲಘು-ಗುರು)</h2>
+    <div id="rules"></div>
+
+  </main>
+
+  <script src="js/prosody.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
