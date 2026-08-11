@@ -1,87 +1,53 @@
-# Raaga Studio — Feature Roadmap (Compose → Mix → Master)
+# Raaga Studio — Feature Roadmap (Compose → Mix → Master → Release)
 
-Workflow this site supports: **Compose in Suno.com → Mix in Suno Studio / Cubase →
-Master in Cubase**. Everything below is mapped to that pipeline.
+Workflow this studio supports: **Compose in Suno.com → Mix in Suno Studio / Cubase → Master in Cubase → Release on Spotify, Apple Music & JioSaavn**.
 
-## ✅ Built today
+## ✅ Built & Shipped
 
-- **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
-- **Suno Prompt Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/structure/
-  instruments/production → ready-to-paste prompt + recipe library
-- **Mix Check** (#8) — pre-master analysis with "ready for mastering?" verdict
-- **Master Check** — full audio QA (LUFS, dBTP, DR, clipping, spectrum, stereo,
-  silence/noise, metadata) with grade A–F, exact problem timeline, JSON/PDF export
-- **Release-ready checklist** (#14) — built into Master Check: dBTP ≤ −1, dithering,
-  ISRC, artwork, LUFS range, phase, noise → score /100 + ✅ release verdict
-- **Song Registry** (#6) — one card per song: status (Idea → … → Released), Suno
-  links, BPM/key/genre, stem-export / mix / master checklists, session notes,
-  version log, JSON export/import
-- **Mix ↔ Master comparison** (#12-lite) — Master Check compares against the last mix
-  analyzed in Mix Check
-
-## Remaining ideas
+- **ಛಂದಸ್ಸು & ಸಾಹಿತ್ಯ (Prosody, Ganas & Rhyme)** (#2) — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ), Gana division (ಯಮಾತಾರಾಜಭಾನಸಲಗಂ: ಮ-ಯ-ರ-ಸ-ತ-ಜ-ಭ-ನ & ಮಾತ್ರಾಗಣ), Prasa detection (ದ್ವಿತೀಯಾಕ್ಷರ ಪ್ರಾಸ & ಅಂತ್ಯಪ್ರಾಸ), rhythm balance metrics → *lyric writing & composing*
+- **ರಾಗ & ಶೃತಿ (Raga Explorer & Tanpura Drone)** (#5) — 30+ Carnatic & Hindustani ragas with Arohana/Avarohana, swara mapping, Western notes, Rasa/Mood, singing times, famous songs, **Interactive Web Audio Swara Synthesizer**, and continuous **Virtual Acoustic Tanpura Drone** (Pa/Ma/Ni strings, Sa harmonics, adjustable tempo/pitch/volume)
+- **BPM, Key Finder & Metronome** (#4) — Live Tap Tempo calculator, **Precision Audio Metronome** with Western meters and **Carnatic Talas** (Adi Tala 8 beats, Rupaka Tala, Misra Chapu, Khanda Chapu, Tisra Eka), and **Audio File Key, Chromagram & BPM Detector** mapping to matching Indian Ragas
+- **Suno Prompt Builder** (#1) — Genre/mood/tempo/key-raga/vocals/language/structure/instruments/production → ready-to-paste prompt + recipe library + one-click export to Song Studio
+- **Mix Check** (#8) — Pre-master analysis with "ready for mastering?" verdict, headroom/crest/DR/phase/buildup/clipping checks, and quick sample audio loaders
+- **Reference Track Comparison** (#9, #12) — Compare your mixdown or master against a commercial reference track: dual player with loudness-matched A/B switching, dual frequency spectrum overlay canvas, and actionable **Match EQ Recommendations**
+- **Master Check** — Full master audio QA (LUFS, True Peak dBTP, DR, clipping positions, spectrum curve, spectrogram, stereo correlation over time, silence/noise, exact problem timeline with audio player seek-to-problem), JSON / PDF export
+- **Release-Ready Checklist** (#14) — Built into Master Check: dBTP ≤ −1, dithering, ISRC, artwork, LUFS range, phase, noise → score /100 + ✅ release verdict
+- **Release Planner & Artwork Validator** (#16) — Cover artwork validator (≥ 3000×3000 px, 1:1 aspect ratio, RGB, file size), **Live Spotify / Apple Music streaming player mockup**, ISRC code generator (`CC-XXX-YY-NNNNN`), release metadata sheet builder, and digital distribution checklist
+- **Song Studio & DAW Workflow** (#6, #7, #10, #11, #15) — One card per song: status (Idea → … → Released), Suno links, BPM/key/genre, stem-export / mix / master checklists, **DAW Session Routing Guides** (Cubase, Logic Pro, Studio One, FL Studio), **Mastering Plugin Chain Presets**, session notes, version log, JSON export/import
+- **Mix ↔ Master Comparison** — Master Check compares against the last mix analyzed in Mix Check
 
 ---
 
-## Phase 1 — Compose (Suno.com)
+## Phase Breakdown Status
 
-| # | Feature | Description | Notes |
-|---|---------|-------------|-------|
-| 1 | Suno Prompt Builder | Form (genre, mood, tempo, structure, vocal style, language, key) → ready-to-paste prompt | Store favorite "prompt recipes" |
-| 2 | Lyric + Prosody integration | Rhyme-pair detection, line-length balance, mātra count per line | Reuses existing prosody engine |
-| 3 | Song Structure Planner | Intro/Verse/Chorus/Bridge arrangement with timestamps | Feeds into the Suno prompt |
-| 4 | Key & BPM Finder | Upload/tap reference → detect tempo + key | Keeps Suno prompt and Cubase session in same key |
-| 5 | Raga/Scale Reference | Carnatic raga → note/scale lookup | Describe melody in Suno prompt ("Hamsadhwani…") |
-| 6 | Song Registry | One page per song: prompt, Suno link, stems, BPM/key, status | Ties all phases together |
+### Phase 1 — Compose (Suno.com)
+1. **Suno Prompt Builder** — ✅ Complete
+2. **Lyric + Prosody + Gana + Prasa Integration** — ✅ Complete
+3. **Key & BPM Finder + Metronome + Tala Cycles** — ✅ Complete
+4. **Raga/Scale Reference + Interactive Swara Synth + Tanpura Drone** — ✅ Complete
+5. **Song Registry** — ✅ Complete
 
-## Phase 2 — Mix (Suno Studio / Cubase)
+### Phase 2 — Mix (Suno Studio / Cubase)
+6. **Stem Export Checklist** — ✅ Complete
+7. **Mix Check (pre-master)** — ✅ Complete
+8. **Reference Track Comparison (A/B Matching & Spectrum Overlay)** — ✅ Complete
+9. **Session Notes & Versioning** — ✅ Complete
+10. **DAW Session Setup Guide** — ✅ Complete
 
-| # | Feature | Description | Notes |
-|---|---------|-------------|-------|
-| 7 | Stem Export Checklist | Which stems to download, naming, gain staging (-18 dBFS, -6 dB peaks) | Interactive checklist |
-| 8 | Mix Check (pre-master) | Run the master engine on the **mix**: loudness, phase, buildup, clipping | Reuse Master Check code |
-| 9 | Reference Compare | Overlay reference track spectrum/loudness vs. your mix | A/B style comparison |
-| 10 | Session Notes & Versioning | Mix log per song with version tags (mix v2…) | Exportable |
-| 11 | Cubase Session Setup Guide | Sample rate, bit depth, routing, stem placement template | Reference content |
+### Phase 3 — Master (Cubase)
+11. **A/B Master Compare & Spectrum Overlay** — ✅ Complete
+12. **Platform-Specific Normalization Reports** — ✅ Complete
+13. **Release-Ready Checklist (Score /100)** — ✅ Complete
+14. **Mastering Chain Logger & Presets** — ✅ Complete
 
-## Phase 3 — Master (Cubase)
-
-| # | Feature | Description | Notes |
-|---|---------|-------------|-------|
-| 12 | A/B Master Compare | Before/after master loudness + spectrum side-by-side | |
-| 13 | Platform-specific reports | Spotify / Apple / YouTube / Tidal target presets | Extends existing platform gains |
-| 14 | Release-ready checklist | dBTP ≤ -1, dithering, ISRC, metadata | |
-| 15 | Mastering Chain Logger | Record EQ/comp/limiter settings per master version | Repeatable chains |
-
-## Phase 4 — Release & everything else
-
-| # | Feature | Description | Notes |
-|---|---------|-------------|-------|
-| 16 | Release Planner | Platforms, artwork checker (3000×3000 JPG), ISRC manager, distribution checklist | |
-| 17 | Portfolio / Sharing | Publish finished tracks + reports as shareable pages | |
-| 18 | Project Export/Import | One JSON per song with everything above | Matches existing JSON export |
-| 19 | Suno API integration | Generate a track from the prompt builder directly | **Needs a backend** — others are 100% in-browser |
+### Phase 4 — Release & Distribution
+15. **Release Planner & Cover Artwork Validator (3000×3000 px)** — ✅ Complete
+16. **ISRC Generator & Manager** — ✅ Complete
+17. **Digital Distribution Checklist (Spotify, Apple, JioSaavn, Wynk)** — ✅ Complete
+18. **Project Export / Import (JSON)** — ✅ Complete
 
 ---
 
-## Status of the original priority list
+## Architecture Note
 
-1. **Suno Prompt Builder** (1) — ✅ built
-2. **Mix Check** (8) — ✅ built
-3. **Release-ready checklist** (14) — ✅ built (inside Master Check)
-4. **Song Registry** (6) — ✅ built (Song Studio tab)
-5. **Reference Compare** (9) — 🕑 next up — medium effort, big mixing value
-
-## Suggested next steps
-
-1. **Reference Compare** (9) — load a favourite song, overlay its spectrum/loudness vs. your mix.
-2. **Key & BPM Finder** (4) — tap/upload a reference to detect tempo + key.
-3. **Raga/Scale Reference** (5) — Carnatic raga → note/scale lookup.
-4. **Stem Export Checklist** (7) — already inside Song Studio; could become a standalone wizard.
-5. **Release Planner** (16) — platforms, artwork dimension checker, distribution checklist.
-
-## Architecture note
-
-Everything except **Suno API integration (19)** works fully in-browser with no
-backend — consistent with the current zero-dependency design. Feature 19 would
-require a small server/proxy layer to hold the Suno API key.
+Everything runs **100% client-side in the browser** using the Web Audio API, Canvas API, and HTML5 Web APIs with zero external dependencies and zero build step.

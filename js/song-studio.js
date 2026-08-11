@@ -1,5 +1,5 @@
 /**
- * song-studio.js — Song Studio tab: project registry + workflow.
+ * song-studio.js — Song Studio tab: project registry, workflow & DAW setup guides.
  * One card per song: status (Idea → … → Released), Suno links, session notes,
  * stem-export / mix / master checklists, and a version log. Stored in
  * localStorage, exportable/importable as JSON.
@@ -8,6 +8,7 @@
 
 (function () {
   var LS_KEY = 'raaga.songs';
+  var DG = window.DAW_GUIDES;
 
   var STATUSES = ['Idea', 'Composing', 'Suno', 'Mixing', 'Mastering', 'Released'];
 
@@ -25,7 +26,7 @@
       'High-pass mud out of non-bass tracks',
       'Balance levels before EQ / compression',
       'Check mono compatibility (phase)',
-      'A/B against a reference track',
+      'A/B against a reference track (Reference Compare)',
       'Leave headroom — peaks ≤ −6 dBFS',
       'Bounce mixdown as WAV 24-bit for Mix Check'
     ],
@@ -34,8 +35,8 @@
       'Master with limiter ceiling ≤ −1 dBTP',
       'Target platform loudness (−14 Spotify / −16 Apple)',
       'Run Master Check on the final master',
-      'Embed metadata + ISRC',
-      'Attach 3000×3000 artwork',
+      'Embed metadata + ISRC in Release Planner',
+      'Attach 3000×3000 artwork (validate in Release Planner)',
       'Export release files (WAV 24-bit + 16-bit CD)'
     ]
   };
@@ -56,6 +57,7 @@
   var exportOneBtn = $('ss-export-one');
   var gotoMixBtn = $('ss-goto-mix');
   var gotoMasterBtn = $('ss-goto-master');
+  var gotoReleaseBtn = $('ss-goto-release');
 
   var fields = {
     title: $('ss-title'),
@@ -72,6 +74,8 @@
   var verNotes = $('ss-ver-notes');
   var verAddBtn = $('ss-ver-add');
   var versionsEl = $('ss-versions');
+  var dawGuideEl = $('ss-daw-guide');
+  var chainPresetsEl = $('ss-chain-presets');
 
   // ─── State ───────────────────────────────────────────────────────────────
   var songs = load();
@@ -184,6 +188,7 @@
     editorTitle.textContent = (s.title || 'Untitled') + ' — song details';
     renderChecklists();
     renderVersions();
+    renderDawGuides();
     editorEl.hidden = false;
     editorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -267,7 +272,7 @@
     var s = currentId ? songs.find(function (x) { return x.id === currentId; }) : null;
     if (!versionsEl || !s) return;
     if (!s.versions.length) {
-      versionsEl.innerHTML = '<p class="hint">No versions logged yet. Add “Mix v1”, “Master v2”… with the chain/settings you used.</p>';
+      versionsEl.innerHTML = '<p class="hint">No versions logged yet. Add “Mix v1”, “Master v2”… or choose a mastering chain preset below.</p>';
       return;
     }
     versionsEl.innerHTML = s.versions.map(function (v, i) {
@@ -289,18 +294,69 @@
     });
   }
 
-  function addVersion() {
+  function addVersion(name, notes) {
     var s = currentId ? songs.find(function (x) { return x.id === currentId; }) : null;
     if (!s) return;
-    var name = (verName.value || '').trim();
-    var notes = (verNotes.value || '').trim();
+    name = (name || (verName ? verName.value : '') || '').trim();
+    notes = (notes || (verNotes ? verNotes.value : '') || '').trim();
     if (!name && !notes) { flash('Give the version a name (e.g. Mix v2).'); return; }
     s.versions.unshift({ name: name || 'Version ' + (s.versions.length + 1), notes: notes, at: today() });
     s.updatedAt = today();
-    verName.value = ''; verNotes.value = '';
+    if (verName) verName.value = '';
+    if (verNotes) verNotes.value = '';
     persist();
     renderVersions();
     flash('Version added.');
+  }
+
+  // ─── DAW Guides & Chain Presets ──────────────────────────────────────────
+  function renderDawGuides() {
+    if (!DG) return;
+
+    if (chainPresetsEl && DG.MASTERING_CHAINS) {
+      var cHtml = '<div class="ss-chain-grid">';
+      DG.MASTERING_CHAINS.forEach(function (ch) {
+        cHtml += '<div class="panel ss-chain-card">';
+        cHtml += '<h5>' + escapeHtml(ch.name) + '</h5>';
+        cHtml += '<span class="ss-chain-target">Target: ' + escapeHtml(ch.target) + '</span>';
+        cHtml += '<ol class="ss-chain-steps">';
+        ch.plugins.forEach(function (p) {
+          cHtml += '<li><strong>' + escapeHtml(p.type) + ':</strong> ' + escapeHtml(p.settings) + '</li>';
+        });
+        cHtml += '</ol>';
+        cHtml += '<button type="button" class="btn sm ss-add-chain-btn" data-chain-id="' + ch.id + '">+ Log this chain in Versions</button>';
+        cHtml += '</div>';
+      });
+      cHtml += '</div>';
+      chainPresetsEl.innerHTML = cHtml;
+
+      chainPresetsEl.querySelectorAll('.ss-add-chain-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var cid = btn.getAttribute('data-chain-id');
+          var chain = DG.MASTERING_CHAINS.find(function (c) { return c.id === cid; });
+          if (!chain) return;
+          var notesStr = chain.name + ' (' + chain.target + '): ' +
+            chain.plugins.map(function (p) { return p.order + '. ' + p.type; }).join(' → ');
+          addVersion('Master Chain (' + chain.name.split(' ')[0] + ')', notesStr);
+        });
+      });
+    }
+
+    if (dawGuideEl && DG.DAW_TEMPLATES) {
+      var dHtml = '<div class="ss-daw-accordion">';
+      Object.keys(DG.DAW_TEMPLATES).forEach(function (k) {
+        var t = DG.DAW_TEMPLATES[k];
+        dHtml += '<details class="ss-daw-details">';
+        dHtml += '<summary><strong>' + escapeHtml(t.name) + '</strong> — ' + escapeHtml(t.summary) + '</summary>';
+        dHtml += '<div class="body"><ol>';
+        t.steps.forEach(function (st) {
+          dHtml += '<li><strong>' + escapeHtml(st.step) + ':</strong> ' + escapeHtml(st.text) + '</li>';
+        });
+        dHtml += '</ol></div></details>';
+      });
+      dHtml += '</div>';
+      dawGuideEl.innerHTML = dHtml;
+    }
   }
 
   // ─── Export / Import ─────────────────────────────────────────────────────
@@ -397,7 +453,7 @@
         importInput.value = '';
       });
     }
-    if (verAddBtn) verAddBtn.addEventListener('click', addVersion);
+    if (verAddBtn) verAddBtn.addEventListener('click', function () { addVersion(); });
     if (verName) verName.addEventListener('keydown', function (e) { if (e.key === 'Enter') addVersion(); });
     if (gotoMixBtn && window.RaagaStudio) {
       gotoMixBtn.addEventListener('click', function () { window.RaagaStudio.switchTo('mix'); });
@@ -405,9 +461,13 @@
     if (gotoMasterBtn && window.RaagaStudio) {
       gotoMasterBtn.addEventListener('click', function () { window.RaagaStudio.switchTo('master'); });
     }
+    if (gotoReleaseBtn && window.RaagaStudio) {
+      gotoReleaseBtn.addEventListener('click', function () { window.RaagaStudio.switchTo('release'); });
+    }
 
     renderStrip();
     renderList();
+    renderDawGuides();
   }
 
   if (document.readyState === 'loading') {

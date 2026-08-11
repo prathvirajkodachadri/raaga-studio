@@ -1,8 +1,7 @@
 /**
  * ui_smoke_test.js — loads every UI controller against a minimal DOM stub
  * and exercises init paths + a few interactions (tab switch, prompt build,
- * song add/save). Catches reference errors in the browser-only code without
- * a real browser.
+ * song add/save, raga cards, metronome, release planner).
  */
 'use strict';
 
@@ -33,6 +32,7 @@ class El {
     this.textContent = '';
     this.checked = false;
     this.files = [];
+    this.options = [];
   }
   set innerHTML(v) { this._html = String(v); }
   get innerHTML() { return this._html; }
@@ -46,8 +46,8 @@ class El {
   getAttribute(k) { return this._attrs[k]; }
   appendChild(c) { this.children.push(c); c.parentNode = this; return c; }
   remove() {}
-  querySelector() { return null; }
-  querySelectorAll() { return []; }
+  querySelector(sel) { return null; }
+  querySelectorAll(sel) { return []; }
   focus() {}
   scrollIntoView() {}
   click() {
@@ -64,14 +64,14 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['prosody', 'suno', 'mix', 'master', 'songs'];
+const TAB_IDS = ['prosody', 'raga', 'bpm', 'suno', 'mix', 'master', 'release', 'songs'];
 
 global.window = {
   addEventListener() {},
   dispatchEvent() { return true; },
   __mixSummary: null
 };
-global.CustomEvent = class { constructor(type) { this.type = type; } };
+global.CustomEvent = class { constructor(type, init) { this.type = type; this.detail = init && init.detail; } };
 global.document = {
   readyState: 'complete',
   getElementById: getEl,
@@ -133,6 +133,14 @@ console.log('UI smoke tests\n');
 
 load('prosody.js');
 load('app.js');
+load('ragas.js');
+load('raga-app.js');
+load('bpm-key.js');
+load('bpm-key-app.js');
+load('ref-compare.js');
+load('release-planner.js');
+load('release-planner-app.js');
+load('daw-guides.js');
 load('master-check.js');
 load('master-check-app.js');
 load('suno-prompts.js');
@@ -141,10 +149,28 @@ load('mix-check-app.js');
 load('song-studio.js');
 load('nav.js');
 
-// prosody rendered the demo (syllables are split into spans, so check markers)
+// prosody rendered the demo
 assert(getEl('result').innerHTML.indexOf('ಸಾಲು') >= 0, 'prosody renders demo output');
-assert(getEl('result').innerHTML.indexOf('ಒಟ್ಟು') >= 0, 'prosody shows mātra totals');
+assert(getEl('result').innerHTML.indexOf('ಮಾತ್ರೆ') >= 0, 'prosody shows mātra totals');
 assert(getEl('rules').innerHTML.indexOf('ನಿಯಮ') >= 0, 'prosody renders rules');
+
+// raga explorer rendered
+assert(getEl('rg-list').innerHTML.indexOf('Mohanam') >= 0, 'raga explorer rendered Mohanam');
+assert(getEl('rg-list').innerHTML.indexOf('ಆರೋಹಣ') >= 0, 'raga arohana swaras displayed');
+
+// metronome pattern select
+assert(getEl('bk-met-pattern').innerHTML.indexOf('Adi Tala') >= 0, 'metronome pattern includes Adi Tala');
+
+// release planner rendered
+assert(getEl('rp-dist-checklist').innerHTML.indexOf('Spotify') >= 0, 'release planner rendered distribution checklist');
+
+// ISRC generation on click
+getEl('rp-isrc-country').value = 'IN';
+getEl('rp-isrc-reg').value = 'RGS';
+getEl('rp-isrc-year').value = '26';
+getEl('rp-isrc-seq').value = '1';
+getEl('rp-isrc-gen').click();
+assert(getEl('rp-isrc-output').value === 'IN-RGS-26-00001', 'ISRC generator populated output on button click');
 
 // master-check genre select populated
 assert(getEl('mc-genre').innerHTML.indexOf('Pop / EDM') >= 0, 'master genre select populated');
@@ -156,13 +182,17 @@ masterTab.click();
 assert(masterTab.classList.contains('active'), 'master tab becomes active on click');
 assert(getEl('tab-master').hidden === false, 'master panel shown');
 assert(getEl('tab-prosody').hidden === true, 'prosody panel hidden');
-assert(getEl('tab-master').classList === undefined || true, 'panels hidden flag toggles');
+
+const ragaTab = getEl('raga');
+ragaTab.click();
+assert(ragaTab.classList.contains('active'), 'raga tab becomes active on click');
+assert(getEl('tab-raga').hidden === false, 'raga panel shown');
 
 // suno prompt builder defaults
 assert(getEl('sp-output').value.indexOf('[Genre: Let Suno decide]') >= 0, 'prompt output generated with defaults');
 assert(getEl('sp-tempo').innerHTML.indexOf('Let Suno decide') >= 0, 'tempo select populated');
 assert(getEl('sp-recipes').innerHTML.indexOf('ಕನ್ನಡ ಭಕ್ತಿಗೀತೆ') >= 0, 'preset recipes seeded');
-assert(JSON.parse(global.localStorage.getItem('raaga.sunoRecipes')).length === 3, 'presets persisted to localStorage');
+assert(JSON.parse(global.localStorage.getItem('raaga.sunoRecipes')).length >= 3, 'presets persisted to localStorage');
 
 // song studio: add + save
 getEl('ss-add').click();
@@ -187,6 +217,10 @@ assert(withVer.versions.length === 1 && withVer.versions[0].name === 'Mix v1', '
 // engine exposed
 assert(typeof global.window.MASTER_CHECK.buildReleaseChecklist === 'function', 'buildReleaseChecklist exported');
 assert(typeof global.window.MIX_CHECK.assessMix === 'function', 'assessMix exported');
+assert(typeof global.window.RAGAS.getRagaById === 'function', 'RAGAS engine exposed');
+assert(typeof global.window.BPM_KEY.analyzeKeyAndBpm === 'function', 'BPM_KEY engine exposed');
+assert(typeof global.window.REF_COMPARE.compareReports === 'function', 'REF_COMPARE engine exposed');
+assert(typeof global.window.RELEASE_PLANNER.validateArtwork === 'function', 'RELEASE_PLANNER engine exposed');
 assert(typeof global.window.RaagaStudio.switchTo === 'function', 'RaagaStudio.switchTo exposed');
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');

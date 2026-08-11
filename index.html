@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Raaga Studio · Compose → Mix → Master</title>
+  <title>Raaga Studio · Compose → Mix → Master → Release</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,26 +16,30 @@
     </div>
     <div class="brand">
       <h1>Raaga Studio · <span>Compose → Mix → Master</span></h1>
-      <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
+      <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · ರಾಗ · BPM · prompt builder · mix &amp; master QA · release</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="prosody" role="tab" aria-selected="true">ಛಂದಸ್ಸು</button>
+      <button type="button" class="tab active" data-tab="prosody" role="tab" aria-selected="true">ಛಂದಸ್ಸು &amp; ಸಾಹಿತ್ಯ</button>
+      <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false">ರಾಗ &amp; ಶೃತಿ</button>
+      <button type="button" class="tab" data-tab="bpm" role="tab" aria-selected="false">BPM &amp; Key</button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false">Suno Prompt</button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false">Mix Check</button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false">Master Check</button>
+      <button type="button" class="tab" data-tab="release" role="tab" aria-selected="false">Release Planner</button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false">Song Studio</button>
     </nav>
   </header>
 
-  <!-- ═══════════════ PROSODY TAB ═══════════════ -->
+  <!-- ═══════════════ 1. PROSODY TAB (ಛಂದಸ್ಸು & ಸಾಹಿತ್ಯ) ═══════════════ -->
   <main class="wrap" id="tab-prosody">
-    <h2 class="sec">ಸ್ಕ್ಯಾನರ್ (Scanner)</h2>
+    <h2 class="sec">ಸ್ಕ್ಯಾನರ್ &amp; ಸಾಹಿತ್ಯ (Prosody, Gana &amp; Rhyme Scanner)</h2>
 
     <div class="legend-row">
       <span class="chip"><span class="box laghu-c">U</span> ಲಘು · 1 ಮಾತ್ರೆ</span>
       <span class="chip"><span class="box guru-c">—</span> ಗುರು · 2 ಮಾತ್ರೆ</span>
       <span class="chip"><span class="box pluta-c">3</span> ಪ್ಲುತ · 3 ಮಾತ್ರೆ</span>
       <span class="chip"><span class="box none-c">·</span> ಚಿಹ್ನೆ ಇಲ್ಲ (halant)</span>
+      <span class="chip"><span class="box gana-c">ಗಣ</span> ಮ-ಯ-ರ-ಸ-ತ-ಜ-ಭ-ನ</span>
     </div>
 
     <div class="controls">
@@ -43,35 +47,186 @@
         <input type="checkbox" id="shatpadi">
         <span>ಷಟ್ಪದಿ (3ನೇ &amp; 6ನೇ ಸಾಲಿನ ಕೊನೆಯ ಅಕ್ಷರವನ್ನು ಗುರುವೆಂದು)</span>
       </label>
+      <label class="chk">
+        <input type="checkbox" id="showGanas" checked>
+        <span>ಗಣ ವಿಭಾಗ ತೋರಿಸು (Show Ganas)</span>
+      </label>
       <button class="btn primary" id="loadDemo">ಲೋಡ್ ಉದಾಹರಣೆಗಳು</button>
       <button class="btn" id="clear">ಅಳಿಸು</button>
-      <span class="hint">Kannada text → live ಮಾತ್ರೆ-ಲಘು-ಗುರು marking</span>
+      <button class="btn" id="sendToSuno">⚡ Send Lyrics to Suno Prompt →</button>
+      <span class="hint">Kannada text → live ಮಾತ್ರೆ-ಲಘು-ಗುರು, ಗಣಗಳು &amp; ಪ್ರಾಸ marking</span>
     </div>
+
+    <div id="prasa-analysis" class="prasa-wrap"></div>
+    <div id="rhythm-stats" class="rhythm-wrap"></div>
 
     <div class="cols">
       <div class="panel">
-        <label for="input" class="hint">ಕನ್ನಡ ಪದ್ಯ / ಸಾಲುಗಳು</label>
+        <label for="input" class="hint">ಕನ್ನಡ ಪದ್ಯ / ಸಾಹಿತ್ಯದ ಸಾಲುಗಳು</label>
         <textarea id="input" spellcheck="false" placeholder="ಕನ್ನಡದಲ್ಲಿ ಬರೆಯಿರಿ…"></textarea>
       </div>
       <div class="panel output">
-        <span class="hint">ಗುರುತು ಮಾಡಿದ ಫಲಿತಾಂಶ</span>
+        <span class="hint">ಗುರುತು ಮಾಡಿದ ಫಲಿತಾಂಶ &amp; ಗಣಗಳು</span>
         <div id="result"></div>
       </div>
     </div>
 
-    <h2 class="sec">ನಿಯಮಗಳು (ಮಾತ್ರೆ-ಲಘು-ಗುರು)</h2>
+    <h2 class="sec">ಛಂದಸ್ಸಿನ ನಿಯಮಗಳು &amp; ಗಣ ಕೋಷ್ಟಕ</h2>
     <div id="rules"></div>
   </main>
 
-  <!-- ═══════════════ SUNO PROMPT BUILDER TAB ═══════════════ -->
+  <!-- ═══════════════ 2. RAGA & SHRUTI TAB (ರಾಗ & ಶೃತಿ) ═══════════════ -->
+  <main class="wrap" id="tab-raga" hidden>
+    <h2 class="sec">ರಾಗ &amp; ಶೃತಿ (Carnatic &amp; Hindustani Raga Explorer + Tanpura Drone)</h2>
+    <p class="mc-intro">
+      Explore 30+ Indian classical ragas with Arohana/Avarohana swaras, Western note equivalents,
+      Rasa/Mood, traditional singing times and famous songs. Play swaras synthesized in your chosen root pitch (Sa)
+      or turn on the <strong>acoustic Tanpura Drone</strong> to accompany your composition practice.
+    </p>
+
+    <!-- Tanpura Drone Widget -->
+    <div class="panel tp-widget">
+      <div class="tp-widget-head">
+        <div class="tp-title">
+          <span class="tp-icon">🪕</span>
+          <div>
+            <h3>ವರ್ಚುವಲ್ ತಂಬೂರಿ (Virtual Acoustic Tanpura Drone)</h3>
+            <span class="hint">Continuous acoustic drone for practice &amp; composing — runs across all tabs</span>
+          </div>
+        </div>
+        <button type="button" class="btn primary tp-toggle-btn" id="tp-play">▶ Play Tanpura Drone</button>
+      </div>
+
+      <div class="tp-controls-grid">
+        <div class="tp-ctrl">
+          <label class="pb-label" for="tp-tonic">ಮೂಲ ಶೃತಿ (Tonic Sa)</label>
+          <select id="tp-tonic" class="mc-select"></select>
+        </div>
+        <div class="tp-ctrl">
+          <label class="pb-label" for="tp-string">ಮೊದಲ ತಂತಿ (1st String)</label>
+          <select id="tp-string" class="mc-select">
+            <option value="P" selected>Panchama (ಪ - P) — Standard</option>
+            <option value="M">Madhyama (ಮ - M1) — for Madyamavathi, Hindolam, etc.</option>
+            <option value="N">Nishada (ನಿ - N3) — for Bhoopali/Marwa</option>
+          </select>
+        </div>
+        <div class="tp-ctrl">
+          <label class="pb-label">ಪ್ಲಕ್ಕಿಂಗ್ ವೇಗ: <span id="tp-tempo-val">48 BPM</span></label>
+          <input type="range" id="tp-tempo" min="30" max="80" value="48" class="rg-slider">
+        </div>
+        <div class="tp-ctrl">
+          <label class="pb-label">ಧ್ವನಿ ಮಟ್ಟ (Volume)</label>
+          <input type="range" id="tp-vol" min="0" max="100" value="45" class="rg-slider">
+        </div>
+      </div>
+    </div>
+
+    <!-- Raga Explorer Controls -->
+    <div class="controls mc-controls">
+      <label class="hint" for="rg-tonic">Root Tonic (Sa):</label>
+      <select id="rg-tonic" class="mc-select"></select>
+
+      <label class="hint" for="rg-rasa-filter">ರಸ / Mood:</label>
+      <select id="rg-rasa-filter" class="mc-select">
+        <option value="all">All Moods</option>
+        <option value="bhakti">Bhakti / Devotional (ಭಕ್ತಿ)</option>
+        <option value="shringara">Romantic (ಶೃಂಗಾರ)</option>
+        <option value="karuna">Pathos / Compassion (ಕರುಣ)</option>
+        <option value="shanta">Peaceful / Meditative (ಶಾಂತ)</option>
+        <option value="utsaha">Uplifting / Energetic (ಉತ್ಸಾಹ)</option>
+      </select>
+
+      <input type="text" id="rg-search" class="mc-select" placeholder="Search raga by name or swara…">
+    </div>
+
+    <div id="rg-list" class="rg-list"></div>
+  </main>
+
+  <!-- ═══════════════ 3. BPM & KEY FINDER TAB (ಲಯ & ಶೃತಿ) ═══════════════ -->
+  <main class="wrap" id="tab-bpm" hidden>
+    <h2 class="sec">BPM &amp; Key Finder (ಲಯ, ಶೃತಿ &amp; ತಾಳ)</h2>
+    <p class="mc-intro">
+      Tap the beat to calculate tempo, run the precision Web Audio <strong>Metronome</strong> with Western meters
+      and Carnatic Talas (Adi Tala, Rupaka, Misra Chapu, Khanda Chapu), or upload an audio file to automatically
+      detect its <strong>BPM, Musical Key, and matching Indian Ragas</strong>!
+    </p>
+
+    <div class="bpm-grid">
+      <!-- 1. Tap Tempo -->
+      <div class="panel bpm-box">
+        <h3>ಲಯ ಗಣಕ (Tap Tempo)</h3>
+        <p class="hint">Tap along to the beat with your mouse or Spacebar.</p>
+        <div class="tap-area">
+          <button type="button" id="bk-tap-btn" class="tap-btn">
+            <span class="tap-main" id="bk-tap-bpm">—</span>
+            <span class="tap-label">TAP BEAT</span>
+          </button>
+        </div>
+        <div id="bk-tap-sub" class="tap-sub">Tap the button or press Space</div>
+        <div class="controls" style="justify-content:center; margin-top:12px">
+          <button class="btn sm" id="bk-tap-reset" type="button">Reset</button>
+          <button class="btn sm" id="bk-tap-apply-met" type="button" disabled>Set in Metronome</button>
+          <button class="btn sm primary" id="bk-tap-apply-suno" type="button" disabled>Apply to Suno Prompt</button>
+        </div>
+      </div>
+
+      <!-- 2. Audio Metronome & Carnatic Talas -->
+      <div class="panel bpm-box">
+        <h3>ಮೆಟ್ರೋನೋಮ್ &amp; ತಾಳ (Metronome &amp; Tala)</h3>
+        <p class="hint">Sample-accurate Web Audio click with visual pulse.</p>
+        <div class="met-ctrl-row">
+          <button type="button" class="btn primary" id="bk-met-play">▶ Start Metronome</button>
+          <div class="met-bpm-control">
+            <button type="button" class="btn sm" id="bk-met-minus">−</button>
+            <input type="number" id="bk-met-bpm" class="mc-select bpm-input" value="96" min="30" max="280">
+            <button type="button" class="btn sm" id="bk-met-plus">+</button>
+          </div>
+        </div>
+        <input type="range" id="bk-met-slider" min="30" max="240" value="96" class="rg-slider" style="margin:10px 0">
+
+        <div class="pb-field">
+          <label class="pb-label" for="bk-met-pattern">ತಾಳ / Time Signature</label>
+          <select id="bk-met-pattern" class="mc-select" style="width:100%"></select>
+        </div>
+        <div id="bk-met-tala-info" class="hint" style="margin-top:6px"></div>
+        <div id="bk-met-beats" class="beat-balls-row"></div>
+      </div>
+    </div>
+
+    <!-- 3. Audio File Key & BPM Detector -->
+    <h2 class="sec">Audio File Key, Pitch &amp; BPM Detector</h2>
+    <div class="controls mc-controls">
+      <button class="btn primary" id="bk-browse" type="button">Browse Audio File</button>
+      <input type="file" id="bk-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a" hidden>
+    </div>
+
+    <div id="bk-dropzone" class="mc-dropzone" tabindex="0" role="button"
+         aria-label="Drop audio file here to detect key and BPM">
+      <div class="mc-drop-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 24c0-6.627 5.373-12 12-12s12 5.373 12 12M24 6v6M24 36v6M6 24h6M36 24h6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="mc-drop-title">Drag &amp; drop audio file here</div>
+      <div class="mc-drop-sub">Detect BPM, Chromagram Pitch Profile, Key &amp; closest Indian Ragas</div>
+    </div>
+
+    <div id="bk-progress-wrap" class="mc-progress-wrap" hidden>
+      <div class="mc-progress-track"><div id="bk-progress-bar" class="mc-progress-bar"></div></div>
+      <div id="bk-progress-label" class="hint">Analyzing audio…</div>
+    </div>
+
+    <div id="bk-detect-result"></div>
+  </main>
+
+  <!-- ═══════════════ 4. SUNO PROMPT BUILDER TAB ═══════════════ -->
   <main class="wrap" id="tab-suno" hidden>
     <h2 class="sec">Suno Prompt Builder</h2>
     <p class="mc-intro">
       Assemble a ready-to-paste Suno prompt — genre, mood, tempo, vocal style, language,
       key/raga, instrumentation and production details. Save your favourite prompt
       <strong>recipes</strong> and reuse them for every song.
-      Tip: scan your Kannada lyrics in the <strong>ಛಂದಸ್ಸು</strong> tab first, then paste
-      them into the “extra details” field below.
+      Tip: scan your Kannada lyrics in the <strong>ಛಂದಸ್ಸು</strong> tab or explore ragas in the <strong>ರಾಗ</strong> tab first!
     </p>
 
     <div class="pb-grid">
@@ -141,6 +296,7 @@
           <button class="btn primary" id="sp-generate" type="button">Generate prompt</button>
           <button class="btn" id="sp-copy" type="button">Copy</button>
           <button class="btn" id="sp-save-recipe" type="button">Save as recipe</button>
+          <button class="btn" id="sp-send-song-studio" type="button">Add to Song Studio</button>
           <a class="btn" id="sp-suno-link" href="https://suno.com/create" target="_blank" rel="noopener">Open suno.com ↗</a>
         </div>
 
@@ -162,9 +318,9 @@
     </div>
   </main>
 
-  <!-- ═══════════════ MIX CHECK TAB ═══════════════ -->
+  <!-- ═══════════════ 5. MIX CHECK TAB ═══════════════ -->
   <main class="wrap" id="tab-mix" hidden>
-    <h2 class="sec">Mix Check — Pre-Master Analysis</h2>
+    <h2 class="sec">Mix Check — Pre-Master QA &amp; Reference Compare</h2>
     <p class="mc-intro">
       Drop your <strong>mixdown</strong> (before mastering) to check it against mixing targets:
       headroom (peaks ≤ −6 dBFS, integrated ≈ −18 to −14 LUFS), dynamics (crest/DR), stereo/phase,
@@ -175,9 +331,14 @@
     <div class="controls mc-controls">
       <label class="hint" for="mx-genre">Genre reference</label>
       <select id="mx-genre" class="mc-select" aria-label="Genre reference for mix targets"></select>
-      <button class="btn primary" id="mx-browse" type="button">Browse files</button>
+      <button class="btn primary" id="mx-browse" type="button">Browse mix file</button>
       <button class="btn" id="mx-clear" type="button">Clear</button>
       <input type="file" id="mx-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a,.aac,.caf" hidden>
+
+      <span class="hint" style="margin-left:auto">Quick Sample Audio:</span>
+      <button class="btn sm" id="mx-sample-good" type="button">Good Mixdown</button>
+      <button class="btn sm" id="mx-sample-clipped" type="button">Clipped Mix</button>
+      <button class="btn sm" id="mx-sample-over" type="button">Over-Compressed</button>
     </div>
 
     <div id="mx-dropzone" class="mc-dropzone" tabindex="0" role="button"
@@ -198,9 +359,21 @@
     </div>
 
     <div id="mx-results"></div>
+
+    <!-- Reference Compare Section in Mix Check -->
+    <h2 class="sec" style="margin-top:28px">Reference Track Comparison (A/B Matching)</h2>
+    <p class="hint">Compare your mixdown against a commercial reference track to check spectral balance, bottom-end weight, and loudness.</p>
+    <div class="controls mc-controls">
+      <button class="btn" id="mx-ref-browse" type="button">Browse reference track</button>
+      <input type="file" id="mx-ref-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a" hidden>
+    </div>
+    <div id="mx-ref-dropzone" class="mc-dropzone sm-drop" tabindex="0" role="button">
+      <div class="mc-drop-title">Drop commercial reference track here</div>
+    </div>
+    <div id="mx-ref-results"></div>
   </main>
 
-  <!-- ═══════════════ MASTER CHECK TAB ═══════════════ -->
+  <!-- ═══════════════ 6. MASTER CHECK TAB ═══════════════ -->
   <main class="wrap" id="tab-master" hidden>
     <h2 class="sec">Master Check — Audio Quality Analysis</h2>
     <p class="mc-intro">
@@ -213,11 +386,16 @@
     <div class="controls mc-controls">
       <label class="hint" for="mc-genre">Genre reference</label>
       <select id="mc-genre" class="mc-select" aria-label="Genre reference for DR thresholds"></select>
-      <button class="btn primary" id="mc-browse" type="button">Browse files</button>
+      <button class="btn primary" id="mc-browse" type="button">Browse master</button>
       <button class="btn" id="mc-clear" type="button">Clear</button>
       <button class="btn" id="mc-export-json" type="button" disabled>Export JSON</button>
       <button class="btn" id="mc-export-pdf" type="button" disabled>Export PDF</button>
       <input type="file" id="mc-file" accept="audio/*,.wav,.flac,.aiff,.aif,.mp3,.ogg,.opus,.m4a,.aac,.caf" multiple hidden>
+
+      <span class="hint" style="margin-left:auto">Quick Sample Audio:</span>
+      <button class="btn sm" id="mc-sample-good" type="button">Good Master</button>
+      <button class="btn sm" id="mc-sample-clipped" type="button">Clipped Audio</button>
+      <button class="btn sm" id="mc-sample-over" type="button">Over-Compressed</button>
     </div>
 
     <div id="mc-dropzone" class="mc-dropzone" tabindex="0" role="button"
@@ -253,13 +431,105 @@
     </div>
   </main>
 
-  <!-- ═══════════════ SONG STUDIO TAB ═══════════════ -->
+  <!-- ═══════════════ 7. RELEASE PLANNER TAB ═══════════════ -->
+  <main class="wrap" id="tab-release" hidden>
+    <h2 class="sec">Release Planner &amp; Artwork Validator</h2>
+    <p class="mc-intro">
+      Prepare your release for digital distribution (Spotify, Apple Music, JioSaavn, Wynk, YouTube Content ID).
+      Validate your <strong>album cover art</strong> (dimensions ≥ 3000×3000 px, 1:1 aspect ratio), generate valid
+      <strong>ISRC codes</strong>, build metadata sheets and follow the full digital release checklist.
+    </p>
+
+    <div class="rp-grid">
+      <!-- Left: Artwork validator -->
+      <div class="panel rp-art-section">
+        <h3>ಆಲ್ಬಮ್ ಆರ್ಟ್‌ವರ್ಕ್ ತಪಾಸಣೆ (Album Artwork Validator)</h3>
+        <p class="hint">Check resolution, aspect ratio, file size and format before submitting to distributors.</p>
+
+        <div class="controls">
+          <button class="btn primary" id="rp-art-browse" type="button">Browse Artwork</button>
+          <input type="file" id="rp-art-file" accept="image/*,.jpg,.jpeg,.png,.webp" hidden>
+        </div>
+
+        <div id="rp-art-dropzone" class="mc-dropzone sm-drop" tabindex="0" role="button">
+          <div class="mc-drop-title">Drop 3000×3000 Cover Art here</div>
+          <div class="mc-drop-sub">JPG or PNG · 1:1 Aspect Ratio</div>
+        </div>
+
+        <div id="rp-art-results"></div>
+
+        <!-- Live Streaming Player Mockup Preview -->
+        <div class="rp-mockup-card panel">
+          <h4>Streaming Platform Preview Mockup</h4>
+          <div class="rp-spotify-frame">
+            <img id="rp-mockup-img" class="rp-frame-img" alt="Cover Art" src="" hidden>
+            <div class="rp-frame-info">
+              <div class="rp-frame-title" id="rp-mockup-title">Song Title</div>
+              <div class="rp-frame-artist" id="rp-mockup-artist">Artist Name</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: ISRC & Metadata & Distribution Checklist -->
+      <div class="panel rp-meta-section">
+        <h3>ISRC Generator &amp; Metadata Builder</h3>
+
+        <div class="rp-isrc-row">
+          <div class="pb-field">
+            <label class="pb-label" for="rp-isrc-country">Country</label>
+            <input id="rp-isrc-country" class="mc-select" value="IN" maxlength="2" style="width:70px">
+          </div>
+          <div class="pb-field">
+            <label class="pb-label" for="rp-isrc-reg">Registrant</label>
+            <input id="rp-isrc-reg" class="mc-select" value="RGS" maxlength="3" style="width:80px">
+          </div>
+          <div class="pb-field">
+            <label class="pb-label" for="rp-isrc-year">Year</label>
+            <input id="rp-isrc-year" class="mc-select" value="26" maxlength="2" style="width:70px">
+          </div>
+          <div class="pb-field">
+            <label class="pb-label" for="rp-isrc-seq">Track #</label>
+            <input id="rp-isrc-seq" type="number" class="mc-select" value="1" min="1" max="99999" style="width:90px">
+          </div>
+          <div class="pb-field" style="align-self:flex-end">
+            <button class="btn primary" id="rp-isrc-gen" type="button">Generate ISRC</button>
+          </div>
+        </div>
+
+        <div class="rp-isrc-out-row">
+          <input id="rp-isrc-output" class="mc-select isrc-code-out" placeholder="IN-RGS-26-00001" readonly>
+          <button class="btn" id="rp-isrc-copy" type="button">Copy ISRC</button>
+        </div>
+
+        <h4 style="margin:16px 0 8px; color:var(--gold)">Release Metadata Sheet</h4>
+        <div class="ss-form-grid">
+          <label class="ss-field">Title <input id="rp-meta-title" class="mc-select" type="text" placeholder="Song title"></label>
+          <label class="ss-field">Primary Artist <input id="rp-meta-artist" class="mc-select" type="text" placeholder="Artist name"></label>
+          <label class="ss-field">ಕನ್ನಡ ಸಾಹಿತಿ (Lyricist) <input id="rp-meta-lyricist" class="mc-select" type="text" placeholder="Lyricist name"></label>
+          <label class="ss-field">ಸಂಗೀತ (Composer) <input id="rp-meta-composer" class="mc-select" type="text" placeholder="Composer"></label>
+          <label class="ss-field">Genre <input id="rp-meta-genre" class="mc-select" type="text" placeholder="Carnatic Fusion / Bhavageethe"></label>
+          <label class="ss-field">ISRC <input id="rp-meta-isrc" class="mc-select" type="text" placeholder="IN-RGS-26-00001"></label>
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <button class="btn primary" id="rp-meta-export-json" type="button">Export Metadata (JSON)</button>
+          <button class="btn" id="rp-meta-copy-text" type="button">Copy Release Text</button>
+        </div>
+
+        <h4 style="margin:20px 0 8px; color:var(--gold)">Digital Distribution Checklist</h4>
+        <div id="rp-dist-checklist" class="rp-dist-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════ 8. SONG STUDIO TAB ═══════════════ -->
   <main class="wrap" id="tab-songs" hidden>
-    <h2 class="sec">Song Studio — Project Registry &amp; Workflow</h2>
+    <h2 class="sec">Song Studio — Project Registry &amp; DAW Workflow</h2>
     <p class="mc-intro">
       One card per song, tracking the whole journey: <strong>Idea → Composing → Suno → Mixing → Mastering →
-      Released</strong>. Keep the Suno prompt used, stem-export and mix/master checklists, session notes
-      and mix/master versions. Everything is saved locally in your browser and can be exported as JSON.
+      Released</strong>. Keep the Suno prompt used, stem-export and mix/master checklists, session notes,
+      DAW session setup templates, and mix/master versions. Everything is saved locally in your browser.
     </p>
 
     <div id="ss-strip" class="ss-strip"></div>
@@ -316,8 +586,13 @@
         </div>
       </div>
 
+      <!-- Mastering Chain Presets & Versions -->
       <div class="panel ss-versions">
-        <h4>Versions &amp; mastering chain log</h4>
+        <h4>Mastering Chain Presets</h4>
+        <p class="hint">Click any preset to automatically record it in this song's version log.</p>
+        <div id="ss-chain-presets"></div>
+
+        <h4 style="margin-top:16px">Versions &amp; mastering chain log</h4>
         <div class="ss-ver-add">
           <input id="ss-ver-name" class="mc-select" type="text" placeholder="e.g. Mix v2 / Master v1">
           <input id="ss-ver-notes" class="mc-select" type="text" placeholder="Notes (chain, settings…)">
@@ -326,18 +601,33 @@
         <div id="ss-versions"></div>
       </div>
 
+      <!-- DAW Setup Guide Accordion -->
+      <div class="panel ss-daw-box">
+        <h4>DAW Session Routing &amp; Setup Guides</h4>
+        <div id="ss-daw-guide"></div>
+      </div>
+
       <div class="controls">
         <button class="btn primary" id="ss-save" type="button">Save song</button>
         <button class="btn" id="ss-delete" type="button">Delete song</button>
         <button class="btn" id="ss-export-one" type="button">Export this song</button>
         <button class="btn" id="ss-goto-mix" type="button">→ Mix Check</button>
         <button class="btn" id="ss-goto-master" type="button">→ Master Check</button>
+        <button class="btn" id="ss-goto-release" type="button">→ Release Planner</button>
       </div>
     </div>
   </main>
 
   <script src="js/prosody.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/ragas.js"></script>
+  <script src="js/raga-app.js"></script>
+  <script src="js/bpm-key.js"></script>
+  <script src="js/bpm-key-app.js"></script>
+  <script src="js/ref-compare.js"></script>
+  <script src="js/release-planner.js"></script>
+  <script src="js/release-planner-app.js"></script>
+  <script src="js/daw-guides.js"></script>
   <script src="js/master-check.js"></script>
   <script src="js/master-check-app.js"></script>
   <script src="js/suno-prompts.js"></script>

@@ -131,5 +131,46 @@ check('API exports present', function () {
   eq(Array.isArray(P.PROSODY_RULES), true);
 });
 
+/* ---- 8. Gana division tests ---- */
+check('Gana division: ಮ-ಗಣ (———)', function () {
+  var g = P.divideAksharaGanas('———');
+  eq(g[0].name, 'ಮ');
+});
+check('Gana division: ಯ-ಗಣ (U——)', function () {
+  var g = P.divideAksharaGanas('U——');
+  eq(g[0].name, 'ಯ');
+});
+check('Gana division: ನ-ಗಣ (UUU)', function () {
+  var g = P.divideAksharaGanas('UUU');
+  eq(g[0].name, 'ನ');
+});
+check('Gana division: ಭ-ಗಣ (—UU) and remaining ಲ', function () {
+  var g = P.divideAksharaGanas('—UUU');
+  eq(g[0].name, 'ಭ');
+  eq(g[1].name, 'ಲ');
+});
+
+/* ---- 9. Prasa (Rhyme) tests ---- */
+check('Dvitiyakshara prasa matches (ನನ್ನ / ನಿನ್ನ / ಮುನ್ನ)', function () {
+  var lines = P.scanText('ನನ್ನ ಮನಸ್ಸು\nನಿನ್ನ ಪ್ರೀತಿ\nಮುನ್ನಡೆ');
+  var prasa = P.analyzePrasa(lines);
+  eq(prasa.dvitiyakshara.matched, true);
+  eq(prasa.dvitiyakshara.rhymeLetter, 'ನ');
+});
+check('Antya prasa matches (ಹೋದೆನು / ನೋಡಿದೆನು)', function () {
+  var lines = P.scanText('ಕಳೆದು ಹೋದೆನು\nನಿನ್ನ ನೋಡಿದೆನು');
+  var prasa = P.analyzePrasa(lines);
+  eq(prasa.antyaPrasa.matched, true);
+});
+
+/* ---- 10. Rhythm analysis ---- */
+check('Rhythm metrics calculated', function () {
+  var lines = P.scanText('ಕಲ್ಲು ಮಣ್ಣು ನಿಲ್ಲು\nಅರಮನೆ ಕನ್ನಡಿಗರು');
+  var rh = P.analyzeRhythm(lines);
+  eq(rh.lineCount, 2);
+  eq(rh.totalMatras > 0, true);
+});
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail === 0 ? 0 : 1);
+

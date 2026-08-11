@@ -1,7 +1,8 @@
 /**
  * suno-prompts.js — Suno Prompt Builder.
  * Turns genre/mood/tempo/vocals/language/key/instruments/production picks into a
- * ready-to-paste Suno prompt. Includes a local recipe library (localStorage).
+ * ready-to-paste Suno prompt. Includes a local recipe library (localStorage)
+ * and seamless integration with Prosody (Lyrics) and Ragas.
  */
 'use strict';
 
@@ -12,13 +13,15 @@
   var DATA = {
     genres: [
       'Carnatic Fusion', 'Bhavageete (Kannada poetry)', 'Sugama Sangeetha',
-      'Devotional / Bhajan', 'Indie Folk', 'Indie Pop', 'Pop', 'Rock',
-      'Hip-Hop / Rap', 'EDM / Dance', 'Lo-fi / Chill', 'Film Score / Cinematic',
-      'Indian Classical', 'Jazz', 'Ambient / Meditative'
+      'Devotional / Bhajan / Vachana', 'Kannada Folk / Janapada', 'Carnatic Rock',
+      'Kannada Hip-Hop / Rap', 'Indie Folk', 'Indie Pop', 'Pop', 'Rock',
+      'EDM / Dance', 'Lo-fi / Chill', 'Film Score / Cinematic',
+      'Indian Classical', 'Ghazal / Sufi', 'Jazz', 'Ambient / Meditative'
     ],
     moods: [
       'Uplifting', 'Melancholic', 'Romantic', 'Devotional', 'Energetic',
-      'Nostalgic', 'Calm', 'Dark', 'Playful', 'Grand / Cinematic', 'Yearning'
+      'Nostalgic', 'Calm', 'Dark', 'Playful', 'Grand / Cinematic', 'Yearning',
+      'Spiritual / Trance', 'Rebellious / Raw'
     ],
     tempos: [
       'Let Suno decide',
@@ -29,10 +32,12 @@
     ],
     keys: [
       'No preference',
-      'C major', 'D major', 'G major', 'A major', 'E major',
-      'A minor', 'E minor', 'D minor',
+      'C major', 'D major', 'G major', 'A major', 'E major', 'F major',
+      'A minor', 'E minor', 'D minor', 'B minor',
       'Hamsadhwani (raga)', 'Mohanam (raga)', 'Kalyani (raga)',
-      'Shankarabharanam (raga)', 'Madhuvanti (raga)', 'Yaman (raga)'
+      'Shankarabharanam (raga)', 'Mayamalavagowla (raga)', 'Charukesi (raga)',
+      'Hindolam (raga)', 'Sindhu Bhairavi (raga)', 'Madhuvanti (raga)',
+      'Shivaranjani (raga)', 'Revati (raga)', 'Natabhairavi (raga)', 'Kharaharapriya (raga)'
     ],
     vocals: [
       'Let Suno decide',
@@ -40,50 +45,60 @@
       'Female — powerful, belting',
       'Male — warm, deep',
       'Male — light, folk style',
+      'Male — high energy, raw rock vocal',
       'Duet — male & female',
       'Choir / group harmony',
       'Falsetto / high register',
-      'Rap / spoken word',
+      'Rap / spoken word flow',
       'Instrumental only (no vocals)'
     ],
     languages: [
       'Kannada', 'Hindi', 'Tamil', 'Telugu', 'English',
-      'Kannada + Hindi mix', 'Instrumental', 'Let Suno decide'
+      'Kannada + Hindi mix', 'Kannada + English mix', 'Instrumental', 'Let Suno decide'
     ],
     structures: [
       'Verse → Chorus → Verse → Chorus → Bridge → Final Chorus (with intro & outro)',
       'Verse → Chorus → Verse → Chorus (simple pop form)',
-      'AABA — classic jazz/standard form',
+      'Pallavi → Anupallavi → Charanam (Carnatic Kriti structure)',
       'Raga alapana (intro) → composition → faster finale',
-      'Build → Drop → Build → Drop (EDM)',
+      'AABA — classic jazz/standard form',
+      'Build → Drop → Build → Drop (EDM / Trap)',
       'Freeform / let Suno decide'
     ],
     instruments: [
       'Violin', 'Flute (bansuri)', 'Mridangam', 'Tabla', 'Tanpura drone',
       'Sitar', 'Veena', 'Acoustic guitar', 'Electric guitar', 'Bass',
       'Piano', 'Synth pads', 'Strings ensemble', 'Drums', 'Percussion',
-      'Harmonium', 'Shehnai', 'Saxophone', 'Cello', 'Mouth organ'
+      'Harmonium', 'Shehnai', 'Saxophone', 'Cello', 'Dollu / Folk drums'
     ],
     prod: [
       'Warm & organic', 'Cinematic strings', 'Modern trap beat',
       'Vintage tape warmth', 'Huge reverb on vocals', 'Layered harmonies',
       'Minimal & sparse', 'Live-band feel', '90s film-song nostalgia',
-      'Dreamy synth washes'
+      'Dreamy synth washes', 'Heavy distorted bass', 'Crisp acoustic punch'
     ]
   };
 
   var PRESET_RECIPES = [
     {
       name: 'ಕನ್ನಡ ಭಕ್ತಿಗೀತೆ (Devotional)',
-      prompt: '[Genre: Devotional / Bhajan, Carnatic Fusion]\n[Mood: Devotional, Uplifting]\n[Tempo: Mid — 80–110 BPM]\n[Key: Mohanam (raga)]\n[Vocals: Female — soft, classical-trained]\n[Language: Kannada]\n[Structure: Raga alapana (intro) → composition → faster finale]\n[Instruments: tanpura drone, mridangam, flute (bansuri), violin, harmonium]\n[Production: warm & organic, live-band feel, gentle call-and-response with a small chorus]'
+      prompt: '[Genre: Devotional / Bhajan / Vachana, Carnatic Fusion]\n[Mood: Devotional, Uplifting]\n[Tempo: Mid — 80–110 BPM]\n[Key: Mohanam (raga)]\n[Vocals: Female — soft, classical-trained]\n[Language: Kannada]\n[Structure: Raga alapana (intro) → composition → faster finale]\n[Instruments: tanpura drone, mridangam, flute (bansuri), violin, harmonium]\n[Production: warm & organic, live-band feel, gentle call-and-response with a small chorus]'
     },
     {
       name: 'Carnatic Fusion Pop',
       prompt: '[Genre: Carnatic Fusion, Pop]\n[Mood: Uplifting, Energetic]\n[Tempo: Mid-fast — 110–130 BPM]\n[Key: Hamsadhwani (raga)]\n[Vocals: Female — powerful, belting]\n[Language: Kannada]\n[Structure: Verse → Chorus → Verse → Chorus → Bridge → Final Chorus (with intro & outro)]\n[Instruments: electric guitar, bass, drums, violin, synth pads, mridangam]\n[Production: cinematic strings, layered harmonies, modern crisp drums with subtle 90s film-song nostalgia]'
     },
     {
-      name: 'ಇಂಡೀ ಹಾಡು (Indie acoustic)',
+      name: 'ಇಂಡೀ ಭಾವಗೀತೆ (Indie Acoustic)',
       prompt: '[Genre: Indie Folk, Bhavageete (Kannada poetry)]\n[Mood: Melancholic, Nostalgic]\n[Tempo: Slow — 60–80 BPM]\n[Key: A minor]\n[Vocals: Male — warm, deep]\n[Language: Kannada]\n[Structure: Verse → Chorus → Verse → Chorus (simple pop form)]\n[Instruments: acoustic guitar, cello, piano, flute (bansuri)]\n[Production: minimal & sparse, warm & organic, huge reverb on vocals, intimate and close-mic\'d]'
+    },
+    {
+      name: 'ಕನ್ನಡ ಜನಪದ ರಾಕ್ (Folk Rock)',
+      prompt: '[Genre: Kannada Folk / Janapada, Rock, Carnatic Fusion]\n[Mood: Energetic, Uplifting]\n[Tempo: Mid-fast — 110–130 BPM]\n[Key: Charukesi (raga)]\n[Vocals: Male — high energy, raw rock vocal]\n[Language: Kannada]\n[Structure: Verse → Chorus → Verse → Chorus → Bridge → Final Chorus (with intro & outro)]\n[Instruments: electric guitar, bass, dollu / folk drums, flute (bansuri), harmonium]\n[Production: live-band feel, crisp acoustic punch, punchy modern drums]'
+    },
+    {
+      name: 'ಕನ್ನಡ ಹಿಪ್-ಹಾಪ್ / Rap',
+      prompt: '[Genre: Kannada Hip-Hop / Rap, Carnatic Fusion]\n[Mood: Rebellious / Raw, Energetic]\n[Tempo: Mid — 80–110 BPM]\n[Key: D minor]\n[Vocals: Rap / spoken word flow]\n[Language: Kannada]\n[Structure: Build → Drop → Build → Drop (EDM / Trap)]\n[Instruments: mridangam, sitar, bass, synth pads, drums]\n[Production: modern trap beat, heavy distorted bass, layered harmonies]'
     }
   ];
 
@@ -107,6 +122,7 @@
   var recipeNameWrap = $('sp-recipe-name-wrap');
   var recipeNameInput = $('sp-recipe-name');
   var recipesEl = $('sp-recipes');
+  var sendToSongStudioBtn = $('sp-send-song-studio');
 
   // ─── State ───────────────────────────────────────────────────────────────
   var selected = { genres: [], moods: [], instruments: [], prod: [] };
@@ -133,6 +149,7 @@
         var i = arr.indexOf(v);
         if (i >= 0) { arr.splice(i, 1); } else { arr.push(v); }
         renderChips(group);
+        refreshOutput();
       });
     });
   }
@@ -185,8 +202,10 @@
 
   function refreshOutput() {
     var text = buildPrompt();
-    output.value = text;
-    output.classList.toggle('has', !!text);
+    if (output) {
+      output.value = text;
+      output.classList.toggle('has', !!text);
+    }
   }
 
   // ─── Recipes ─────────────────────────────────────────────────────────────
@@ -202,6 +221,7 @@
   }
 
   function renderRecipes() {
+    if (!recipesEl) return;
     var list = loadRecipes();
     if (!list.length) {
       recipesEl.innerHTML = '<p class="hint">No saved recipes yet. Generate a prompt, name it, and hit “Save as recipe”.</p>';
@@ -217,7 +237,7 @@
     recipesEl.querySelectorAll('.pb-recipe-load').forEach(function (b) {
       b.addEventListener('click', function () {
         var r = loadRecipes()[+b.getAttribute('data-i')];
-        if (r) output.value = r.prompt;
+        if (r && output) output.value = r.prompt;
       });
     });
     recipesEl.querySelectorAll('.pb-recipe-del').forEach(function (b) {
@@ -231,21 +251,21 @@
   }
 
   function saveCurrentRecipe() {
-    var text = output.value.trim();
+    var text = output ? output.value.trim() : '';
     if (!text) { flash('Generate a prompt first.'); return; }
-    var name = (recipeNameInput.value || '').trim() || ('Recipe ' + (loadRecipes().length + 1));
+    var name = (recipeNameInput ? recipeNameInput.value : '').trim() || ('Recipe ' + (loadRecipes().length + 1));
     var list = loadRecipes();
     list.unshift({ name: name, prompt: text, at: new Date().toLocaleDateString() });
     saveRecipes(list);
-    recipeNameInput.value = '';
-    recipeNameWrap.hidden = true;
+    if (recipeNameInput) recipeNameInput.value = '';
+    if (recipeNameWrap) recipeNameWrap.hidden = true;
     renderRecipes();
     flash('Recipe “' + name + '” saved.');
   }
 
   // ─── Copy ────────────────────────────────────────────────────────────────
   function copyPrompt() {
-    var text = output.value.trim();
+    var text = output ? output.value.trim() : '';
     if (!text) { flash('Nothing to copy — generate a prompt first.'); return; }
     function done() { flash('Prompt copied — paste it into suno.com.'); }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -297,7 +317,10 @@
     if (copy) copy.addEventListener('click', copyPrompt);
 
     var save = $('sp-save-recipe');
-    if (save) save.addEventListener('click', function () { recipeNameWrap.hidden = false; recipeNameInput.focus(); });
+    if (save) save.addEventListener('click', function () {
+      if (recipeNameWrap) { recipeNameWrap.hidden = false; }
+      if (recipeNameInput) { recipeNameInput.focus(); }
+    });
 
     if (recipeNameInput) {
       recipeNameInput.addEventListener('keydown', function (e) {
@@ -305,9 +328,31 @@
       });
     }
     var saveBtn = $('sp-save-recipe');
-    // pressing save twice with a name set saves immediately
     if (saveBtn) {
       saveBtn.addEventListener('dblclick', function () { saveCurrentRecipe(); });
+    }
+
+    if (sendToSongStudioBtn) {
+      sendToSongStudioBtn.addEventListener('click', function () {
+        var g = selected.genres.join(', ') || 'Carnatic Fusion';
+        var tempoVal = selects.tempo ? selects.tempo.value : '';
+        var keyVal = selects.key ? selects.key.value : '';
+        var promptText = output ? output.value : '';
+
+        if (window.RaagaStudio && window.RaagaStudio.switchTo) {
+          window.RaagaStudio.switchTo('songs');
+        }
+
+        var ssAdd = document.getElementById('ss-add');
+        if (ssAdd) ssAdd.click();
+
+        var ssGenre = document.getElementById('ss-genre');
+        var ssKey = document.getElementById('ss-key');
+        var ssNotes = document.getElementById('ss-notes');
+        if (ssGenre) ssGenre.value = g;
+        if (ssKey) ssKey.value = keyVal;
+        if (ssNotes && promptText) ssNotes.value = 'Suno Prompt:\n' + promptText;
+      });
     }
 
     var outputEl = $('sp-output');

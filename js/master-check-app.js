@@ -1,12 +1,14 @@
 /**
  * master-check-app.js — UI controller for Master Check audio QA.
  * Now with exact problem locations: clipping times, true-peak overs,
- * clicks/pops, phase issues, abrupt edges shown as clickable timeline.
+ * clicks/pops, phase issues, abrupt edges shown as clickable timeline,
+ * Reference track overlay, and quick sample audio loading.
  */
 'use strict';
 
 (function () {
   var MC = window.MASTER_CHECK;
+  var RC = window.REF_COMPARE;
   if (!MC) {
     console.error('MASTER_CHECK engine missing');
     return;
@@ -24,6 +26,11 @@
   var fileListEl = document.getElementById('mc-file-list');
   var exportJsonBtn = document.getElementById('mc-export-json');
   var exportPdfBtn = document.getElementById('mc-export-pdf');
+
+  var sampleGoodBtn = document.getElementById('mc-sample-good');
+  var sampleClippedBtn = document.getElementById('mc-sample-clipped');
+  var sampleOverBtn = document.getElementById('mc-sample-over');
+
   var queue = []; // { file, url, report?, status }
   var activeReport = null;
   var activeUrl = null;
@@ -56,6 +63,27 @@
     renderFileList();
     processQueue();
   }
+
+  function loadSampleMaster(path, name) {
+    progressWrap.hidden = false;
+    progressBar.style.width = '20%';
+    progressLabel.textContent = 'Fetching sample ' + name + '…';
+
+    fetch(path).then(function (res) {
+      if (!res.ok) throw new Error('Could not fetch sample master');
+      return res.blob();
+    }).then(function (blob) {
+      var file = new File([blob], name, { type: 'audio/wav' });
+      acceptFiles([file]);
+    }).catch(function (err) {
+      flash('Sample load error: ' + err.message);
+      progressWrap.hidden = true;
+    });
+  }
+
+  if (sampleGoodBtn) sampleGoodBtn.addEventListener('click', function () { loadSampleMaster('sample_audio/good_master.wav', 'good_master.wav'); });
+  if (sampleClippedBtn) sampleClippedBtn.addEventListener('click', function () { loadSampleMaster('sample_audio/clipped_audio.wav', 'clipped_master.wav'); });
+  if (sampleOverBtn) sampleOverBtn.addEventListener('click', function () { loadSampleMaster('sample_audio/over_compressed.wav', 'over_compressed_master.wav'); });
 
   if (browseBtn && fileInput) {
     browseBtn.addEventListener('click', function () { fileInput.click(); });
@@ -211,7 +239,7 @@
     html += '</div>';
     html += '</div></section>';
 
-    // Release-ready checklist (new in Master Check)
+    // Release-ready checklist
     if (r.release) {
       var rel = r.release;
       var relCls = rel.ready ? 'pass' : (rel.summary.fail === 0 ? 'warn' : 'fail');
@@ -235,7 +263,11 @@
         if (c.advice) html += '<div class="mc-rel-advice">' + escapeHtml(c.advice) + '</div>';
         html += '</div></div>';
       });
-      html += '</div></section>';
+      html += '</div>';
+      html += '<div class="controls" style="margin-top:10px">';
+      html += '<button type="button" class="btn primary" id="mc-goto-release-btn">🚀 Open Release Planner & Artwork QA →</button>';
+      html += '</div>';
+      html += '</section>';
     }
 
     // Audio player with seek help — exact problem audition
@@ -295,7 +327,7 @@
       html += '<section class="mc-timeline panel no-issues"><div class="mc-viz-head"><h3>No localized issues</h3></div><p class="hint">No clipping, true-peak overs, clicks or phase problems detected with sample-accurate location. Clean master!</p></section>';
     }
 
-    // Waveform + spectrogram — now with multi-type markers
+    // Waveform + spectrogram
     html += '<section class="mc-viz panel">';
     html += '<div class="mc-viz-head"><h3>Waveform & Spectrogram — Problems Marked</h3>';
     html += '<div class="mc-viz-legend"><span class="clip-leg">Clipping</span><span class="tp-leg">True Peak</span><span class="click-leg">Click</span><span class="phase-leg">Phase</span><span class="sil-leg">Silence</span></div></div>';
@@ -325,7 +357,7 @@
       html += '</div></section>';
     }
 
-    // Mix ↔ Master comparison (uses the last mix analyzed in the Mix Check tab)
+    // Mix ↔ Master comparison
     var mixSum = window.__mixSummary || null;
     if (!mixSum) {
       try { mixSum = JSON.parse(sessionStorage.getItem('raaga.lastMixSummary') || 'null'); } catch (e) { mixSum = null; }
@@ -381,7 +413,7 @@
       html += '</section>';
     }
 
-    // Detailed accordion — now shows exact times per check
+    // Detailed accordion
     html += '<section class="mc-details">';
     html += '<h2 class="sec">Detailed report — exact locations where available</h2>';
     if (r.categories) {
@@ -440,13 +472,18 @@
           try { audioEl.currentTime = t; audioEl.play().catch(function () {}); } catch (e) {}
           audioEl.focus();
         }
-        // visual scroll to waveform
         var wave = document.getElementById('mc-wave');
         if (wave) wave.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // update playhead in waveform
         highlightTime(t, r.duration);
       });
     });
+
+    var gotoRelBtn = document.getElementById('mc-goto-release-btn');
+    if (gotoRelBtn && window.RaagaStudio) {
+      gotoRelBtn.addEventListener('click', function () {
+        window.RaagaStudio.switchTo('release');
+      });
+    }
 
     // Draw canvases after DOM insert
     requestAnimationFrame(function () {
@@ -481,8 +518,6 @@
 
   var lastHighlightT = -1;
   function highlightTime(currentT, duration) {
-    // draw playhead over waveform? We store and redraw cheaply — update CSS track if exists?
-    // Simpler: move a overlay div if we find tl-track
     var track = document.getElementById('mc-tl-track');
     if (!track) return;
     var existing = track.querySelector('.tl-playhead');
@@ -589,7 +624,6 @@
       } else if (m.type === 'truepeak') {
         ctx.fillStyle = 'rgba(224,179,106,0.9)';
         ctx.fillRect(x, 0, 2, h);
-        // little triangle top
         ctx.beginPath(); ctx.moveTo(x - 4, 0); ctx.lineTo(x + 4, 0); ctx.lineTo(x, 8); ctx.fill();
       } else if (m.type === 'click') {
         ctx.fillStyle = 'rgba(224,200,90,0.95)';
@@ -600,15 +634,6 @@
         ctx.fillRect(x, 0, 2, h);
       }
     });
-
-    // legacy clipping positions (redundant)
-    if (r.clipping && r.clipping.positions && r.sampleRate && (!markers.length)) {
-      ctx.fillStyle = 'rgba(228,87,127,0.55)';
-      r.clipping.positions.forEach(function (sample) {
-        var x = (sample / (r.sampleRate * duration)) * w;
-        ctx.fillRect(x, 0, 2, h);
-      });
-    }
 
     // waveform
     ctx.strokeStyle = '#e4577f';
@@ -635,13 +660,11 @@
       ctx.fillRect(0, mid - mid * 0.85, w, mid * 1.7);
     }
 
-    // time labels + playhead if exists
     ctx.fillStyle = 'rgba(168,159,148,0.5)';
     ctx.font = '10px system-ui';
     ctx.fillText('0:00', 4, h - 4);
     ctx.fillText(MC.fmtDur(duration), w - 48, h - 4);
 
-    // clickable overlay hint for seeking — store map for click handler
     canvas.style.cursor = 'crosshair';
     if (!canvas._bound) {
       canvas._bound = true;
@@ -760,7 +783,6 @@
     ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
     ctx.setLineDash([]);
 
-    // shade phase issues
     if (r.stereo && r.stereo.phaseIssueTimes) {
       ctx.fillStyle = 'rgba(169,127,214,0.22)';
       r.stereo.phaseIssueTimes.forEach(function (ph) {
