@@ -537,8 +537,17 @@
     if (!canvas) return null;
     var parent = canvas.parentElement;
     var w = parent ? parent.clientWidth - 28 : 800;
+    w = Math.max(280, w); // minimum width so graph is readable
     var dpr = window.devicePixelRatio || 1;
-    var h = canvas.height;
+    // Responsive height: use CSS-computed height when possible
+    var h = 140;
+    if (canvas.style && canvas.style.height) {
+      var parsed = parseInt(canvas.style.height, 10);
+      if (parsed > 0) h = parsed;
+    }
+    // Scale height down slightly on very narrow screens
+    if (w < 400) h = Math.round(h * 0.75);
+    else if (w < 600) h = Math.round(h * 0.85);
     canvas.width = Math.floor(w * dpr);
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';

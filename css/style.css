@@ -568,7 +568,342 @@ details .body .ex { color: var(--text); font-family: var(--kn-font); }
 .mc-viz-legend .click-leg::before { background:#d4c05a; }
 .mc-viz-legend .phase-leg::before { background:rgba(169,127,214,0.7); }
 
-/* print helpers (when exporting) */
+/* ==========================================================================
+   RESPONSIVE / SMARTPHONE — Master Check, Mix Check, Charts, All Tools
+   ========================================================================== */
+
+/* Canvas graphs: responsive height + full-width on mobile */
+.mc-canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 200px;
+  touch-action: manipulation;
+}
+@media (max-width: 760px) {
+  .mc-canvas { max-height: 140px; }
+}
+@media (max-width: 420px) {
+  .mc-canvas { max-height: 110px; }
+}
+
+/* Timeline track: responsive */
+.mc-tl-track {
+  height: 36px;
+  min-height: 36px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Timeline markers: larger touch targets on mobile */
+@media (max-width: 760px) {
+  .tl-marker {
+    width: 5px;
+    min-height: 30px;
+  }
+  .tl-marker.click { width: 6px; }
+  .tl-marker.phase { width: 10px; }
+}
+
+/* Time tags: bigger touch targets */
+.mc-time-tag {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .mc-time-tag {
+    min-height: 40px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .mc-time-tag.sm {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Player audio element: touch friendly */
+.mc-player audio {
+  border-radius: 8px;
+  max-height: 48px;
+}
+
+/* Dropzone: larger touch target on mobile */
+@media (max-width: 760px) {
+  .mc-dropzone {
+    padding: 32px 16px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .mc-drop-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Controls row: wrap nicely, full-width on mobile */
+@media (max-width: 760px) {
+  .controls {
+    gap: 6px;
+  }
+  .controls .btn {
+    min-height: 44px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 10px;
+    font-size: 13px;
+  }
+  .mc-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .mc-controls .btn.primary {
+    grid-column: 1 / -1;
+  }
+  .mc-controls .mc-select {
+    grid-column: 1 / -1;
+  }
+  .mc-controls .btn:disabled {
+    min-height: 44px;
+  }
+}
+
+/* Genre selects: full-width on mobile */
+@media (max-width: 760px) {
+  .mc-controls .mc-select,
+  .mx-numbers + .mc-controls .mc-select {
+    width: 100%;
+  }
+}
+
+/* Number cards: 2-column on small screens */
+@media (max-width: 420px) {
+  .mx-numbers {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mx-num {
+    padding: 10px 8px;
+  }
+  .mx-num-v {
+    font-size: 18px;
+  }
+}
+
+/* Comparison table: better horizontal scroll */
+.mc-mixcmp {
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+}
+.mc-cmp-table {
+  min-width: 560px;
+}
+@media (max-width: 760px) {
+  .mc-cmp-table th,
+  .mc-cmp-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
+
+/* Platform grid: 2-col on phones */
+@media (max-width: 420px) {
+  .mc-plat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .mc-plat {
+    padding: 10px;
+  }
+}
+
+/* Category strip: 3-col on medium, 2 on small */
+@media (max-width: 600px) {
+  .mc-cat-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .mc-cat-chip {
+    padding: 8px 8px;
+  }
+  .mc-cat-chip .cs {
+    font-size: 16px;
+  }
+}
+@media (max-width: 420px) {
+  .mc-cat-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Release checklist: single-col on narrow phones */
+@media (max-width: 420px) {
+  .mc-rel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Feature grid: single-col on small phones */
+@media (max-width: 420px) {
+  .mc-feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Score card: smaller on very narrow screens */
+@media (max-width: 420px) {
+  .mc-grade {
+    font-size: 44px;
+  }
+  .mc-score-num {
+    font-size: 18px;
+  }
+  .mc-score-card {
+    padding: 16px 12px;
+  }
+}
+
+/* Summary pills: wrap */
+.mc-summary-pills {
+  gap: 6px;
+}
+@media (max-width: 420px) {
+  .mc-summary-pills .pill {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* Accordion detailed checks: better mobile */
+@media (max-width: 760px) {
+  .mc-check {
+    padding: 8px 10px;
+  }
+  .mc-check-top {
+    gap: 6px 8px;
+  }
+  .mc-check-top .cn {
+    font-size: 12px;
+    min-width: 100px;
+  }
+  .mc-check-top .cv {
+    font-size: 12px;
+  }
+  .mc-check .crec {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  .mc-acc summary .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .mc-acc summary .t {
+    font-size: 13px;
+  }
+  .loc-list {
+    gap: 4px;
+  }
+}
+
+/* Mix Check number cards on phones */
+@media (max-width: 500px) {
+  .mx-numbers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+@media (max-width: 420px) {
+  .mx-numbers {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mx-num-v {
+    font-size: 18px;
+  }
+  .mx-num-a {
+    font-size: 9px;
+  }
+}
+
+/* Mix check checks: mobile */
+@media (max-width: 760px) {
+  .mx-check {
+    padding: 8px 10px;
+  }
+  .mx-c-top {
+    gap: 6px 8px;
+  }
+  .mx-c-name {
+    font-size: 12px;
+  }
+  .mx-c-val {
+    font-size: 12px;
+  }
+  .mx-c-target {
+    font-size: 10px;
+  }
+  .mx-c-advice {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+
+/* Song Studio: card grid single-col on phones */
+@media (max-width: 420px) {
+  .ss-card {
+    padding: 12px;
+  }
+  .ss-card-title {
+    font-size: 14px;
+  }
+  .ss-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .ss-chk-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Song Studio version add: stack on mobile */
+@media (max-width: 760px) {
+  .ss-ver-add {
+    flex-direction: column;
+  }
+  .ss-ver-add input {
+    width: 100%;
+  }
+}
+
+/* Vocal EQ: easier slider dragging on mobile */
+@media (max-width: 760px) {
+  .vq-node-hit {
+    r: 14;
+  }
+  .vq-node-dot {
+    stroke-width: 2;
+  }
+}
+
+/* Prevent zoom on double-tap for interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  button, [role="button"], .chip-opt, .vq-easy-problem,
+  .vq-chip, .vq-tcard, .mc-time-tag, .mc-file-chip,
+  .ss-card {
+    -webkit-touch-callout: none;
+  }
+}
+
+/* Smooth scrolling for all overflow containers */
+.vq-chart, .mc-mixcmp, .mc-tl-track, .ss-strip,
+.pb-chips, .vq-chips {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Print helpers (when exporting) */
 @media print {
   .topbar, .mc-dropzone, .mc-controls, .mc-feature-grid { display: none !important; }
   body { background: #fff; color: #111; }
