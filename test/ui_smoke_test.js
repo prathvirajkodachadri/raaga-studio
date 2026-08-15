@@ -139,32 +139,56 @@ load('suno-prompts.js');
 load('mix-check.js');
 load('mix-check-app.js');
 load('song-studio.js');
-load('vocal-eq.js');
+load('pro-eq.js');
 load('nav.js');
 
-// vocal eq map (home tab)
-assert(typeof global.window.VOCAL_EQ === 'object', 'VOCAL_EQ engine exported');
-assert(global.window.VOCAL_EQ.data.zones.length === 15, '15 frequency zones defined');
-assert(global.window.VOCAL_EQ.data.troubles.length === 13, '13 troubleshooting cards defined');
-assert(getEl('vq-chart').innerHTML.indexOf('<svg') >= 0, 'EQ chart rendered as SVG');
-assert(getEl('vq-chips').innerHTML.indexOf('Mud') >= 0, 'zone legend chips rendered');
-assert(getEl('vq-detail').innerHTML.indexOf('Boost') >= 0, 'detail panel rendered');
-assert(getEl('vq-table').innerHTML.indexOf('Sub / Rumble') >= 0, 'quick reference table rendered');
-assert(getEl('vq-easy-problems').innerHTML.indexOf('Muddy') >= 0, 'easy guide problem picker rendered');
-assert(getEl('vq-easy-result').innerHTML.indexOf('suggested starting move') >= 0, 'easy guide recipe rendered');
-assert(global.window.VOCAL_EQ.state.view === 'advanced' && getEl('vq-advanced').hidden === false, 'full EQ graph is the default first-page view');
-global.window.VOCAL_EQ.setView('easy');
-assert(getEl('vq-advanced').hidden === true && getEl('vq-easy').hidden === false, 'easy guide can still be opened programmatically');
-global.window.VOCAL_EQ.setView('advanced');
-getEl('vq-mode-female').click();
-assert(global.window.VOCAL_EQ.state.mode === 'female', 'female mode switch works');
-assert(global.window.VOCAL_EQ.state.showMale === false, 'male curve hidden in female mode');
-getEl('vq-mode-male').click();
-assert(global.window.VOCAL_EQ.state.mode === 'male', 'male mode switch works');
-getEl('vq-compare').click();
-assert(global.window.VOCAL_EQ.state.showMale && global.window.VOCAL_EQ.state.showFemale, 'compare shows both curves');
-getEl('vq-reset').click();
-assert(global.window.VOCAL_EQ.state.mode === 'male' && global.window.VOCAL_EQ.state.showFemale === true, 'reset restores graph defaults');
+// pro-eq parametric EQ (home tab)
+const EQ = global.window.PRO_EQ;
+assert(typeof EQ === 'object', 'PRO_EQ engine exported');
+assert(EQ.data.presets.length === 8, '8 presets defined');
+assert(EQ.data.types.length === 6, '6 band types defined (bell/shelves/cuts/notch)');
+assert(EQ.state.bands.length === 4, 'default preset loads 4 bands');
+assert(getEl('peq-svg-host').innerHTML.indexOf('<svg') >= 0, 'EQ display rendered as SVG');
+assert(getEl('peq-svg-host').innerHTML.indexOf('peq-total') >= 0, 'total response curve rendered');
+assert(getEl('peq-toolbar').innerHTML.indexOf('Preset') >= 0, 'toolbar rendered');
+assert(getEl('peq-audiobar').innerHTML.indexOf('Pink noise') >= 0, 'audio bar rendered');
+
+// biquad math: a +6 dB bell at 1 kHz responds ≈ +6 dB at its centre
+const bellDb = EQ.bandDb({ type: 'bell', freq: 1000, gain: 6, q: 1, slope: 24, on: true }, 1000);
+assert(Math.abs(bellDb - 6) < 0.05, 'bell band peaks at its gain (' + bellDb.toFixed(2) + ' dB)');
+// low cut is −3 dB at its corner frequency (Butterworth) and steep below
+const lc = { type: 'lowcut', freq: 100, gain: 0, q: 0.7071, slope: 24, on: true };
+assert(Math.abs(EQ.bandDb(lc, 100) + 3) < 0.6, 'low cut ≈ −3 dB at corner');
+assert(EQ.bandDb(lc, 25) < -40, '24 dB/oct low cut is steep two octaves down');
+// disabled bands contribute nothing
+assert(EQ.bandDb({ type: 'bell', freq: 1000, gain: 6, q: 1, on: false }, 1000) === 0, 'disabled band contributes 0 dB');
+// total = sum of bands
+const twoBands = [
+  { type: 'bell', freq: 1000, gain: 4, q: 1, on: true },
+  { type: 'bell', freq: 1000, gain: -1, q: 1, on: true }
+];
+assert(Math.abs(EQ.totalDb(twoBands, 1000) - 3) < 0.1, 'total response sums band responses');
+
+// band add / select / remove
+const before = EQ.state.bands.length;
+const idx = EQ.addBand('bell', 2500, 3, 1.4);
+assert(EQ.state.bands.length === before + 1 && EQ.state.sel === idx, 'addBand appends and selects');
+EQ.removeBand(idx);
+assert(EQ.state.bands.length === before, 'removeBand removes');
+EQ.selectBand(0);
+assert(EQ.state.sel === 0, 'selectBand works');
+
+// presets / bypass / range
+EQ.setPreset('telephone');
+assert(EQ.state.bands.length === 3, 'telephone preset loads 3 bands');
+EQ.setBypass(true);
+assert(EQ.state.bypass === true, 'bypass engages');
+EQ.setBypass(false);
+EQ.setRange(30);
+assert(EQ.state.range === 30, 'display range switches to ±30 dB');
+EQ.setRange(12);
+EQ.setPreset('default');
+assert(EQ.state.bands.length === 4, 'reset to default preset restores 4 bands');
 
 // prosody rendered the demo (syllables are split into spans, so check markers)
 assert(getEl('result').innerHTML.indexOf('ಸಾಲು') >= 0, 'prosody renders demo output');

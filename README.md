@@ -7,27 +7,26 @@ Six tools in one page, no build step, no npm install. Files never leave the brow
 
 ## Tools
 
-### 0. Vocal EQ Map (home)
-The first page you land on: an **interactive vocal EQ cheat sheet** for mixing
-engineers, with a real 20 Hz → 20 kHz logarithmic graph (−12 to +12 dB) and
-15 color-coded frequency zones (Sub/Rumble → Extreme Air/Hiss).
+### 0. Pro-EQ (home)
+The first page is now a **practical FabFilter Pro-Q style parametric EQ** — a
+single clean display, nothing else. 20 Hz → 20 kHz log scale with a selectable
+±6 / ±12 / ±30 dB range.
 
-- The **full interactive vocal EQ graph** opens directly on the first page — no
-  extra click needed. Male and female curves are shown together by default.
-- A phone-first Easy Guide still exists in the code for safe one-move recipes, but
-  the landing page now stays focused on the graph.
-- **MALE VOCAL / FEMALE VOCAL modes** with separate recommended starting EQ
-  (centre frequency, gain, Q) — curves, zone labels and values all update.
-- Click any zone (or chip/table row) for a detail panel: character, boost/cut
-  results, when to boost/cut, adjustable Male & Female EQ sliders, Q and
-  typical problems.
-- **Compare mode** shows both curves on one graph; drag the glowing dots on the
-  curve to tweak, hover anywhere for a live frequency/gain readout.
-- **"If Your Vocal Sounds Like This…"** — 13 troubleshooting cards (muddy,
-  boomy, boxy, nasal, hollow, thin, dull, unclear, harsh, aggressive, sibilant,
-  too bright, lacking air) with the range to check and starting EQ moves.
-- All data (zones, values, descriptions, troubleshooting) lives in one
-  structured object — `window.VOCAL_EQ.data` in `js/vocal-eq.js` — easy to edit.
+- **Real biquad filter math** (RBJ cookbook): the yellow curve is the exact
+  magnitude response of the filters applied to the audio, not an illustration.
+- **Up to 8 bands**, each Bell / Low Shelf / High Shelf / Low Cut / High Cut /
+  Notch. Cut filters have Butterworth **12/24/36/48 dB/oct slopes**.
+- Pro-Q style interaction: **drag the numbered dots** (freq/gain), **scroll the
+  mouse wheel** over the display for Q, **double-click empty space to add a
+  band** (it guesses low-cut near 20 Hz, shelf near 20 kHz), double-click a dot
+  to delete, arrow keys nudge, Shift = fine adjust.
+- **Live audio through the EQ**: pink noise, the bundled sample WAVs, or load
+  your own file — played through real `BiquadFilterNode`s with a real-time
+  **spectrum analyzer** drawn behind the curve, plus output gain and bypass.
+- **Presets**: Vocal Start, Male Vocal, Female Vocal, De-Mud, Air & Sparkle,
+  Podcast Voice, Telephone FX, Flat.
+- Engine exported as `window.PRO_EQ` (`js/pro-eq.js`) — the DSP helpers
+  (`coeffs`, `bandDb`, `totalDb`) are unit-testable in Node.
 
 ### 1. ಛಂದಸ್ಸು (Prosody)
 Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
@@ -85,9 +84,10 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 
 ```
 raaga-studio/
-├── index.html                 # 5-tab UI (prosody · suno · mix · master · songs)
+├── index.html                 # 6-tab UI (pro-eq · prosody · suno · mix · master · songs)
 ├── css/style.css              # dark studio theme
 ├── js/
+│   ├── pro-eq.js              # Pro-Q style parametric EQ (home) — biquad DSP + Web Audio
 │   ├── prosody.js             # Kannada prosody engine
 │   ├── app.js                 # prosody UI controller
 │   ├── master-check.js        # audio analysis engine (Web Audio API) + release checklist

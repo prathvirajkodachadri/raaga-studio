@@ -22,7 +22,7 @@
       <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
+      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Pro-EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
@@ -33,88 +33,17 @@
 
   <!-- ═══════════════ VOCAL EQ TAB (home) ═══════════════ -->
   <main class="wrap" id="tab-vocal-eq">
-    <section class="vq-hero vq-hero-graph">
-      <div>
-        <p class="vq-eyebrow">Vocal EQ frequency graph</p>
-        <h2 class="vq-title">Vocal EQ Map</h2>
-        <p class="vq-sub">Full 20 Hz–20 kHz graph on the first page: frequency zones, recommended curves and drag-to-tweak EQ points.</p>
+    <section class="panel peq-panel">
+      <div class="peq-toolbar" id="peq-toolbar"></div>
+      <div class="peq-display" id="peq-display" aria-label="Parametric EQ display — drag dots to shape the curve">
+        <canvas class="peq-spectrum" id="peq-spectrum" aria-hidden="true"></canvas>
+        <div class="peq-svg-host" id="peq-svg-host"></div>
+        <div class="peq-tooltip" id="peq-tooltip" hidden></div>
       </div>
-      <div class="vq-voice-pick">
-        <span class="vq-step-kicker"><b>1</b> Choose your voice</span>
-        <div class="vq-mode" role="group" aria-label="Vocal type">
-          <button type="button" class="vq-mode-btn male active" id="vq-mode-male" aria-pressed="true">Male</button>
-          <button type="button" class="vq-mode-btn female" id="vq-mode-female" aria-pressed="false">Female</button>
-        </div>
-      </div>
+      <div class="peq-readout" id="peq-readout" aria-live="polite"></div>
+      <div class="peq-controls" id="peq-controls"></div>
+      <div class="peq-audiobar" id="peq-audiobar"></div>
     </section>
-
-    <div class="vq-viewbar" hidden>
-      <div class="vq-view-copy">
-        <strong>Choose your workspace</strong>
-        <span>Use the easy guide first. Open the full map only when you want more control.</span>
-      </div>
-      <div class="vq-view-switch" role="group" aria-label="Vocal EQ workspace">
-        <button type="button" class="vq-view-btn active" id="vq-view-easy" aria-pressed="true"><span aria-hidden="true">✨</span> Easy guide</button>
-        <button type="button" class="vq-view-btn" id="vq-view-advanced" aria-pressed="false"><span aria-hidden="true">🎛</span> Full EQ map</button>
-      </div>
-    </div>
-
-    <section class="panel vq-easy" id="vq-easy" aria-labelledby="vq-easy-title" hidden>
-      <div class="vq-easy-head">
-        <div>
-          <span class="vq-easy-badge">Recommended</span>
-          <h3 id="vq-easy-title">Quick vocal fix</h3>
-          <p>Pick the description that sounds closest. You can change it anytime.</p>
-        </div>
-        <span class="vq-easy-progress">Step 2 of 3</span>
-      </div>
-      <div class="vq-easy-grid">
-        <div class="vq-problem-picker">
-          <h4><span>2</span> What do you hear?</h4>
-          <div class="vq-easy-problems" id="vq-easy-problems" role="group" aria-label="Choose a vocal problem"></div>
-        </div>
-        <div class="vq-easy-result" id="vq-easy-result" aria-live="polite"></div>
-      </div>
-      <p class="vq-easy-status" id="vq-easy-status" aria-live="polite"></p>
-    </section>
-
-    <div class="vq-advanced" id="vq-advanced">
-    <section class="panel vq-chart-panel">
-      <div class="vq-toolbar">
-        <div class="vq-toggles">
-          <label class="vq-tgl"><input type="checkbox" id="vq-show-zones" checked><span class="tui"></span>Show Frequency Zones</label>
-          <label class="vq-tgl"><input type="checkbox" id="vq-show-curve" checked><span class="tui"></span>Show EQ Curve</label>
-          <label class="vq-tgl"><input type="checkbox" id="vq-show-male" checked><span class="tui"></span>Male</label>
-          <label class="vq-tgl f"><input type="checkbox" id="vq-show-female"><span class="tui"></span>Female</label>
-        </div>
-        <div class="vq-toolbar-right">
-          <button type="button" class="vq-compare" id="vq-compare">⚖ Compare</button>
-          <span class="vq-voice-badge" id="vq-voice-badge"><span class="m">MALE VOCAL</span> · editing</span>
-          <button type="button" class="btn primary" id="vq-reset">Reset</button>
-        </div>
-      </div>
-
-      <div class="vq-chart-cap">
-        <span class="l">Vocal EQ <span style="color:#8b93a3">·</span> <span class="m" style="color:#6ee7ff">Male</span> <span style="color:#8b93a3">vs</span> <span style="color:#ff6fb5">Female</span></span>
-        <span class="r">−12 dB ⇄ +12 dB · log scale · click a zone or drag a dot</span>
-      </div>
-      <div class="vq-chart" id="vq-chart" aria-label="Vocal EQ frequency graph">
-        <div id="vq-tooltip" class="vq-tooltip" hidden></div>
-      </div>
-      <div class="vq-chips" id="vq-chips"></div>
-      <p class="vq-chip-hint">Legend — click any zone on the graph or chip below for details, recommended EQ and Q. Drag the glowing dots on the graph to tweak.</p>
-    </section>
-
-    <section class="panel vq-detail" id="vq-detail"></section>
-
-    <h2 class="sec">If Your Vocal Sounds Like This…</h2>
-    <p class="mc-intro">Click a problem card to jump to the frequency range to check and the recommended starting EQ move for both male and female vocals.</p>
-    <div class="vq-trouble-grid" id="vq-troubles"></div>
-
-    <h2 class="sec">Quick Reference — All Zones</h2>
-    <p class="mc-intro">The full 20 Hz–20 kHz vocal spectrum at a glance. Click any row to inspect the zone in detail.</p>
-    <div id="vq-table"></div>
-    </div>
   </main>
 
   <!-- ═══════════════ PROSODY TAB ═══════════════ -->
@@ -434,7 +363,7 @@
   <script src="js/mix-check.js"></script>
   <script src="js/mix-check-app.js"></script>
   <script src="js/song-studio.js"></script>
-  <script src="js/vocal-eq.js"></script>
+  <script src="js/pro-eq.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>
