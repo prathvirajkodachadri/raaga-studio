@@ -33,11 +33,11 @@
 
   <!-- ═══════════════ VOCAL EQ TAB (home) ═══════════════ -->
   <main class="wrap" id="tab-vocal-eq">
-    <section class="vq-hero">
+    <section class="vq-hero vq-hero-graph">
       <div>
-        <p class="vq-eyebrow">Simple vocal mixing assistant</p>
-        <h2 class="vq-title">Make your vocal sound better</h2>
-        <p class="vq-sub">Choose what you hear and get a clear EQ starting point. No frequency knowledge needed.</p>
+        <p class="vq-eyebrow">Vocal EQ frequency graph</p>
+        <h2 class="vq-title">Vocal EQ Map</h2>
+        <p class="vq-sub">Full 20 Hz–20 kHz graph on the first page: frequency zones, recommended curves and drag-to-tweak EQ points.</p>
       </div>
       <div class="vq-voice-pick">
         <span class="vq-step-kicker"><b>1</b> Choose your voice</span>
@@ -48,9 +48,7 @@
       </div>
     </section>
 
-    <div class="vq-reminder" role="note"><span aria-hidden="true">👂</span> <span><b>Start small.</b> Try the suggestion, switch EQ bypass on and off, and keep it only if the vocal sounds clearer in the full mix.</span></div>
-
-    <div class="vq-viewbar">
+    <div class="vq-viewbar" hidden>
       <div class="vq-view-copy">
         <strong>Choose your workspace</strong>
         <span>Use the easy guide first. Open the full map only when you want more control.</span>
@@ -61,7 +59,7 @@
       </div>
     </div>
 
-    <section class="panel vq-easy" id="vq-easy" aria-labelledby="vq-easy-title">
+    <section class="panel vq-easy" id="vq-easy" aria-labelledby="vq-easy-title" hidden>
       <div class="vq-easy-head">
         <div>
           <span class="vq-easy-badge">Recommended</span>
@@ -80,7 +78,7 @@
       <p class="vq-easy-status" id="vq-easy-status" aria-live="polite"></p>
     </section>
 
-    <div class="vq-advanced" id="vq-advanced" hidden>
+    <div class="vq-advanced" id="vq-advanced">
     <section class="panel vq-chart-panel">
       <div class="vq-toolbar">
         <div class="vq-toggles">

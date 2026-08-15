@@ -282,12 +282,12 @@
   /* ═══════════════════════════ STATE ═══════════════════════════ */
   var state = {
     mode: 'male',          // which voice is "active" (edited / emphasized)
-    view: 'easy',          // beginner guide first; the full graph is one tap away
+    view: 'advanced',      // first page opens directly on the full EQ graph
     quickProblem: 'muddy',
     showZones: true,
     showCurve: true,
     showMale: true,
-    showFemale: false,
+    showFemale: true,
     selected: 'mud-body'
   };
 
@@ -941,10 +941,11 @@
     gains = defaultGains();
     state.mode = 'male';
     state.quickProblem = 'muddy';
+    state.view = 'advanced';
     state.showZones = true;
     state.showCurve = true;
     state.showMale = true;
-    state.showFemale = false;
+    state.showFemale = true;
     renderAll();
   }
 

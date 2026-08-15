@@ -152,10 +152,10 @@ assert(getEl('vq-detail').innerHTML.indexOf('Boost') >= 0, 'detail panel rendere
 assert(getEl('vq-table').innerHTML.indexOf('Sub / Rumble') >= 0, 'quick reference table rendered');
 assert(getEl('vq-easy-problems').innerHTML.indexOf('Muddy') >= 0, 'easy guide problem picker rendered');
 assert(getEl('vq-easy-result').innerHTML.indexOf('suggested starting move') >= 0, 'easy guide recipe rendered');
-assert(global.window.VOCAL_EQ.state.view === 'easy' && getEl('vq-advanced').hidden === true, 'easy guide is the default view');
-global.window.VOCAL_EQ.setView('advanced');
-assert(getEl('vq-advanced').hidden === false && getEl('vq-easy').hidden === true, 'full EQ map can be opened');
+assert(global.window.VOCAL_EQ.state.view === 'advanced' && getEl('vq-advanced').hidden === false, 'full EQ graph is the default first-page view');
 global.window.VOCAL_EQ.setView('easy');
+assert(getEl('vq-advanced').hidden === true && getEl('vq-easy').hidden === false, 'easy guide can still be opened programmatically');
+global.window.VOCAL_EQ.setView('advanced');
 getEl('vq-mode-female').click();
 assert(global.window.VOCAL_EQ.state.mode === 'female', 'female mode switch works');
 assert(global.window.VOCAL_EQ.state.showMale === false, 'male curve hidden in female mode');
@@ -164,7 +164,7 @@ assert(global.window.VOCAL_EQ.state.mode === 'male', 'male mode switch works');
 getEl('vq-compare').click();
 assert(global.window.VOCAL_EQ.state.showMale && global.window.VOCAL_EQ.state.showFemale, 'compare shows both curves');
 getEl('vq-reset').click();
-assert(global.window.VOCAL_EQ.state.mode === 'male' && global.window.VOCAL_EQ.state.showFemale === false, 'reset restores defaults');
+assert(global.window.VOCAL_EQ.state.mode === 'male' && global.window.VOCAL_EQ.state.showFemale === true, 'reset restores graph defaults');
 
 // prosody rendered the demo (syllables are split into spans, so check markers)
 assert(getEl('result').innerHTML.indexOf('ಸಾಲು') >= 0, 'prosody renders demo output');
