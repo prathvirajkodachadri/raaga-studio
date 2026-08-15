@@ -282,6 +282,8 @@
   /* ═══════════════════════════ STATE ═══════════════════════════ */
   var state = {
     mode: 'male',          // which voice is "active" (edited / emphasized)
+    view: 'easy',          // beginner guide first; the full graph is one tap away
+    quickProblem: 'muddy',
     showZones: true,
     showCurve: true,
     showMale: true,
@@ -317,6 +319,13 @@
   var showMaleChk = $('vq-show-male');
   var showFemaleChk = $('vq-show-female');
   var voiceBadge = $('vq-voice-badge');
+  var easyViewBtn = $('vq-view-easy');
+  var advancedViewBtn = $('vq-view-advanced');
+  var easyEl = $('vq-easy');
+  var advancedEl = $('vq-advanced');
+  var easyProblemsEl = $('vq-easy-problems');
+  var easyResultEl = $('vq-easy-result');
+  var easyStatusEl = $('vq-easy-status');
 
   var PAD = { top: 22, right: 16, bottom: 42, left: 54 };
   var chartW = 960, chartH = 440;
@@ -376,6 +385,11 @@
     if (!chartEl) return;
     var rect = chartEl.getBoundingClientRect();
     chartW = rect && rect.width ? rect.width : 900;
+    /* On a phone the full map pans horizontally instead of shrinking labels
+       and drag targets until they become impossible to use. */
+    if (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 760) {
+      chartW = Math.max(680, chartW);
+    }
     chartH = Math.max(300, Math.min(480, Math.round(chartW * 0.46)));
     var plotT = PAD.top, plotB = chartH - PAD.bottom, plotL = PAD.left, plotR = chartW - PAD.right;
     var plotH = plotB - plotT, zeroY = (plotT + plotB) / 2;
@@ -726,6 +740,94 @@
     if (sl.style && sl.style.setProperty) sl.style.setProperty('--fill', pct + '%');
   }
 
+  /* ═══════════════════════════ EASY GUIDE ═══════════════════════════ */
+  function troubleById(id) {
+    for (var i = 0; i < TROUBLES.length; i++) if (TROUBLES[i].id === id) return TROUBLES[i];
+    return TROUBLES[0];
+  }
+
+  function quickRecipeText() {
+    var t = troubleById(state.quickProblem);
+    var voice = state.mode === 'female' ? 'Female' : 'Male';
+    return voice + ' vocal — ' + t.name + ': ' + t[state.mode] + '. Check ' + t.check + '. Start small and compare with EQ bypassed.';
+  }
+
+  function renderEasy() {
+    var t = troubleById(state.quickProblem);
+    if (easyProblemsEl) {
+      var choices = '';
+      TROUBLES.forEach(function (problem) {
+        var active = problem.id === t.id;
+        choices += '<button type="button" class="vq-easy-problem' + (active ? ' active' : '') + '" data-problem="' + problem.id + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
+          '<span class="ico" aria-hidden="true">' + problem.icon + '</span>' +
+          '<span class="nm">' + esc(problem.name) + '</span></button>';
+      });
+      easyProblemsEl.innerHTML = choices;
+    }
+
+    if (easyResultEl) {
+      var voiceName = state.mode === 'female' ? 'Female' : 'Male';
+      var recipe = t[state.mode];
+      easyResultEl.innerHTML =
+        '<div class="vq-result-step"><b>3</b> Try this first</div>' +
+        '<div class="vq-result-title"><span class="ico" aria-hidden="true">' + t.icon + '</span><h4>' + esc(t.name) + ' vocal</h4></div>' +
+        '<p class="vq-result-symptom">' + esc(t.symptom) + '</p>' +
+        '<div class="vq-recipe ' + state.mode + '">' +
+          '<span class="vq-recipe-label">' + voiceName + ' vocal · suggested starting move</span>' +
+          '<strong class="vq-recipe-value">' + esc(recipe) + '</strong>' +
+        '</div>' +
+        '<p class="vq-result-check"><b>Listen around:</b> ' + esc(t.check) + '. Start with the first move, keep it gentle, then compare with bypass.</p>' +
+        '<div class="vq-result-actions">' +
+          '<button type="button" class="vq-easy-action primary" data-easy-action="copy">Copy settings</button>' +
+          '<button type="button" class="vq-easy-action" data-easy-action="map">Fine-tune on map</button>' +
+        '</div>';
+    }
+  }
+
+  function setView(view) {
+    state.view = view === 'advanced' ? 'advanced' : 'easy';
+    var advanced = state.view === 'advanced';
+    if (easyEl) easyEl.hidden = advanced;
+    if (advancedEl) advancedEl.hidden = !advanced;
+    if (easyViewBtn) {
+      easyViewBtn.classList.toggle('active', !advanced);
+      easyViewBtn.setAttribute('aria-pressed', advanced ? 'false' : 'true');
+    }
+    if (advancedViewBtn) {
+      advancedViewBtn.classList.toggle('active', advanced);
+      advancedViewBtn.setAttribute('aria-pressed', advanced ? 'true' : 'false');
+    }
+    if (advanced) renderChart();
+  }
+
+  function copyQuickRecipe() {
+    var text = quickRecipeText();
+    function success() {
+      if (easyStatusEl) easyStatusEl.textContent = '✓ Settings copied — paste them into your session notes.';
+    }
+    function fallback() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        if (ta.select) ta.select();
+        if (document.execCommand) document.execCommand('copy');
+        if (ta.remove) ta.remove();
+        success();
+      } catch (err) {
+        if (easyStatusEl) easyStatusEl.textContent = 'Could not copy automatically. Press and hold the settings above to copy.';
+      }
+    }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(success, fallback);
+    } else {
+      fallback();
+    }
+  }
+
   /* ═══════════════════════════ TROUBLESHOOTING CARDS ═══════════════════════════ */
   function renderTroubles() {
     if (!troublesEl) return;
@@ -794,6 +896,7 @@
   function resetAll() {
     gains = defaultGains();
     state.mode = 'male';
+    state.quickProblem = 'muddy';
     state.showZones = true;
     state.showCurve = true;
     state.showMale = true;
@@ -802,12 +905,14 @@
   }
 
   function renderAll() {
+    renderEasy();
     renderChart();
     renderChips();
     renderDetail();
     renderTroubles();
     renderTable();
     syncControls();
+    setView(state.view);
   }
 
   function syncControls() {
@@ -836,8 +941,36 @@
   function bind() {
     if (modeMaleBtn) modeMaleBtn.addEventListener('click', function () { switchVoice('male'); });
     if (modeFemaleBtn) modeFemaleBtn.addEventListener('click', function () { switchVoice('female'); });
+    if (easyViewBtn) easyViewBtn.addEventListener('click', function () { setView('easy'); });
+    if (advancedViewBtn) advancedViewBtn.addEventListener('click', function () { setView('advanced'); });
     if (compareBtn) compareBtn.addEventListener('click', function () { setCompare(!(state.showMale && state.showFemale)); });
     if (resetBtn) resetBtn.addEventListener('click', resetAll);
+
+    if (easyProblemsEl) easyProblemsEl.addEventListener('click', function (e) {
+      var problem = e.target && e.target.closest ? e.target.closest('.vq-easy-problem') : null;
+      if (!problem || !problem.getAttribute) return;
+      state.quickProblem = problem.getAttribute('data-problem');
+      if (easyStatusEl) easyStatusEl.textContent = '';
+      renderEasy();
+      if (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 860 && easyResultEl && easyResultEl.scrollIntoView) {
+        easyResultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+    if (easyResultEl) easyResultEl.addEventListener('click', function (e) {
+      var action = e.target && e.target.closest ? e.target.closest('[data-easy-action]') : null;
+      if (!action || !action.getAttribute) return;
+      if (action.getAttribute('data-easy-action') === 'copy') {
+        copyQuickRecipe();
+        return;
+      }
+      if (action.getAttribute('data-easy-action') === 'map') {
+        var problem = troubleById(state.quickProblem);
+        if (problem.zones && problem.zones.length) state.selected = problem.zones[0];
+        state.view = 'advanced';
+        renderAll();
+        if (advancedEl && advancedEl.scrollIntoView) advancedEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
 
     if (showZonesChk) showZonesChk.addEventListener('change', function () { state.showZones = showZonesChk.checked; renderChart(); });
     if (showCurveChk) showCurveChk.addEventListener('change', function () { state.showCurve = showCurveChk.checked; renderChart(); });
@@ -901,6 +1034,7 @@
     gains: gains,
     switchVoice: switchVoice,
     selectZone: selectZone,
+    setView: setView,
     reset: resetAll,
     fmtDB: fmtDB
   };

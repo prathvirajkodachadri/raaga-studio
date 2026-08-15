@@ -150,6 +150,12 @@ assert(getEl('vq-chart').innerHTML.indexOf('<svg') >= 0, 'EQ chart rendered as S
 assert(getEl('vq-chips').innerHTML.indexOf('Mud') >= 0, 'zone legend chips rendered');
 assert(getEl('vq-detail').innerHTML.indexOf('Boost') >= 0, 'detail panel rendered');
 assert(getEl('vq-table').innerHTML.indexOf('Sub / Rumble') >= 0, 'quick reference table rendered');
+assert(getEl('vq-easy-problems').innerHTML.indexOf('Muddy') >= 0, 'easy guide problem picker rendered');
+assert(getEl('vq-easy-result').innerHTML.indexOf('suggested starting move') >= 0, 'easy guide recipe rendered');
+assert(global.window.VOCAL_EQ.state.view === 'easy' && getEl('vq-advanced').hidden === true, 'easy guide is the default view');
+global.window.VOCAL_EQ.setView('advanced');
+assert(getEl('vq-advanced').hidden === false && getEl('vq-easy').hidden === true, 'full EQ map can be opened');
+global.window.VOCAL_EQ.setView('easy');
 getEl('vq-mode-female').click();
 assert(global.window.VOCAL_EQ.state.mode === 'female', 'female mode switch works');
 assert(global.window.VOCAL_EQ.state.showMale === false, 'male curve hidden in female mode');
