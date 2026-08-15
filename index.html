@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1d1916">
+  <meta name="color-scheme" content="dark">
   <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <a class="skip-link" href="#tab-vocal-eq">Skip to studio tools</a>
   <header class="topbar">
     <div class="logo" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
@@ -15,16 +18,16 @@
       </svg>
     </div>
     <div class="brand">
-      <h1>Raaga Studio · <span>Compose → Mix → Master</span></h1>
+      <h1>Raaga Studio <span class="brand-flow">· Compose → Mix → Master</span></h1>
       <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true">Vocal EQ</button>
-      <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false">ಛಂದಸ್ಸು</button>
-      <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false">Suno Prompt</button>
-      <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false">Mix Check</button>
-      <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false">Master Check</button>
-      <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false">Song Studio</button>
+      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
+      <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
+      <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
+      <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
+      <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
+      <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
     </nav>
   </header>
 
@@ -32,17 +35,52 @@
   <main class="wrap" id="tab-vocal-eq">
     <section class="vq-hero">
       <div>
-        <h2 class="vq-title">Vocal EQ Map</h2>
-        <p class="vq-sub">Interactive vocal frequency cheat sheet for mixing engineers — <b>20 Hz → 20 kHz</b>, separate Male / Female starting points.</p>
+        <p class="vq-eyebrow">Simple vocal mixing assistant</p>
+        <h2 class="vq-title">Make your vocal sound better</h2>
+        <p class="vq-sub">Choose what you hear and get a clear EQ starting point. No frequency knowledge needed.</p>
       </div>
-      <div class="vq-mode" role="group" aria-label="Vocal type">
-        <button type="button" class="vq-mode-btn male active" id="vq-mode-male" aria-pressed="true">MALE VOCAL</button>
-        <button type="button" class="vq-mode-btn female" id="vq-mode-female" aria-pressed="false">FEMALE VOCAL</button>
+      <div class="vq-voice-pick">
+        <span class="vq-step-kicker"><b>1</b> Choose your voice</span>
+        <div class="vq-mode" role="group" aria-label="Vocal type">
+          <button type="button" class="vq-mode-btn male active" id="vq-mode-male" aria-pressed="true">Male</button>
+          <button type="button" class="vq-mode-btn female" id="vq-mode-female" aria-pressed="false">Female</button>
+        </div>
       </div>
     </section>
 
-    <div class="vq-reminder" role="note">⚠️ <span><b>These are starting points, not rules.</b> Always listen in context and make small EQ moves — then trust your ears.</span></div>
+    <div class="vq-reminder" role="note"><span aria-hidden="true">👂</span> <span><b>Start small.</b> Try the suggestion, switch EQ bypass on and off, and keep it only if the vocal sounds clearer in the full mix.</span></div>
 
+    <div class="vq-viewbar">
+      <div class="vq-view-copy">
+        <strong>Choose your workspace</strong>
+        <span>Use the easy guide first. Open the full map only when you want more control.</span>
+      </div>
+      <div class="vq-view-switch" role="group" aria-label="Vocal EQ workspace">
+        <button type="button" class="vq-view-btn active" id="vq-view-easy" aria-pressed="true"><span aria-hidden="true">✨</span> Easy guide</button>
+        <button type="button" class="vq-view-btn" id="vq-view-advanced" aria-pressed="false"><span aria-hidden="true">🎛</span> Full EQ map</button>
+      </div>
+    </div>
+
+    <section class="panel vq-easy" id="vq-easy" aria-labelledby="vq-easy-title">
+      <div class="vq-easy-head">
+        <div>
+          <span class="vq-easy-badge">Recommended</span>
+          <h3 id="vq-easy-title">Quick vocal fix</h3>
+          <p>Pick the description that sounds closest. You can change it anytime.</p>
+        </div>
+        <span class="vq-easy-progress">Step 2 of 3</span>
+      </div>
+      <div class="vq-easy-grid">
+        <div class="vq-problem-picker">
+          <h4><span>2</span> What do you hear?</h4>
+          <div class="vq-easy-problems" id="vq-easy-problems" role="group" aria-label="Choose a vocal problem"></div>
+        </div>
+        <div class="vq-easy-result" id="vq-easy-result" aria-live="polite"></div>
+      </div>
+      <p class="vq-easy-status" id="vq-easy-status" aria-live="polite"></p>
+    </section>
+
+    <div class="vq-advanced" id="vq-advanced" hidden>
     <section class="panel vq-chart-panel">
       <div class="vq-toolbar">
         <div class="vq-toggles">
@@ -78,6 +116,7 @@
     <h2 class="sec">Quick Reference — All Zones</h2>
     <p class="mc-intro">The full 20 Hz–20 kHz vocal spectrum at a glance. Click any row to inspect the zone in detail.</p>
     <div id="vq-table"></div>
+    </div>
   </main>
 
   <!-- ═══════════════ PROSODY TAB ═══════════════ -->
