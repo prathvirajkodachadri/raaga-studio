@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['prosody', 'suno', 'mix', 'master', 'songs'];
+const TAB_IDS = ['vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs'];
 
 global.window = {
   addEventListener() {},
@@ -139,7 +139,26 @@ load('suno-prompts.js');
 load('mix-check.js');
 load('mix-check-app.js');
 load('song-studio.js');
+load('vocal-eq.js');
 load('nav.js');
+
+// vocal eq map (home tab)
+assert(typeof global.window.VOCAL_EQ === 'object', 'VOCAL_EQ engine exported');
+assert(global.window.VOCAL_EQ.data.zones.length === 15, '15 frequency zones defined');
+assert(global.window.VOCAL_EQ.data.troubles.length === 13, '13 troubleshooting cards defined');
+assert(getEl('vq-chart').innerHTML.indexOf('<svg') >= 0, 'EQ chart rendered as SVG');
+assert(getEl('vq-chips').innerHTML.indexOf('Mud') >= 0, 'zone legend chips rendered');
+assert(getEl('vq-detail').innerHTML.indexOf('Boost') >= 0, 'detail panel rendered');
+assert(getEl('vq-table').innerHTML.indexOf('Sub / Rumble') >= 0, 'quick reference table rendered');
+getEl('vq-mode-female').click();
+assert(global.window.VOCAL_EQ.state.mode === 'female', 'female mode switch works');
+assert(global.window.VOCAL_EQ.state.showMale === false, 'male curve hidden in female mode');
+getEl('vq-mode-male').click();
+assert(global.window.VOCAL_EQ.state.mode === 'male', 'male mode switch works');
+getEl('vq-compare').click();
+assert(global.window.VOCAL_EQ.state.showMale && global.window.VOCAL_EQ.state.showFemale, 'compare shows both curves');
+getEl('vq-reset').click();
+assert(global.window.VOCAL_EQ.state.mode === 'male' && global.window.VOCAL_EQ.state.showFemale === false, 'reset restores defaults');
 
 // prosody rendered the demo (syllables are split into spans, so check markers)
 assert(getEl('result').innerHTML.indexOf('ಸಾಲು') >= 0, 'prosody renders demo output');
