@@ -207,11 +207,36 @@ assert(getEl('tab-master').hidden === false, 'master panel shown');
 assert(getEl('tab-prosody').hidden === true, 'prosody panel hidden');
 assert(getEl('tab-master').classList === undefined || true, 'panels hidden flag toggles');
 
-// suno prompt builder defaults
-assert(getEl('sp-output').value.indexOf('[Genre: Let Suno decide]') >= 0, 'prompt output generated with defaults');
+// suno custom-mode builder defaults + pure prompt engine
+const SP = global.window.SUNO_PROMPTS;
+assert(typeof SP.buildStyle === 'function', 'Suno style prompt engine exported');
+assert(getEl('sp-style-output').value.indexOf('Kannada lyrics') >= 0, 'live Style of Music output generated');
 assert(getEl('sp-tempo').innerHTML.indexOf('Let Suno decide') >= 0, 'tempo select populated');
-assert(getEl('sp-recipes').innerHTML.indexOf('ಕನ್ನಡ ಭಕ್ತಿಗೀತೆ') >= 0, 'preset recipes seeded');
-assert(JSON.parse(global.localStorage.getItem('raaga.sunoRecipes')).length === 3, 'presets persisted to localStorage');
+assert(getEl('sp-recipes').innerHTML.indexOf('ಕನ್ನಡ ಭಕ್ತಿಗೀತೆ') >= 0, 'built-in recipes rendered');
+assert(global.localStorage.getItem('raaga.sunoRecipes') === null, 'built-in recipes are not mixed into user storage');
+
+const promptState = SP.defaultState();
+promptState.selected.genres = ['Carnatic Fusion', 'Pop'];
+promptState.selected.moods = ['Uplifting'];
+promptState.selected.instruments = ['Flute (bansuri)', 'Mridangam'];
+promptState.selected.prod = ['Warm & organic'];
+promptState.tempo = 'Mid — 80–110 BPM';
+promptState.bpm = '96';
+promptState.key = 'Mohanam (raga)';
+promptState.vocals = 'Female — soft, classical-trained';
+const stylePrompt = SP.buildStyle(promptState);
+assert(stylePrompt.indexOf('Carnatic Fusion') >= 0, 'style prompt includes selected genre');
+assert(stylePrompt.indexOf('bansuri flute') >= 0, 'style prompt normalizes instrument wording');
+assert(stylePrompt.indexOf('96 BPM') >= 0 && stylePrompt.indexOf('80–110') < 0, 'exact BPM overrides tempo range');
+assert(stylePrompt.indexOf('[Genre:') < 0, 'style output avoids verbose bracket labels');
+assert(SP.LIMITS.instruments === 4 && SP.LIMITS.genres === 3, 'Suno picker limits defined');
+assert(SP.getStructureTemplate('pop-full').indexOf('[Bridge]') >= 0, 'lyrics structure template includes bridge');
+
+const legacy = SP.parseLegacyPrompt('[Genre: Indie Folk]\n[Mood: Calm]\n[Language: Kannada]\n---\nLyrics / notes:\nನನ್ನ ಹಾಡು');
+assert(legacy.selected.genres[0] === 'Indie Folk', 'legacy recipe genre migrates');
+assert(legacy.lyrics === 'ನನ್ನ ಹಾಡು', 'legacy recipe lyrics migrate');
+const legacyInstrumental = SP.parseLegacyPrompt('[Vocals: Let Suno decide]\n[Language: Instrumental]');
+assert(legacyInstrumental.vocals === 'Instrumental only (no vocals)' && legacyInstrumental.language === 'Kannada', 'legacy instrumental language migrates to song mode');
 
 // song studio: add + save
 getEl('ss-add').click();

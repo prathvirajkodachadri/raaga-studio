@@ -34,8 +34,9 @@
     </nav>
   </header>
 
+  <main id="studio-tools">
   <!-- ═══════════════ VOCAL EQ CHEAT SHEET (home) ═══════════════ -->
-  <main class="wrap veq-page" id="tab-vocal-eq">
+  <section class="wrap veq-page" id="tab-vocal-eq">
     <article class="veq-board" aria-labelledby="veq-title">
       <header class="veq-hero">
         <div class="veq-title-wrap">
@@ -291,10 +292,10 @@
         <div class="peq-audiobar" id="peq-audiobar"></div>
       </section>
     </details>
-  </main>
+  </section>
 
   <!-- ═══════════════ PROSODY TAB ═══════════════ -->
-  <main class="wrap" id="tab-prosody" hidden>
+  <section class="wrap" id="tab-prosody" hidden>
     <h2 class="sec">ಸ್ಕ್ಯಾನರ್ (Scanner)</h2>
 
     <div class="legend-row">
@@ -327,38 +328,64 @@
 
     <h2 class="sec">ನಿಯಮಗಳು (ಮಾತ್ರೆ-ಲಘು-ಗುರು)</h2>
     <div id="rules"></div>
-  </main>
+  </section>
 
   <!-- ═══════════════ SUNO PROMPT BUILDER TAB ═══════════════ -->
-  <main class="wrap" id="tab-suno" hidden>
-    <h2 class="sec">Suno Prompt Builder</h2>
-    <p class="mc-intro">
-      Assemble a ready-to-paste Suno prompt — genre, mood, tempo, vocal style, language,
-      key/raga, instrumentation and production details. Save your favourite prompt
-      <strong>recipes</strong> and reuse them for every song.
-      Tip: scan your Kannada lyrics in the <strong>ಛಂದಸ್ಸು</strong> tab first, then paste
-      them into the “extra details” field below.
-    </p>
+  <section class="wrap pb-page" id="tab-suno" hidden>
+    <section class="pb-hero" aria-labelledby="sp-page-title">
+      <div>
+        <span class="pb-eyebrow">Built for Suno Custom Mode</span>
+        <h2 id="sp-page-title">Turn a song idea into clean Suno fields</h2>
+        <p>
+          Shape the sound on the left, then copy <strong>Style of Music</strong> and
+          <strong>Lyrics</strong> separately on the right. Your draft stays in this browser.
+        </p>
+      </div>
+      <ol class="pb-steps" aria-label="Suno workflow">
+        <li><b>1</b><span>Choose<br>the sound</span></li>
+        <li><b>2</b><span>Copy style<br>&amp; lyrics</span></li>
+        <li><b>3</b><span>Create<br>in Suno</span></li>
+      </ol>
+    </section>
 
     <div class="pb-grid">
-      <div class="panel pb-form">
-        <div class="pb-field">
-          <label class="pb-label">Genre <em>(pick 1–3)</em></label>
-          <div class="pb-chips" id="sp-genres"></div>
-        </div>
+      <section class="panel pb-form" aria-labelledby="sp-builder-title">
+        <header class="pb-panel-head">
+          <div>
+            <span class="pb-step-mark">1</span>
+            <div><h3 id="sp-builder-title">Shape the sound</h3><p>Selections update the prompt live.</p></div>
+          </div>
+          <div class="pb-head-actions">
+            <a class="btn subtle pb-output-jump" href="#sp-output-title">View result ↓</a>
+            <button class="btn subtle" id="sp-reset" type="button">Reset all</button>
+          </div>
+        </header>
 
         <div class="pb-field">
-          <label class="pb-label">Mood <em>(pick 1–3)</em></label>
-          <div class="pb-chips" id="sp-moods"></div>
+          <label class="pb-label" for="sp-title">Song title <em>optional</em></label>
+          <input id="sp-title" class="mc-select pb-input" type="text" maxlength="120"
+                 placeholder="e.g. ಮಳೆಯ ನೆನಪು">
         </div>
+
+        <fieldset class="pb-field">
+          <legend class="pb-label">Genre <em>pick 1–3</em><span class="pb-pick-count" id="sp-genres-count">0 / 3</span></legend>
+          <div class="pb-chips" id="sp-genres" role="group" aria-label="Choose up to three genres"></div>
+        </fieldset>
+
+        <fieldset class="pb-field">
+          <legend class="pb-label">Mood <em>pick 1–3</em><span class="pb-pick-count" id="sp-moods-count">0 / 3</span></legend>
+          <div class="pb-chips" id="sp-moods" role="group" aria-label="Choose up to three moods"></div>
+        </fieldset>
 
         <div class="pb-row">
           <div class="pb-field">
             <label class="pb-label" for="sp-tempo">Tempo</label>
             <select id="sp-tempo" class="mc-select"></select>
+            <input id="sp-bpm" class="mc-select pb-input" type="number" min="40" max="240" inputmode="numeric"
+                   aria-label="Exact BPM, optional" placeholder="Exact BPM (optional)">
           </div>
           <div class="pb-field">
-            <label class="pb-label" for="sp-key">Key / Scale</label>
+            <label class="pb-label" for="sp-key">Key or raga</label>
             <select id="sp-key" class="mc-select"></select>
           </div>
         </div>
@@ -369,7 +396,7 @@
             <select id="sp-vocals" class="mc-select"></select>
           </div>
           <div class="pb-field">
-            <label class="pb-label" for="sp-language">Language</label>
+            <label class="pb-label" for="sp-language">Lyrics language</label>
             <select id="sp-language" class="mc-select"></select>
           </div>
         </div>
@@ -377,59 +404,128 @@
         <div class="pb-field">
           <label class="pb-label" for="sp-structure">Song structure</label>
           <select id="sp-structure" class="mc-select"></select>
+          <span class="pb-help">Choose a template, then insert it in the Lyrics box.</span>
         </div>
 
-        <div class="pb-field">
-          <label class="pb-label">Instruments <em>(pick 1–4)</em></label>
-          <div class="pb-chips" id="sp-instruments"></div>
-        </div>
+        <fieldset class="pb-field">
+          <legend class="pb-label">Instruments <em>pick up to 4</em><span class="pb-pick-count" id="sp-instruments-count">0 / 4</span></legend>
+          <div class="pb-chips" id="sp-instruments" role="group" aria-label="Choose up to four instruments"></div>
+        </fieldset>
+
+        <fieldset class="pb-field">
+          <legend class="pb-label">Production style <em>pick up to 3</em><span class="pb-pick-count" id="sp-prod-count">0 / 3</span></legend>
+          <div class="pb-chips" id="sp-prod" role="group" aria-label="Choose up to three production styles"></div>
+        </fieldset>
 
         <div class="pb-field">
-          <label class="pb-label">Production style <em>(pick 0–3)</em></label>
-          <div class="pb-chips" id="sp-prod"></div>
+          <label class="pb-label" for="sp-extra-style">Additional style direction <em>optional</em></label>
+          <textarea id="sp-extra-style" class="pb-textarea pb-compact" spellcheck="true"
+            placeholder="e.g. intimate close-miked vocal, gentle gamakas, dynamic final chorus"></textarea>
+          <span class="pb-help">Describe musical traits rather than naming a living artist.</span>
         </div>
 
-        <div class="pb-field">
-          <label class="pb-label" for="sp-extra">Extra details / lyrics</label>
-          <textarea id="sp-extra" class="pb-textarea" spellcheck="false"
-            placeholder="Paste your scanned Kannada lyrics, reference artists, vocal ornaments, production references…"></textarea>
-        </div>
-
-        <div class="pb-field">
-          <label class="pb-label">Prompt detail level</label>
+        <fieldset class="pb-field">
+          <legend class="pb-label">Prompt detail</legend>
           <div class="pb-mode">
-            <label class="chk"><input type="radio" name="sp-mode" value="concise" checked><span>Concise</span></label>
-            <label class="chk"><input type="radio" name="sp-mode" value="detailed"><span>Detailed</span></label>
+            <label class="chk"><input id="sp-mode-c" type="radio" name="sp-mode" value="concise" checked><span>Concise</span></label>
+            <label class="chk"><input id="sp-mode-d" type="radio" name="sp-mode" value="detailed"><span>Detailed</span></label>
           </div>
-        </div>
+        </fieldset>
+      </section>
 
-        <div class="controls">
-          <button class="btn primary" id="sp-generate" type="button">Generate prompt</button>
-          <button class="btn" id="sp-copy" type="button">Copy</button>
-          <button class="btn" id="sp-save-recipe" type="button">Save as recipe</button>
-          <a class="btn" id="sp-suno-link" href="https://suno.com/create" target="_blank" rel="noopener">Open suno.com ↗</a>
-        </div>
+      <div class="pb-side">
+        <section class="panel pb-output-panel" aria-labelledby="sp-output-title">
+          <header class="pb-panel-head">
+            <div>
+              <span class="pb-step-mark">2</span>
+              <div><h3 id="sp-output-title">Ready for Suno</h3><p>Paste each field into Custom Mode.</p></div>
+            </div>
+            <span class="pb-live"><i aria-hidden="true"></i> Live</span>
+          </header>
 
-        <div class="pb-field" style="margin-top:12px">
-          <label class="pb-label" for="sp-output">Your prompt</label>
-          <textarea id="sp-output" class="pb-textarea out" spellcheck="false" readonly
-            placeholder="Generated prompt appears here…"></textarea>
-        </div>
-      </div>
+          <div id="sp-validation" class="pb-validation warn" role="status">For a stronger result, choose a genre and a mood.</div>
 
-      <div class="panel pb-recipes">
-        <h3 class="pb-panel-title">Prompt recipes</h3>
-        <p class="hint">Prebuilt + your saved prompts. Click to load, ✕ to delete.</p>
-        <div id="sp-recipe-name-wrap" class="pb-field" hidden>
-          <input id="sp-recipe-name" class="mc-select" style="width:100%" placeholder="Recipe name…" />
-        </div>
-        <div id="sp-recipes" class="pb-recipe-list"></div>
+          <div class="pb-field pb-output-field">
+            <div class="pb-label-row">
+              <label class="pb-label" for="sp-style-output">Style of Music</label>
+              <span class="pb-char-count" id="sp-style-count">0 characters</span>
+            </div>
+            <textarea id="sp-style-output" class="pb-textarea out" spellcheck="false" readonly
+              placeholder="Choose a genre and mood to build your style…"></textarea>
+            <div class="pb-inline-actions">
+              <button class="btn primary" id="sp-copy-style" type="button">Copy Style of Music</button>
+              <span class="pb-help">If Suno shows a limit, remove lower-priority details first.</span>
+            </div>
+          </div>
+
+          <div class="pb-field pb-output-field">
+            <div class="pb-label-row">
+              <label class="pb-label" for="sp-lyrics">Lyrics &amp; section tags</label>
+              <span class="pb-char-count" id="sp-lyrics-count">0 characters</span>
+            </div>
+            <textarea id="sp-lyrics" class="pb-textarea pb-lyrics" spellcheck="true"
+              placeholder="[Verse 1]&#10;ನಿಮ್ಮ ಸಾಹಿತ್ಯವನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ…&#10;&#10;[Chorus]&#10;…"></textarea>
+            <p class="pb-instrumental-note" id="sp-instrumental-note" hidden>
+              Instrumental mode is on. In Suno, enable the <strong>Instrumental</strong> toggle and leave Lyrics empty.
+            </p>
+            <div class="pb-inline-actions">
+              <button class="btn" id="sp-insert-template" type="button">Insert structure template</button>
+              <button class="btn primary" id="sp-copy-lyrics" type="button">Copy Lyrics</button>
+              <button class="btn" id="sp-goto-prosody" type="button">Check Kannada metre →</button>
+            </div>
+          </div>
+
+          <div class="pb-field pb-output-field">
+            <div class="pb-label-row">
+              <label class="pb-label" for="sp-exclude">Exclude <em>optional</em></label>
+              <span class="pb-help">Suno → Advanced Options</span>
+            </div>
+            <input id="sp-exclude" class="mc-select pb-input" type="text"
+                   placeholder="e.g. heavy autotune, distorted guitars, long intro">
+            <div class="pb-inline-actions">
+              <button class="btn" id="sp-copy-exclude" type="button">Copy Exclude</button>
+            </div>
+          </div>
+
+          <div class="pb-primary-actions">
+            <button class="btn" id="sp-copy-all" type="button">Copy all for notes</button>
+            <button class="btn" id="sp-save-recipe" type="button">Save recipe</button>
+            <a class="btn primary" id="sp-suno-link" href="https://suno.com/create" target="_blank" rel="noopener">Open Suno Create ↗</a>
+          </div>
+
+          <details class="pb-howto">
+            <summary>Where does each field go?</summary>
+            <ol>
+              <li>Open Suno Create and enable <strong>Custom</strong>.</li>
+              <li>Paste the generated text into <strong>Style of Music</strong>.</li>
+              <li>Paste your sectioned words into <strong>Lyrics</strong>, or enable <strong>Instrumental</strong>.</li>
+              <li>Paste exclusions under <strong>Advanced Options → Exclude</strong>.</li>
+            </ol>
+          </details>
+        </section>
+
+        <section class="panel pb-recipes" aria-labelledby="sp-recipes-title">
+          <header class="pb-panel-head compact">
+            <div><span class="pb-step-mark">★</span><div><h3 id="sp-recipes-title">Recipes</h3><p>Load a starter or save the complete form.</p></div></div>
+          </header>
+          <div id="sp-recipe-name-wrap" class="pb-save-form" hidden>
+            <label class="pb-label" for="sp-recipe-name">Recipe name</label>
+            <input id="sp-recipe-name" class="mc-select pb-input" type="text" maxlength="80" placeholder="e.g. Kannada indie ballad">
+            <div class="pb-inline-actions">
+              <button class="btn primary" id="sp-recipe-confirm" type="button">Save recipe</button>
+              <button class="btn" id="sp-recipe-cancel" type="button">Cancel</button>
+            </div>
+          </div>
+          <div id="sp-recipes" class="pb-recipe-list"></div>
+        </section>
       </div>
     </div>
-  </main>
+
+    <div id="sp-flash" class="pb-flash" role="status" aria-live="polite"></div>
+  </section>
 
   <!-- ═══════════════ RAGA REFERENCE TAB ═══════════════ -->
-  <main class="wrap" id="tab-raga" hidden>
+  <section class="wrap" id="tab-raga" hidden>
     <h2 class="sec">Raga Reference — Scale &amp; Mood Library</h2>
     <p class="rg-intro">
       Pick a raga, see its <strong>ārohana / avarohana</strong> and the
@@ -471,10 +567,10 @@
         </ul>
       </div>
     </div>
-  </main>
+  </section>
 
   <!-- ═══════════════ MIX CHECK TAB ═══════════════ -->
-  <main class="wrap" id="tab-mix" hidden>
+  <section class="wrap" id="tab-mix" hidden>
     <h2 class="sec">Mix Check — Pre-Master Analysis</h2>
     <p class="mc-intro">
       Drop your <strong>mixdown</strong> (before mastering) to check it against mixing targets:
@@ -509,10 +605,10 @@
     </div>
 
     <div id="mx-results"></div>
-  </main>
+  </section>
 
   <!-- ═══════════════ MASTER CHECK TAB ═══════════════ -->
-  <main class="wrap" id="tab-master" hidden>
+  <section class="wrap" id="tab-master" hidden>
     <h2 class="sec">Master Check — Audio Quality Analysis</h2>
     <p class="mc-intro">
       Drop a master (WAV, FLAC, AIFF, MP3, OGG…) for loudness (LUFS / dBTP), dynamic range,
@@ -562,10 +658,10 @@
       <div class="panel mc-feat"><h4>7. Silence &amp; noise</h4><p>Head/tail silence, abrupt edges, noise floor, clicks/pops.</p></div>
       <div class="panel mc-feat"><h4>8. Metadata + release</h4><p>Title, artist, album, ISRC, artwork — plus release-ready checklist (dithering, dBTP ≤ −1).</p></div>
     </div>
-  </main>
+  </section>
 
   <!-- ═══════════════ SONG STUDIO TAB ═══════════════ -->
-  <main class="wrap" id="tab-songs" hidden>
+  <section class="wrap" id="tab-songs" hidden>
     <h2 class="sec">Song Studio — Project Registry &amp; Workflow</h2>
     <p class="mc-intro">
       One card per song, tracking the whole journey: <strong>Idea → Composing → Suno → Mixing → Mastering →
@@ -645,6 +741,8 @@
         <button class="btn" id="ss-goto-master" type="button">→ Master Check</button>
       </div>
     </div>
+  </section>
+
   </main>
 
   <script src="js/prosody.js"></script>

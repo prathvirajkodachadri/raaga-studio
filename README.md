@@ -32,12 +32,15 @@ Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
 Scan your lyrics live while composing — every syllable is colour-marked with its
 mātra value, with the ಷಟ್ಪದಿ rule toggle and preloaded examples.
 
-### 2. Suno Prompt Builder
-Assemble a ready-to-paste **Suno.com prompt**: genre (Carnatic Fusion, Bhavageete,
-Devotional…), mood, tempo, key/raga (Hamsadhwani, Mohanam, Kalyani…), vocal style,
-language, song structure, instruments (tanpura, mridangam, bansuri, veena…) and
-production style. Save favourite prompt **recipes** locally and reload them for
-every song. Concise or detailed mode.
+### 2. Suno Custom Mode Builder
+Build the separate fields used by **Suno Custom Mode**: a focused **Style of Music**
+prompt, editable **Lyrics** with insertable section templates, an optional title, and
+an **Exclude** list for Advanced Options. Choose genre (Carnatic Fusion, Bhavageete,
+Devotional…), mood, tempo or exact BPM, key/raga (Hamsadhwani, Mohanam, Kalyani…),
+vocal style, language, instruments and production style. Selection limits are enforced,
+the output updates live, instrumental settings stay consistent, and the current draft is
+preserved locally. Built-in starters cannot be accidentally deleted; saved **recipes**
+restore the complete editable form. Concise and detailed modes are available.
 
 ### 3. Raga & Scale Reference
 A searchable library of **16 Carnatic + Hindustani ragas** (Hamsadhwani, Mohanam,

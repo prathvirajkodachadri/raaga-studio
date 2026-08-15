@@ -43,7 +43,7 @@
       pentatonic: true, time: 'Any / night', mood: 'Joyful · folk · danceable',
       rasa: 'Śringāra · Hāsya',
       tips: [
-        'Carnatic’s “major pentatonic” — maps to C D E G A. The most suna/fusion-friendly raga.',
+        'Carnatic’s “major pentatonic” — maps to C D E G A. The most Suno/fusion-friendly raga.',
         'Folk, celebratory and upbeat pieces sit naturally here.',
         'No Ma or Ni keeps harmony simple — a safe first raga for crossover tracks.'
       ],
