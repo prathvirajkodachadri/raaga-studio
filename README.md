@@ -12,9 +12,10 @@ The first page you land on: an **interactive vocal EQ cheat sheet** for mixing
 engineers, with a real 20 Hz → 20 kHz logarithmic graph (−12 to +12 dB) and
 15 color-coded frequency zones (Sub/Rumble → Extreme Air/Hiss).
 
-- A phone-first **Easy Guide** opens by default: choose Male/Female, tap the sound
-  problem (muddy, boxy, harsh, sibilant, dull…), then copy one safe starting EQ
-  move. The full interactive map remains available for detailed fine-tuning.
+- The **full interactive vocal EQ graph** opens directly on the first page — no
+  extra click needed. Male and female curves are shown together by default.
+- A phone-first Easy Guide still exists in the code for safe one-move recipes, but
+  the landing page now stays focused on the graph.
 - **MALE VOCAL / FEMALE VOCAL modes** with separate recommended starting EQ
   (centre frequency, gain, Q) — curves, zone labels and values all update.
 - Click any zone (or chip/table row) for a detail panel: character, boost/cut
