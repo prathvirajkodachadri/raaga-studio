@@ -385,17 +385,18 @@
     if (!chartEl) return;
     var rect = chartEl.getBoundingClientRect();
     chartW = rect && rect.width ? rect.width : 900;
-    /* On a phone the full map pans horizontally instead of shrinking labels
-       and drag targets until they become impossible to use. */
+    /* On a phone the full map pans horizontally with better touch support */
     var isMobile = typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 760;
     if (isMobile) {
-      chartW = Math.max(680, chartW);
+      /* Use the actual container width - no minimum - for true responsiveness */
+      chartW = Math.max(320, chartW);
       /* Increase padding on mobile so nodes near edges are easier to drag */
-      PAD = { top: 22, right: 20, bottom: 44, left: 58 };
+      PAD = { top: 22, right: 24, bottom: 44, left: 58 };
     } else {
       PAD = { top: 22, right: 16, bottom: 42, left: 54 };
     }
-    chartH = Math.max(300, Math.min(480, Math.round(chartW * 0.46)));
+    /* Make chart height proportional but with reasonable bounds */
+    chartH = Math.max(250, Math.min(480, Math.round(chartW * (isMobile ? 0.55 : 0.46))));
     var plotT = PAD.top, plotB = chartH - PAD.bottom, plotL = PAD.left, plotR = chartW - PAD.right;
     var plotH = plotB - plotT, zeroY = (plotT + plotB) / 2;
 
@@ -407,20 +408,41 @@
       var y = Y(db);
       var isZero = db === 0;
       s += '<line x1="' + plotL + '" y1="' + y.toFixed(1) + '" x2="' + plotR + '" y2="' + y.toFixed(1) + '" class="vq-hline' + (isZero ? ' zero' : '') + '"/>';
-      if (db % 6 === 0 || isZero) {
-        s += '<text x="' + (plotL - 8) + '" y="' + (y + 3) + '" class="vq-ylab">' + (db > 0 ? '+' : '') + db + '</text>';
+      /* On mobile, show fewer labels to avoid crowding */
+      if (isMobile) {
+        if (db % 6 === 0 || isZero) {
+          s += '<text x="' + (plotL - 7) + '" y="' + (y + 3) + '" class="vq-ylab mobile">' + (db > 0 ? '+' : '') + db + '</text>';
+        }
+      } else {
+        if (db % 6 === 0 || isZero) {
+          s += '<text x="' + (plotL - 8) + '" y="' + (y + 3) + '" class="vq-ylab">' + (db > 0 ? '+' : '') + db + '</text>';
+        }
       }
     }
-    s += '<text x="14" y="' + (plotT + 6) + '" class="vq-axis-title">GAIN (dB)</text>';
+    /* Only show axis title on desktop */
+    if (!isMobile) {
+      s += '<text x="14" y="' + (plotT + 6) + '" class="vq-axis-title">GAIN (dB)</text>';
+    }
 
     /* ---- vertical (frequency) grid ---- */
     MARKERS.forEach(function (f) {
       var x = X(f);
       s += '<line x1="' + x.toFixed(1) + '" y1="' + plotT + '" x2="' + x.toFixed(1) + '" y2="' + plotB + '" class="vq-vline"/>';
-      s += '<text x="' + x.toFixed(1) + '" y="' + (chartH - 18) + '" class="vq-xlab">' + (f >= 1000 ? (f / 1000) + 'k' : f) + '</text>';
+      /* On mobile, skip some labels to avoid crowding */
+      if (isMobile) {
+        /* Only show key frequency markers on mobile */
+        if (f === 20 || f === 100 || f === 1000 || f === 10000 || f === 20000) {
+          s += '<text x="' + x.toFixed(1) + '" y="' + (chartH - 16) + '" class="vq-xlab mobile">' + (f >= 1000 ? (f / 1000) + 'k' : f) + '</text>';
+        }
+      } else {
+        s += '<text x="' + x.toFixed(1) + '" y="' + (chartH - 18) + '" class="vq-xlab">' + (f >= 1000 ? (f / 1000) + 'k' : f) + '</text>';
+      }
     });
-    s += '<text x="' + (plotR - 4) + '" y="' + (chartH - 18) + '" class="vq-xlab dim" text-anchor="end">Hz →</text>';
-    s += '<text x="' + (plotR - 4) + '" y="' + (chartH - 5) + '" class="vq-xlab dim" text-anchor="end">log scale · ' + F_MIN + ' Hz – ' + (F_MAX / 1000) + ' kHz</text>';
+    /* Only show the scale info on desktop */
+    if (!isMobile) {
+      s += '<text x="' + (plotR - 4) + '" y="' + (chartH - 18) + '" class="vq-xlab dim" text-anchor="end">Hz →</text>';
+      s += '<text x="' + (plotR - 4) + '" y="' + (chartH - 5) + '" class="vq-xlab dim" text-anchor="end">log scale · ' + F_MIN + ' Hz – ' + (F_MAX / 1000) + ' kHz</text>';
+    }
 
     /* ---- zones ---- */
     if (state.showZones) {
@@ -431,10 +453,21 @@
         s += '<g class="vq-zone' + (sel ? ' sel' : '') + '" data-zone="' + z.id + '" tabindex="0" role="button" aria-label="' + esc(z.name + ' ' + z.range[0] + ' to ' + z.range[1] + ' hertz') + '">';
         s += '<rect class="vq-zone-bg" x="' + x1.toFixed(1) + '" y="' + plotT + '" width="' + w.toFixed(1) + '" height="' + plotH + '" fill="' + z.color + '" stroke="' + z.color + '" stroke-width="1"/>';
         s += '<rect class="vq-zone-tab" x="' + x1.toFixed(1) + '" y="' + plotT + '" width="' + w.toFixed(1) + '" height="3" fill="' + z.color + '"/>';
-        if (w >= 74) {
-          s += '<text x="' + mid.toFixed(1) + '" y="' + (plotT + 15) + '" class="vq-zone-lab" fill="' + z.color + '" text-anchor="middle">' + esc(z.name) + '</text>';
+        /* On mobile, use shorter labels or rotate to save space */
+        if (isMobile) {
+          /* For mobile, use short names and rotate if space is tight */
+          if (w >= 50) {
+            s += '<text x="' + mid.toFixed(1) + '" y="' + (plotT + 14) + '" class="vq-zone-lab mobile" fill="' + z.color + '" text-anchor="middle">' + esc(z.short || z.name) + '</text>';
+          } else {
+            s += '<text transform="translate(' + (x1 + 3).toFixed(1) + ' ' + (plotT + 38) + ') rotate(90)" class="vq-zone-lab rot mobile" fill="' + z.color + '">' + esc(z.short || z.name) + '</text>';
+          }
         } else {
-          s += '<text transform="translate(' + (x1 + 4).toFixed(1) + ' ' + (plotT + 46) + ') rotate(90)" class="vq-zone-lab rot" fill="' + z.color + '">' + esc(z.name) + '</text>';
+          /* Desktop: use full names */
+          if (w >= 74) {
+            s += '<text x="' + mid.toFixed(1) + '" y="' + (plotT + 15) + '" class="vq-zone-lab" fill="' + z.color + '" text-anchor="middle">' + esc(z.name) + '</text>';
+          } else {
+            s += '<text transform="translate(' + (x1 + 4).toFixed(1) + ' ' + (plotT + 46) + ') rotate(90)" class="vq-zone-lab rot" fill="' + z.color + '">' + esc(z.name) + '</text>';
+          }
         }
         s += '</g>';
       });
@@ -455,16 +488,20 @@
 
         /* ---- node handles ---- */
         s += '<g class="vq-nodes" data-voice="' + voice + '">';
-        var hitR = isMobile ? 16 : 9;
+        /* Larger touch targets for mobile */
+        var hitR = isMobile ? 20 : 9;
         ZONES.forEach(function (z) {
           var b = gains[voice][z.id];
           var x = X(b.freq), y = Y(b.gain);
-          var dotR = isMobile ? 5.5 : (active ? 4.2 : 3.2);
+          /* Larger dots on mobile for better visibility */
+          var dotR = isMobile ? 6.5 : (active ? 4.2 : 3.2);
           s += '<g class="vq-node' + (active ? ' active' : '') + '" data-zone="' + z.id + '">';
           s += '<circle class="vq-node-hit" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + hitR + '"/>';
           s += '<circle class="vq-node-dot' + (active ? ' active' : '') + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + dotR + '" fill="' + col + '"/>';
           if (active) {
-            s += '<text x="' + x.toFixed(1) + '" y="' + (y - 9).toFixed(1) + '" class="vq-node-val" text-anchor="middle" fill="' + col + '">' + (b.gain > 0 ? '+' : '') + b.gain.toFixed(1) + '</text>';
+            /* Adjust text position for mobile */
+            var textYOffset = isMobile ? 12 : 9;
+            s += '<text x="' + x.toFixed(1) + '" y="' + (y - textYOffset).toFixed(1) + '" class="vq-node-val" text-anchor="middle" fill="' + col + '">' + (b.gain > 0 ? '+' : '') + b.gain.toFixed(1) + '</text>';
           }
           s += '</g>';
         });
