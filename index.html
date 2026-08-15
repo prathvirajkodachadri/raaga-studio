@@ -7,6 +7,7 @@
   <meta name="color-scheme" content="dark">
   <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
 </head>
 <body>
 
@@ -22,7 +23,7 @@
       <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Pro-EQ</span><span class="tab-label mobile">EQ</span></button>
+      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
@@ -31,19 +32,263 @@
     </nav>
   </header>
 
-  <!-- ═══════════════ VOCAL EQ TAB (home) ═══════════════ -->
-  <main class="wrap" id="tab-vocal-eq">
-    <section class="panel peq-panel">
-      <div class="peq-toolbar" id="peq-toolbar"></div>
-      <div class="peq-display" id="peq-display" aria-label="Parametric EQ display — drag dots to shape the curve">
-        <canvas class="peq-spectrum" id="peq-spectrum" aria-hidden="true"></canvas>
-        <div class="peq-svg-host" id="peq-svg-host"></div>
-        <div class="peq-tooltip" id="peq-tooltip" hidden></div>
+  <!-- ═══════════════ VOCAL EQ CHEAT SHEET (home) ═══════════════ -->
+  <main class="wrap veq-page" id="tab-vocal-eq">
+    <article class="veq-board" aria-labelledby="veq-title">
+      <header class="veq-hero">
+        <div class="veq-title-wrap">
+          <svg class="veq-mic" viewBox="0 0 64 80" aria-hidden="true">
+            <rect x="18" y="4" width="28" height="46" rx="14" fill="none" stroke="currentColor" stroke-width="4"/>
+            <path d="M10 34v4a22 22 0 0 0 44 0v-4M32 60v13M20 74h24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <path d="M23 14h18M23 21h18M23 28h18M23 35h18" stroke="currentColor" stroke-width="2" opacity=".65"/>
+          </svg>
+          <div>
+            <p class="veq-kicker">Raaga Studio quick reference</p>
+            <h2 id="veq-title">Vocal Mixing <span>EQ</span> <em>Cheat Sheet</em></h2>
+            <p class="veq-subtitle">Choose a voice, enter the six values, then adjust by ear. That’s it.</p>
+          </div>
+        </div>
+        <aside class="veq-golden">
+          <strong><span aria-hidden="true">★</span> Golden rule</strong>
+          <p>Don’t boost every frequency. These are problem and character zones—not fixed settings.</p>
+        </aside>
+      </header>
+
+      <section class="veq-start" aria-labelledby="veq-start-title">
+        <div class="veq-section-head">
+          <div>
+            <span class="veq-eyebrow">Simple starting values</span>
+            <h3 id="veq-start-title">Pick one voice and copy these settings</h3>
+          </div>
+          <ol class="veq-steps" aria-label="Three simple steps">
+            <li><b>1</b> Pick</li><li><b>2</b> Enter</li><li><b>3</b> Listen</li>
+          </ol>
+        </div>
+
+        <div class="veq-profile-grid">
+          <section class="veq-profile male" aria-labelledby="male-title">
+            <div class="veq-profile-title">
+              <span class="veq-gender" aria-hidden="true">♂</span>
+              <div><h4 id="male-title">Male vocal</h4><p>Warm, clear starting point</p></div>
+            </div>
+            <div class="veq-setting-grid">
+              <div><span>HPF</span><strong>75 Hz</strong><small>24 dB/oct</small></div>
+              <div><span>Mud</span><strong>250 Hz</strong><small>−3 dB · Q 1.3</small></div>
+              <div><span>Boxiness</span><strong>450 Hz</strong><small>−2 dB · Q 1.6</small></div>
+              <div><span>Presence</span><strong>3 kHz</strong><small>+2 dB · Q 0.9</small></div>
+              <div><span>De-ess</span><strong>7 kHz</strong><small>2–4 dB reduction</small></div>
+              <div><span>Air shelf</span><strong>12 kHz</strong><small>+2 dB · wide</small></div>
+            </div>
+          </section>
+
+          <section class="veq-profile female" aria-labelledby="female-title">
+            <div class="veq-profile-title">
+              <span class="veq-gender" aria-hidden="true">♀</span>
+              <div><h4 id="female-title">Female vocal</h4><p>Open, smooth starting point</p></div>
+            </div>
+            <div class="veq-setting-grid">
+              <div><span>HPF</span><strong>100 Hz</strong><small>24 dB/oct</small></div>
+              <div><span>Mud</span><strong>300 Hz</strong><small>−3 dB · Q 1.3</small></div>
+              <div><span>Boxiness</span><strong>550 Hz</strong><small>−2 dB · Q 1.6</small></div>
+              <div><span>Presence</span><strong>3.5 kHz</strong><small>+2 dB · Q 0.9</small></div>
+              <div><span>De-ess</span><strong>7.5 kHz</strong><small>2–4 dB reduction</small></div>
+              <div><span>Air shelf</span><strong>14 kHz</strong><small>+2 dB · wide</small></div>
+            </div>
+          </section>
+        </div>
+        <p class="veq-caution"><b>Start small:</b> keep normal boosts within +1 to +3 dB and cuts within −2 to −4 dB. Bypass often and keep the version that sounds better in the full mix.</p>
+      </section>
+
+      <section class="veq-zones" aria-labelledby="veq-zones-title">
+        <div class="veq-section-head compact">
+          <div><span class="veq-eyebrow">Frequency map</span><h3 id="veq-zones-title">What each area changes</h3></div>
+          <span class="veq-scroll-note">Swipe sideways to see every zone →</span>
+        </div>
+        <div class="veq-table-shell" tabindex="0" aria-label="Scrollable vocal EQ frequency table">
+          <table class="veq-table">
+            <thead>
+              <tr>
+                <th scope="col" class="veq-row-label">Frequency</th>
+                <th scope="col" class="zone-1">20–40<small>Hz</small></th>
+                <th scope="col" class="zone-2">40–80<small>Hz</small></th>
+                <th scope="col" class="zone-3">80–120<small>Hz</small></th>
+                <th scope="col" class="zone-4">120–200<small>Hz</small></th>
+                <th scope="col" class="zone-5">200–350<small>Hz</small></th>
+                <th scope="col" class="zone-6">350–600<small>Hz</small></th>
+                <th scope="col" class="zone-7">600–1k<small>Hz</small></th>
+                <th scope="col" class="zone-8">1–2k<small>Hz</small></th>
+                <th scope="col" class="zone-9">2–4k<small>Hz</small></th>
+                <th scope="col" class="zone-10">4–6k<small>Hz</small></th>
+                <th scope="col" class="zone-11">5–8k<small>Hz</small></th>
+                <th scope="col" class="zone-12">8–12k<small>Hz</small></th>
+                <th scope="col" class="zone-13">12–16k<small>Hz</small></th>
+                <th scope="col" class="zone-14">16–20k<small>Hz</small></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="veq-row-label">What it affects</th>
+                <td class="zone-1">Sub<br>rumble</td>
+                <td class="zone-2">Deep warmth<br>&amp; body</td>
+                <td class="zone-3">Chest &amp;<br>fundamental</td>
+                <td class="zone-4">Warmth &amp;<br>fullness</td>
+                <td class="zone-5">Mud &amp;<br>cloudiness</td>
+                <td class="zone-6">Boxy or<br>nasal body</td>
+                <td class="zone-7">Honk &amp;<br>nasal tone</td>
+                <td class="zone-8">Presence &amp;<br>intelligibility</td>
+                <td class="zone-9">Clarity &amp;<br>forwardness</td>
+                <td class="zone-10">Attack &amp;<br>articulation</td>
+                <td class="zone-11">Sibilance<br>“S” / “SH”</td>
+                <td class="zone-12">Brightness<br>&amp; sparkle</td>
+                <td class="zone-13">Air &amp;<br>openness</td>
+                <td class="zone-14">Extreme<br>top end</td>
+              </tr>
+              <tr class="veq-action-row">
+                <th scope="row" class="veq-row-label">Typical action</th>
+                <td class="zone-1"><b class="down">↓</b> Remove</td>
+                <td class="zone-2"><b class="down">↓</b> Cut if boomy</td>
+                <td class="zone-3"><b class="up">↑</b> Boost carefully</td>
+                <td class="zone-4"><b class="both">↕</b> Shape gently</td>
+                <td class="zone-5"><b class="down">↓</b> Cut if muddy</td>
+                <td class="zone-6"><b class="down">↓</b> Cut if boxy</td>
+                <td class="zone-7"><b class="down">↓</b> Cut selectively</td>
+                <td class="zone-8"><b class="up">↑</b> Boost carefully</td>
+                <td class="zone-9"><b class="up">↑</b> Add presence</td>
+                <td class="zone-10"><b class="up">↑</b> Add clarity</td>
+                <td class="zone-11"><b class="down">↓</b> Dynamic cut</td>
+                <td class="zone-12"><b class="up">↑</b> High shelf</td>
+                <td class="zone-13"><b class="up">↑</b> Gentle shelf</td>
+                <td class="zone-14"><b class="flat">—</b> Leave alone</td>
+              </tr>
+              <tr class="veq-value-row">
+                <th scope="row" class="veq-row-label">Starter value</th>
+                <td class="zone-1">HPF<br>24 dB/oct</td>
+                <td class="zone-2">−2 to −4 dB<br>Q 1.2</td>
+                <td class="zone-3">+1 dB<br>Q 0.8</td>
+                <td class="zone-4">±1 dB<br>Q 0.8</td>
+                <td class="zone-5">−3 dB<br>Q 1.3</td>
+                <td class="zone-6">−2 dB<br>Q 1.6</td>
+                <td class="zone-7">−2 dB<br>Q 2.0</td>
+                <td class="zone-8">+1 dB<br>Q 1.0</td>
+                <td class="zone-9">+2 dB<br>Q 0.9</td>
+                <td class="zone-10">+1 dB<br>Q 1.0</td>
+                <td class="zone-11">2–4 dB<br>reduction</td>
+                <td class="zone-12">+1 dB<br>wide shelf</td>
+                <td class="zone-13">+2 dB<br>wide shelf</td>
+                <td class="zone-14">0 dB<br>no change</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="veq-main-grid">
+        <section class="veq-card veq-curve-card" aria-labelledby="veq-curve-title">
+          <div class="veq-card-title"><span aria-hidden="true">▶</span><h3 id="veq-curve-title">Typical EQ curve example</h3><small>Illustration—not a preset</small></div>
+          <div class="veq-chart">
+            <svg viewBox="0 0 1000 340" role="img" aria-labelledby="curve-svg-title curve-svg-desc">
+              <title id="curve-svg-title">Example vocal EQ curve with nine labelled moves</title>
+              <desc id="curve-svg-desc">A high pass filter, gentle warmth boost, mud and boxiness cuts, presence, clarity and articulation boosts, de-essing, and an air shelf.</desc>
+              <defs>
+                <linearGradient id="veqCurve" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#ed4a42"/><stop offset=".2" stop-color="#e7a53b"/>
+                  <stop offset=".4" stop-color="#d4d547"/><stop offset=".58" stop-color="#54c35f"/>
+                  <stop offset=".75" stop-color="#35aeda"/><stop offset="1" stop-color="#b65cd1"/>
+                </linearGradient>
+                <linearGradient id="veqFill" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#ed4a42" stop-opacity=".18"/><stop offset=".45" stop-color="#d4d547" stop-opacity=".13"/>
+                  <stop offset=".7" stop-color="#35aeda" stop-opacity=".18"/><stop offset="1" stop-color="#b65cd1" stop-opacity=".18"/>
+                </linearGradient>
+                <filter id="veqGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <g class="veq-chart-grid">
+                <path d="M64 34V292M156 34V292M250 34V292M344 34V292M438 34V292M532 34V292M626 34V292M720 34V292M814 34V292M938 34V292"/>
+                <path d="M64 54H956M64 119H956M64 184H956M64 249H956M64 292H956"/>
+              </g>
+              <g class="veq-chart-axis">
+                <text x="12" y="59">+6 dB</text><text x="25" y="189">0 dB</text><text x="12" y="254">−6 dB</text>
+                <text x="64" y="320">20</text><text x="156" y="320">50</text><text x="250" y="320">100</text><text x="344" y="320">200</text>
+                <text x="438" y="320">500</text><text x="532" y="320">1k</text><text x="626" y="320">2k</text><text x="720" y="320">5k</text>
+                <text x="814" y="320">10k</text><text x="938" y="320">20k</text><text x="963" y="320">Hz</text>
+              </g>
+              <path class="veq-curve-fill" d="M64 274 C92 270 112 225 142 184 C184 174 210 154 248 164 C292 170 318 215 354 219 C386 216 402 184 432 184 C452 184 465 224 492 225 C521 220 548 174 578 135 C608 105 634 178 670 168 C694 160 708 123 730 126 C752 129 763 165 784 160 C810 153 826 119 855 125 C892 132 905 104 954 118 L954 292 L64 292Z"/>
+              <path class="veq-curve-line" d="M64 274 C92 270 112 225 142 184 C184 174 210 154 248 164 C292 170 318 215 354 219 C386 216 402 184 432 184 C452 184 465 224 492 225 C521 220 548 174 578 135 C608 105 634 178 670 168 C694 160 708 123 730 126 C752 129 763 165 784 160 C810 153 826 119 855 125 C892 132 905 104 954 118"/>
+              <g class="veq-points">
+                <g class="p1"><circle cx="142" cy="184" r="13"/><text x="142" y="188">1</text></g>
+                <g class="p2"><circle cx="248" cy="164" r="13"/><text x="248" y="168">2</text></g>
+                <g class="p3"><circle cx="354" cy="219" r="13"/><text x="354" y="223">3</text></g>
+                <g class="p4"><circle cx="492" cy="225" r="13"/><text x="492" y="229">4</text></g>
+                <g class="p5"><circle cx="578" cy="135" r="13"/><text x="578" y="139">5</text></g>
+                <g class="p6"><circle cx="670" cy="168" r="13"/><text x="670" y="172">6</text></g>
+                <g class="p7"><circle cx="730" cy="126" r="13"/><text x="730" y="130">7</text></g>
+                <g class="p8"><circle cx="784" cy="160" r="13"/><text x="784" y="164">8</text></g>
+                <g class="p9"><circle cx="855" cy="125" r="13"/><text x="855" y="129">9</text></g>
+              </g>
+            </svg>
+          </div>
+          <ol class="veq-curve-legend">
+            <li class="p1"><b>1</b><span>HPF<small>80 Hz · 24 dB/oct</small></span></li>
+            <li class="p2"><b>2</b><span>Body<small>+1 dB · 100 Hz</small></span></li>
+            <li class="p3"><b>3</b><span>Mud<small>−3 dB · 250 Hz</small></span></li>
+            <li class="p4"><b>4</b><span>Boxiness<small>−2 dB · 450 Hz</small></span></li>
+            <li class="p5"><b>5</b><span>Presence<small>+1 dB · 1.5 kHz</small></span></li>
+            <li class="p6"><b>6</b><span>Clarity<small>+2 dB · 3.5 kHz</small></span></li>
+            <li class="p7"><b>7</b><span>Articulation<small>+1 dB · 5 kHz</small></span></li>
+            <li class="p8"><b>8</b><span>De-ess<small>2–4 dB · 7.5 kHz</small></span></li>
+            <li class="p9"><b>9</b><span>Air shelf<small>+2 dB · 14 kHz</small></span></li>
+          </ol>
+        </section>
+
+        <div class="veq-side-stack">
+          <section class="veq-card" aria-labelledby="veq-chain-title">
+            <div class="veq-card-title"><span aria-hidden="true">→</span><h3 id="veq-chain-title">Suggested vocal chain</h3></div>
+            <div class="veq-chain" aria-label="High pass filter, mud control, boxiness control, presence, de-esser, air">
+              <div class="purple"><b>⌁</b><span>HPF</span></div><i>›</i>
+              <div class="orange"><b>∿</b><span>Mud</span></div><i>›</i>
+              <div class="gold"><b>∿</b><span>Boxy</span></div><i>›</i>
+              <div class="green"><b>∿</b><span>Presence</span></div><i>›</i>
+              <div class="violet"><b>≋</b><span>De-ess</span></div><i>›</i>
+              <div class="blue"><b>⌁</b><span>Air</span></div>
+            </div>
+          </section>
+
+          <section class="veq-card veq-tips" aria-labelledby="veq-tips-title">
+            <div class="veq-card-title"><span aria-hidden="true">✦</span><h3 id="veq-tips-title">Keep it simple</h3></div>
+            <ul>
+              <li>Use <b>narrow cuts</b> to remove problems.</li>
+              <li>Use <b>wide, gentle boosts</b> for a natural tone.</li>
+              <li>EQ while the <b>full mix is playing</b>.</li>
+              <li><b>Bypass often.</b> Louder is not always better.</li>
+            </ul>
+          </section>
+
+          <section class="veq-card veq-cinema">
+            <div class="veq-card-title"><span aria-hidden="true">●</span><h3>Deep cinematic vocal</h3></div>
+            <p>Keep the chest at <b>100–250 Hz</b>, remove mud carefully, then use saturation and compression for weight. Don’t create “power” by boosting bass alone.</p>
+          </section>
+
+          <section class="veq-remember" aria-label="Vocal EQ reminder">
+            <strong><span aria-hidden="true">★</span> Remember</strong>
+            <p>Cut the bad · keep the good · enhance the best · trust your ears.</p>
+          </section>
+        </div>
       </div>
-      <div class="peq-readout" id="peq-readout" aria-live="polite"></div>
-      <div class="peq-controls" id="peq-controls"></div>
-      <div class="peq-audiobar" id="peq-audiobar"></div>
-    </section>
+    </article>
+
+    <details class="veq-advanced">
+      <summary><span><b>Optional:</b> open the interactive EQ</span><small>Only when you want to experiment</small></summary>
+      <section class="panel peq-panel">
+        <div class="peq-toolbar" id="peq-toolbar"></div>
+        <div class="peq-display" id="peq-display" aria-label="Parametric EQ display — drag dots to shape the curve">
+          <canvas class="peq-spectrum" id="peq-spectrum" aria-hidden="true"></canvas>
+          <div class="peq-svg-host" id="peq-svg-host"></div>
+          <div class="peq-tooltip" id="peq-tooltip" hidden></div>
+        </div>
+        <div class="peq-readout" id="peq-readout" aria-live="polite"></div>
+        <div class="peq-controls" id="peq-controls"></div>
+        <div class="peq-audiobar" id="peq-audiobar"></div>
+      </section>
+    </details>
   </main>
 
   <!-- ═══════════════ PROSODY TAB ═══════════════ -->
