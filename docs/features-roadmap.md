@@ -8,6 +8,9 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 - **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
 - **Suno Prompt Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/structure/
   instruments/production → ready-to-paste prompt + recipe library
+- **Raga & Scale Reference** (#5) — searchable library of 16 ragas with ārohana/
+  avarohana, Western-note mapping (Sa = C), mood/time/rasa, composition tips and a
+  Suno snippet per raga; feeds the Suno Prompt Builder's Key/Scale list
 - **Mix Check** (#8) — pre-master analysis with "ready for mastering?" verdict
 - **Master Check** — full audio QA (LUFS, dBTP, DR, clipping, spectrum, stereo,
   silence/noise, metadata) with grade A–F, exact problem timeline, JSON/PDF export
@@ -31,7 +34,7 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 | 2 | Lyric + Prosody integration | Rhyme-pair detection, line-length balance, mātra count per line | Reuses existing prosody engine |
 | 3 | Song Structure Planner | Intro/Verse/Chorus/Bridge arrangement with timestamps | Feeds into the Suno prompt |
 | 4 | Key & BPM Finder | Upload/tap reference → detect tempo + key | Keeps Suno prompt and Cubase session in same key |
-| 5 | Raga/Scale Reference | Carnatic raga → note/scale lookup | Describe melody in Suno prompt ("Hamsadhwani…") |
+| 5 | Raga/Scale Reference | Carnatic raga → note/scale lookup | ✅ Built — "Raga Reference" tab |
 | 6 | Song Registry | One page per song: prompt, Suno link, stems, BPM/key, status | Ties all phases together |
 
 ## Phase 2 — Mix (Suno Studio / Cubase)
@@ -76,9 +79,8 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 
 1. **Reference Compare** (9) — load a favourite song, overlay its spectrum/loudness vs. your mix.
 2. **Key & BPM Finder** (4) — tap/upload a reference to detect tempo + key.
-3. **Raga/Scale Reference** (5) — Carnatic raga → note/scale lookup.
-4. **Stem Export Checklist** (7) — already inside Song Studio; could become a standalone wizard.
-5. **Release Planner** (16) — platforms, artwork dimension checker, distribution checklist.
+3. **Stem Export Checklist** (7) — already inside Song Studio; could become a standalone wizard.
+4. **Release Planner** (16) — platforms, artwork dimension checker, distribution checklist.
 
 ## Architecture note
 

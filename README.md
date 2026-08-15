@@ -3,7 +3,7 @@
 A single-page, zero-dependency studio for a Kannada music artist's full workflow:
 **compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-Six tools in one page, no build step, no npm install. Files never leave the browser.
+Seven tools in one page, no build step, no npm install. Files never leave the browser.
 
 ## Tools
 
@@ -39,13 +39,30 @@ language, song structure, instruments (tanpura, mridangam, bansuri, veena…) an
 production style. Save favourite prompt **recipes** locally and reload them for
 every song. Concise or detailed mode.
 
-### 3. Mix Check (pre-master)
+### 3. Raga & Scale Reference
+A searchable library of **16 Carnatic + Hindustani ragas** (Hamsadhwani, Mohanam,
+Kalyani, Shankarabharanam, Hindolam, Abheri, Keeravani, Yaman, Madhuvanti…) mapped
+to the Suno → Cubase pipeline. Each raga shows:
+
+- **Ārohana / avarohana** (ascent/descent) in swara notation
+- Every swara with its **Western-note equivalent** (Sa = C) so your Cubase session
+  can stay in the same key as the Suno vocal
+- Mood, rasa, traditional best-time, and 3 practical composition/mixing tips
+- A ready-to-paste **Suno snippet** and a **"Use in Suno prompt"** button that
+  jumps to the prompt builder with the raga pre-filled
+- Search (name, swara like “M2”, mood, rasa) and type filters (Pentatonic /
+  Melakarta / Janya / Hindustani), plus a swara → note reference table
+
+The same raga list feeds the Suno Prompt Builder's **Key/Scale** dropdown, so both
+tabs stay in sync from one source of truth.
+
+### 4. Mix Check (pre-master)
 Drop your **mixdown** (before mastering) and get a "ready for mastering?" verdict:
 headroom (integrated ≈ −18 to −14 LUFS, peaks ≤ −6 dBFS), crest factor / DR,
 clipping, stereo correlation & phase, low-end buildup, noise floor. Reuses the
 same analysis engine with **mixing targets** instead of mastering targets.
 
-### 4. Master Check (audio QA + release checklist)
+### 5. Master Check (audio QA + release checklist)
 Drop a master (WAV / FLAC / AIFF / MP3 / OGG…) and get:
 
 | Category | What it checks |
@@ -68,7 +85,7 @@ comparison** (uses the last mix from the Mix Check tab), JSON or print-to-PDF ex
 **Scoring:** weighted average (Loudness 25%, DR 20%, Clipping 20%, Frequency 10%,
 Stereo 10%, Silence 10%, Metadata 5%) → grade A–F.
 
-### 5. Song Studio (project registry & workflow)
+### 6. Song Studio (project registry & workflow)
 One card per song tracking **Idea → Composing → Suno → Mixing → Mastering → Released**:
 
 - Song registry with BPM / key / genre / status and Suno links
@@ -82,16 +99,18 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 
 ```
 raaga-studio/
-├── index.html                 # 6-tab UI (vocal EQ · prosody · suno · mix · master · songs)
+├── index.html                 # 7-tab UI (vocal EQ · prosody · suno · raga · mix · master · songs)
 ├── css/
 │   ├── style.css              # shared dark studio theme
-│   └── vocal-eq-cheatsheet.css # first-page cheat sheet layout
+│   ├── vocal-eq-cheatsheet.css # first-page cheat sheet layout
+│   └── raga-reference.css     # raga & scale reference cards
 ├── js/
 │   ├── pro-eq.js              # Pro-Q style parametric EQ (home) — biquad DSP + Web Audio
 │   ├── prosody.js             # Kannada prosody engine
 │   ├── app.js                 # prosody UI controller
 │   ├── master-check.js        # audio analysis engine (Web Audio API) + release checklist
 │   ├── master-check-app.js    # master check UI controller
+│   ├── raga-reference.js      # raga library + shared RAGAS data (feeds Suno key list)
 │   ├── suno-prompts.js        # Suno prompt builder + recipe library
 │   ├── mix-check.js           # mix-target assessment engine
 │   ├── mix-check-app.js       # mix check tab controller
@@ -113,7 +132,7 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #vocal-eq #suno #mix #master #songs
+# deep links: #vocal-eq #suno #raga #mix #master #songs
 ```
 
 > **Note:** Mix Check and Master Check need the Web Audio API (modern Chrome,
