@@ -387,8 +387,13 @@
     chartW = rect && rect.width ? rect.width : 900;
     /* On a phone the full map pans horizontally instead of shrinking labels
        and drag targets until they become impossible to use. */
-    if (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 760) {
+    var isMobile = typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 760;
+    if (isMobile) {
       chartW = Math.max(680, chartW);
+      /* Increase padding on mobile so nodes near edges are easier to drag */
+      PAD = { top: 22, right: 20, bottom: 44, left: 58 };
+    } else {
+      PAD = { top: 22, right: 16, bottom: 42, left: 54 };
     }
     chartH = Math.max(300, Math.min(480, Math.round(chartW * 0.46)));
     var plotT = PAD.top, plotB = chartH - PAD.bottom, plotL = PAD.left, plotR = chartW - PAD.right;
@@ -450,14 +455,16 @@
 
         /* ---- node handles ---- */
         s += '<g class="vq-nodes" data-voice="' + voice + '">';
+        var hitR = isMobile ? 16 : 9;
         ZONES.forEach(function (z) {
           var b = gains[voice][z.id];
           var x = X(b.freq), y = Y(b.gain);
+          var dotR = isMobile ? 5.5 : (active ? 4.2 : 3.2);
           s += '<g class="vq-node' + (active ? ' active' : '') + '" data-zone="' + z.id + '">';
-          s += '<circle class="vq-node-hit" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9"/>';
-          s += '<circle class="vq-node-dot' + (active ? ' active' : '') + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (active ? 4.2 : 3.2) + '" fill="' + col + '"/>';
+          s += '<circle class="vq-node-hit" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + hitR + '"/>';
+          s += '<circle class="vq-node-dot' + (active ? ' active' : '') + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + dotR + '" fill="' + col + '"/>';
           if (active) {
-            s += '<text x="' + x.toFixed(1) + '" y="' + (y - 7).toFixed(1) + '" class="vq-node-val" text-anchor="middle" fill="' + col + '">' + (b.gain > 0 ? '+' : '') + b.gain.toFixed(1) + '</text>';
+            s += '<text x="' + x.toFixed(1) + '" y="' + (y - 9).toFixed(1) + '" class="vq-node-val" text-anchor="middle" fill="' + col + '">' + (b.gain > 0 ? '+' : '') + b.gain.toFixed(1) + '</text>';
           }
           s += '</g>';
         });
