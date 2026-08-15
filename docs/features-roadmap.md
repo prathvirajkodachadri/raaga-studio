@@ -6,8 +6,8 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 ## ✅ Built today
 
 - **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
-- **Suno Prompt Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/structure/
-  instruments/production → ready-to-paste prompt + recipe library
+- **Suno Custom Mode Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/
+  instruments/production → separate Style, Lyrics and Exclude fields + full-state recipe library
 - **Raga & Scale Reference** (#5) — searchable library of 16 ragas with ārohana/
   avarohana, Western-note mapping (Sa = C), mood/time/rasa, composition tips and a
   Suno snippet per raga; feeds the Suno Prompt Builder's Key/Scale list
