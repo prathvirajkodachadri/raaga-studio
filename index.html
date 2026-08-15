@@ -8,6 +8,7 @@
   <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
+  <link rel="stylesheet" href="css/raga-reference.css">
 </head>
 <body>
 
@@ -26,6 +27,7 @@
       <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
+      <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♪</span><span class="tab-label desktop">Raga Reference</span><span class="tab-label mobile">Raga</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
@@ -426,6 +428,51 @@
     </div>
   </main>
 
+  <!-- ═══════════════ RAGA REFERENCE TAB ═══════════════ -->
+  <main class="wrap" id="tab-raga" hidden>
+    <h2 class="sec">Raga Reference — Scale &amp; Mood Library</h2>
+    <p class="rg-intro">
+      Pick a raga, see its <strong>ārohana / avarohana</strong> and the
+      <strong>Western notes</strong> (Sa = C) it maps to, then send it straight into your
+      <strong>Suno prompt</strong> or use the same notes to keep your
+      <strong>Cubase session in key</strong>. Search by raga, swara (e.g. “M2”), mood or rasa.
+    </p>
+
+    <div class="rg-controls" id="rg-controls">
+      <input type="search" id="rg-search" class="rg-search"
+             placeholder="Search — e.g. “Hamsadhwani”, “M2”, “melancholic”, “evening”…" aria-label="Search ragas">
+      <div class="rg-filters" id="rg-filters" role="group" aria-label="Filter ragas by type">
+        <button type="button" class="rg-filter on" data-filter="all">All</button>
+        <button type="button" class="rg-filter" data-filter="pentatonic">Pentatonic</button>
+        <button type="button" class="rg-filter" data-filter="melakarta">Melakarta</button>
+        <button type="button" class="rg-filter" data-filter="janya">Janya</button>
+        <button type="button" class="rg-filter" data-filter="hindustani">Hindustani</button>
+      </div>
+    </div>
+    <p class="rg-count" id="rg-count" aria-live="polite"></p>
+
+    <div class="rg-grid" id="rg-grid"></div>
+
+    <h2 class="sec">Swara → Western note map (Sa = C)</h2>
+    <div class="rg-ref-grid">
+      <div class="panel">
+        <table class="rg-ref-table">
+          <thead><tr><th scope="col">Swara</th><th scope="col">Western note</th></tr></thead>
+          <tbody id="rg-swara-body"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3 class="pb-panel-title">How to use this</h3>
+        <ul class="rg-note-help">
+          <li><b>Sa = C</b> is the reference. To transpose, move every note by the same interval (e.g. Sa = G → shift everything up a 5th).</li>
+          <li>In <b>Suno</b>, put the raga in the <em>Key</em> field — the snippet button pastes a ready description.</li>
+          <li>In <b>Cubase</b>, use the Western notes to write MIDI or set a scale, so your session matches the Suno vocal.</li>
+          <li>The <b>mood / time</b> hints are traditional guidance, not rules — always trust your ears.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
   <!-- ═══════════════ MIX CHECK TAB ═══════════════ -->
   <main class="wrap" id="tab-mix" hidden>
     <h2 class="sec">Mix Check — Pre-Master Analysis</h2>
@@ -604,6 +651,7 @@
   <script src="js/app.js"></script>
   <script src="js/master-check.js"></script>
   <script src="js/master-check-app.js"></script>
+  <script src="js/raga-reference.js"></script>
   <script src="js/suno-prompts.js"></script>
   <script src="js/mix-check.js"></script>
   <script src="js/mix-check-app.js"></script>

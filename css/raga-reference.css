@@ -1,0 +1,189 @@
+/* ==========================================================================
+   RAGA REFERENCE — searchable Carnatic/Hindustani raga → Suno/Cubase library
+   ========================================================================== */
+
+.rg-intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 8px 0 4px;
+  max-width: 78ch;
+}
+.rg-intro strong { color: var(--text); }
+
+/* Search + filters */
+.rg-controls {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+.rg-search {
+  flex: 1 1 260px;
+  min-width: 200px;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.rg-search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+.rg-filters { display: flex; flex-wrap: wrap; gap: 7px; }
+.rg-filter {
+  background: var(--panel2); color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
+  transition: all .13s;
+}
+.rg-filter:hover { border-color: var(--accent); color: var(--text); }
+.rg-filter.on {
+  background: rgba(228,87,127,0.16); border-color: var(--accent);
+  color: var(--text); font-weight: 600;
+}
+
+.rg-count { font-size: 11px; color: var(--muted); margin: 0 0 8px 2px; }
+
+/* Cards grid */
+.rg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.rg-empty { grid-column: 1 / -1; padding: 18px; }
+
+.rg-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  transition: border-color .15s, transform .15s;
+}
+.rg-card:hover { border-color: rgba(228,87,127,.4); }
+
+.rg-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.rg-title h3 { margin: 0; font-size: 18px; color: var(--text); }
+.rg-kn {
+  font-family: var(--kn-font);
+  font-size: 14px; color: var(--gold); font-weight: 500; margin-left: 4px;
+}
+.rg-parent { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
+
+.rg-badge {
+  flex: 0 0 auto;
+  font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid;
+}
+.rg-badge-melakarta { color: var(--gold); border-color: rgba(224,179,106,.4); background: rgba(224,179,106,.1); }
+.rg-badge-janya { color: var(--ok); border-color: rgba(123,196,127,.4); background: rgba(123,196,127,.1); }
+.rg-badge-hindustani { color: #7fb4e0; border-color: rgba(127,180,224,.4); background: rgba(127,180,224,.1); }
+
+/* Arohana / avarohana */
+.rg-scale {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.rg-scale-row { display: flex; align-items: center; gap: 10px; }
+.rg-scale-label {
+  flex: 0 0 auto; font-size: 11px; color: var(--muted);
+  min-width: 84px; letter-spacing: .2px;
+}
+.rg-scale-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.rg-note {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 14px; font-weight: 700; color: var(--gold);
+  background: rgba(224,179,106,.08);
+  border: 1px solid rgba(224,179,106,.22);
+  border-radius: 7px; padding: 2px 7px;
+}
+
+/* Swara → western chips */
+.rg-swaras { display: flex; flex-wrap: wrap; gap: 6px; }
+.rg-swara {
+  display: inline-flex; align-items: baseline; gap: 4px;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 3px 8px;
+}
+.rg-swara b { font-size: 13px; color: var(--text); }
+.rg-swara i { font-size: 11px; color: var(--muted); font-style: normal; }
+
+/* Meta */
+.rg-meta-row { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.rg-meta { font-size: 12px; color: var(--muted); }
+.rg-meta b { color: var(--text); font-weight: 600; margin-right: 3px; }
+
+/* Tips */
+.rg-tips { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.rg-tips li { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+/* Suno snippet + actions */
+.rg-suno {
+  margin-top: auto;
+  display: flex; flex-direction: column; gap: 8px;
+  border-top: 1px solid var(--border); padding-top: 12px;
+}
+.rg-suno-label {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.rg-suno-text {
+  display: block;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 11px; font-size: 12px; line-height: 1.5; color: #f0e3c8;
+  font-family: system-ui; word-break: break-word;
+}
+.rg-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.rg-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+/* Flash toast */
+.rg-flash {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(10px);
+  background: var(--accent); color: #fff; font-size: 13px; font-weight: 600;
+  padding: 9px 16px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60;
+}
+.rg-flash.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Swara → Western reference table */
+.rg-ref-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 8px;
+}
+.rg-ref-table { width: 100%; border-collapse: collapse; }
+.rg-ref-table th, .rg-ref-table td {
+  text-align: left; padding: 7px 10px; font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.rg-ref-table th[scope="row"] {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--gold); font-weight: 700;
+}
+.rg-ref-table td { color: var(--muted); }
+.rg-ref-table thead th {
+  font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+}
+.rg-note-help { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.rg-note-help li { margin: 6px 0; }
+
+@media (max-width: 900px) {
+  .rg-ref-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .rg-grid { grid-template-columns: 1fr; }
+  .rg-search { min-width: 100%; }
+  .rg-scale-label { min-width: 72px; }
+}

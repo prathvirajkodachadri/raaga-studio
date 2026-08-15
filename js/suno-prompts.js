@@ -30,9 +30,7 @@
     keys: [
       'No preference',
       'C major', 'D major', 'G major', 'A major', 'E major',
-      'A minor', 'E minor', 'D minor',
-      'Hamsadhwani (raga)', 'Mohanam (raga)', 'Kalyani (raga)',
-      'Shankarabharanam (raga)', 'Madhuvanti (raga)', 'Yaman (raga)'
+      'A minor', 'E minor', 'D minor'
     ],
     vocals: [
       'Let Suno decide',
@@ -285,6 +283,11 @@
 
   // ─── Init ────────────────────────────────────────────────────────────────
   var SELECT_DATA = { tempo: 'tempos', key: 'keys', vocals: 'vocals', language: 'languages', structure: 'structures' };
+
+  // Extend the key list with every raga from the shared Raga Reference library
+  // (js/raga-reference.js loads first and exposes window.RaagaStudio.RAGAS).
+  var sharedRagas = (window.RaagaStudio && window.RaagaStudio.RAGAS) || [];
+  DATA.keys = DATA.keys.concat(sharedRagas.map(function (r) { return r.name + ' (raga)'; }));
 
   function init() {
     Object.keys(selects).forEach(function (k) { fillSelect(selects[k], DATA[SELECT_DATA[k]]); });
