@@ -19,7 +19,8 @@
       <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="prosody" role="tab" aria-selected="true">ಛಂದಸ್ಸು</button>
+      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true">Vocal EQ</button>
+      <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false">ಛಂದಸ್ಸು</button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false">Suno Prompt</button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false">Mix Check</button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false">Master Check</button>
@@ -27,8 +28,60 @@
     </nav>
   </header>
 
+  <!-- ═══════════════ VOCAL EQ TAB (home) ═══════════════ -->
+  <main class="wrap" id="tab-vocal-eq">
+    <section class="vq-hero">
+      <div>
+        <h2 class="vq-title">Vocal EQ Map</h2>
+        <p class="vq-sub">Interactive vocal frequency cheat sheet for mixing engineers — <b>20 Hz → 20 kHz</b>, separate Male / Female starting points.</p>
+      </div>
+      <div class="vq-mode" role="group" aria-label="Vocal type">
+        <button type="button" class="vq-mode-btn male active" id="vq-mode-male" aria-pressed="true">MALE VOCAL</button>
+        <button type="button" class="vq-mode-btn female" id="vq-mode-female" aria-pressed="false">FEMALE VOCAL</button>
+      </div>
+    </section>
+
+    <div class="vq-reminder" role="note">⚠️ <span><b>These are starting points, not rules.</b> Always listen in context and make small EQ moves — then trust your ears.</span></div>
+
+    <section class="panel vq-chart-panel">
+      <div class="vq-toolbar">
+        <div class="vq-toggles">
+          <label class="vq-tgl"><input type="checkbox" id="vq-show-zones" checked><span class="tui"></span>Show Frequency Zones</label>
+          <label class="vq-tgl"><input type="checkbox" id="vq-show-curve" checked><span class="tui"></span>Show EQ Curve</label>
+          <label class="vq-tgl"><input type="checkbox" id="vq-show-male" checked><span class="tui"></span>Male</label>
+          <label class="vq-tgl f"><input type="checkbox" id="vq-show-female"><span class="tui"></span>Female</label>
+        </div>
+        <div class="vq-toolbar-right">
+          <button type="button" class="vq-compare" id="vq-compare">⚖ Compare</button>
+          <span class="vq-voice-badge" id="vq-voice-badge"><span class="m">MALE VOCAL</span> · editing</span>
+          <button type="button" class="btn primary" id="vq-reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="vq-chart-cap">
+        <span class="l">Vocal EQ <span style="color:#8b93a3">·</span> <span class="m" style="color:#6ee7ff">Male</span> <span style="color:#8b93a3">vs</span> <span style="color:#ff6fb5">Female</span></span>
+        <span class="r">−12 dB ⇄ +12 dB · log scale · click a zone or drag a dot</span>
+      </div>
+      <div class="vq-chart" id="vq-chart" aria-label="Vocal EQ frequency graph">
+        <div id="vq-tooltip" class="vq-tooltip" hidden></div>
+      </div>
+      <div class="vq-chips" id="vq-chips"></div>
+      <p class="vq-chip-hint">Legend — click any zone on the graph or chip below for details, recommended EQ and Q. Drag the glowing dots on the graph to tweak.</p>
+    </section>
+
+    <section class="panel vq-detail" id="vq-detail"></section>
+
+    <h2 class="sec">If Your Vocal Sounds Like This…</h2>
+    <p class="mc-intro">Click a problem card to jump to the frequency range to check and the recommended starting EQ move for both male and female vocals.</p>
+    <div class="vq-trouble-grid" id="vq-troubles"></div>
+
+    <h2 class="sec">Quick Reference — All Zones</h2>
+    <p class="mc-intro">The full 20 Hz–20 kHz vocal spectrum at a glance. Click any row to inspect the zone in detail.</p>
+    <div id="vq-table"></div>
+  </main>
+
   <!-- ═══════════════ PROSODY TAB ═══════════════ -->
-  <main class="wrap" id="tab-prosody">
+  <main class="wrap" id="tab-prosody" hidden>
     <h2 class="sec">ಸ್ಕ್ಯಾನರ್ (Scanner)</h2>
 
     <div class="legend-row">
@@ -344,6 +397,7 @@
   <script src="js/mix-check.js"></script>
   <script src="js/mix-check-app.js"></script>
   <script src="js/song-studio.js"></script>
+  <script src="js/vocal-eq.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>

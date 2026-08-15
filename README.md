@@ -3,9 +3,27 @@
 A single-page, zero-dependency studio for a Kannada music artist's full workflow:
 **compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-Five tools in one page, no build step, no npm install. Files never leave the browser.
+Six tools in one page, no build step, no npm install. Files never leave the browser.
 
 ## Tools
+
+### 0. Vocal EQ Map (home)
+The first page you land on: an **interactive vocal EQ cheat sheet** for mixing
+engineers, with a real 20 Hz → 20 kHz logarithmic graph (−12 to +12 dB) and
+15 color-coded frequency zones (Sub/Rumble → Extreme Air/Hiss).
+
+- **MALE VOCAL / FEMALE VOCAL modes** with separate recommended starting EQ
+  (centre frequency, gain, Q) — curves, zone labels and values all update.
+- Click any zone (or chip/table row) for a detail panel: character, boost/cut
+  results, when to boost/cut, adjustable Male & Female EQ sliders, Q and
+  typical problems.
+- **Compare mode** shows both curves on one graph; drag the glowing dots on the
+  curve to tweak, hover anywhere for a live frequency/gain readout.
+- **"If Your Vocal Sounds Like This…"** — 13 troubleshooting cards (muddy,
+  boomy, boxy, nasal, hollow, thin, dull, unclear, harsh, aggressive, sibilant,
+  too bright, lacking air) with the range to check and starting EQ moves.
+- All data (zones, values, descriptions, troubleshooting) lives in one
+  structured object — `window.VOCAL_EQ.data` in `js/vocal-eq.js` — easy to edit.
 
 ### 1. ಛಂದಸ್ಸು (Prosody)
 Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
@@ -91,7 +109,7 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #suno #mix #master #songs
+# deep links: #vocal-eq #suno #mix #master #songs
 ```
 
 > **Note:** Mix Check and Master Check need the Web Audio API (modern Chrome,
