@@ -3,7 +3,7 @@
 A single-page, zero-dependency studio for a Kannada music artist's full workflow:
 **compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-Eight tools in one page, no build step, no npm install. Files never leave the browser.
+Ten tools in one page, no build step, no npm install. Files never leave the browser.
 
 ## Tools
 
@@ -168,16 +168,34 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 - Session notes + **version log** (Mix v1, Master v2… with the chain you used)
 - Export all songs / one song as JSON, re-import anywhere; stored in localStorage
 
+### 8. Lyrics Lab (songwriting prompt builder + rhyme guide)
+A focused prompt builder for Kannada, English and bilingual songwriting. Enter an idea, choose the
+mood, section, rhyme scheme and rhyme style, then copy the structured brief into a writing AI.
+Lyrics Lab does not generate canned lyrics or invented rhyme scores.
+
+- Visual Auto / AAAA / AABB / ABAB / ABBA / ABCB / AABA / AAAB / ABAC / AABC / AAXA schemes
+- Hybrid, perfect, near, internal, multisyllabic, phonetic, Kannada suffix, semantic and rhythmic directions
+- Optional syllable length, vocabulary, key-phrase preservation and Kannada Film Song controls
+- Copyable output requesting finished lyrics followed by short bilingual rhyme notes
+- Detailed Kannada + English guide to sound rhymes, Kannada-friendly rhymes, musical rhymes and schemes
+
+Every prompt follows **Meaning → Emotion → Natural language → Rhythm → Rhyme** and explicitly tells
+the writing AI not to force grammar, repeat an ending unnecessarily or invent numerical scores.
+
+### 9. Quick Access
+A curated, searchable mixing-engineer toolbox with safe external links grouped by free/free-tier status.
+
 ## Structure
 
 ```
 raaga-studio/
-├── index.html                 # 8-tab UI (practical EQ · vocal EQ · prosody · suno · raga · mix · master · songs)
+├── index.html                 # 10-tab UI, ending Song Studio · Lyrics Lab · Quick Access
 ├── css/
 │   ├── style.css              # shared dark studio theme
 │   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
 │   ├── vocal-eq-cheatsheet.css # cheat sheet layout
-│   └── raga-reference.css     # raga & scale reference cards
+│   ├── raga-reference.css     # raga & scale reference cards
+│   └── lyrics-lab.css         # responsive songwriting workspace
 ├── js/
 │   ├── practical-eq.js        # Practical EQ analysis engine (home) — STFT, f0, detectors
 │   ├── practical-eq-app.js    # Practical EQ UI controller + frequency graph
@@ -191,6 +209,8 @@ raaga-studio/
 │   ├── mix-check.js           # mix-target assessment engine
 │   ├── mix-check-app.js       # mix check tab controller
 │   ├── song-studio.js         # project registry, checklists, versions
+│   ├── lyrics-prompt.js       # pure songwriting-prompt builder and rhyme-scheme data
+│   ├── lyrics-lab.js          # Lyrics Lab prompt form, copy and local draft UI
 │   └── nav.js                 # shared tab navigation
 ├── sample_audio/              # optional test fixtures
 ├── docs/
@@ -199,7 +219,8 @@ raaga-studio/
     ├── prosody_test.js        # Node prosody suite (33 checks)
     ├── master_check_test.js   # Node unit tests for scoring helpers (23 checks)
     ├── practical_eq_test.js   # Practical EQ engine on synthesized vocals (81 checks)
-    └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers (64 checks)
+    ├── lyrics_prompt_test.js  # songwriting prompt-builder suite
+    └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers
 ```
 
 ## Run
@@ -209,7 +230,7 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #songs
+# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #songs #lyrics #quick-access
 ```
 
 > **Note:** Practical EQ, Mix Check and Master Check need the Web Audio API (modern
@@ -221,6 +242,7 @@ python3 -m http.server 8000
 node test/prosody_test.js
 node test/master_check_test.js
 node test/practical_eq_test.js
+node test/lyrics_prompt_test.js
 node test/ui_smoke_test.js
 ```
 

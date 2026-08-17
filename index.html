@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/raga-reference.css">
   <link rel="stylesheet" href="css/practical-eq.css">
   <link rel="stylesheet" href="css/mix-tools.css">
+  <link rel="stylesheet" href="css/lyrics-lab.css">
 </head>
 <body>
 
@@ -34,6 +35,7 @@
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
+      <button type="button" class="tab" data-tab="lyrics" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಕ</span><span class="tab-label desktop">Lyrics Lab</span><span class="tab-label mobile">Lyrics</span></button>
       <button type="button" class="tab" data-tab="quick-access" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⚡</span><span class="tab-label desktop">Quick Access</span><span class="tab-label mobile">Quick</span></button>
     </nav>
   </header>
@@ -797,6 +799,213 @@
     </div>
   </section>
 
+  <!-- ═══════════════ LYRICS LAB TAB ═══════════════ -->
+  <section class="wrap ll-page" id="tab-lyrics" hidden>
+    <header class="ll-hero">
+      <div>
+        <p class="ll-kicker">Raaga Studio · songwriting prompt builder</p>
+        <h2>Lyrics <span>Lab</span></h2>
+        <p class="mc-intro">Build a clear Kannada, English or bilingual songwriting prompt—then copy it into your preferred writing AI.</p>
+      </div>
+      <div class="ll-hero-note"><strong>Prompt only</strong><span>Lyrics Lab guides the writer; it does not generate lyrics or invent scores.</span></div>
+    </header>
+
+    <section class="panel ll-builder" aria-labelledby="ll-builder-title">
+      <div class="ll-panel-title">
+        <span class="ll-step">01</span>
+        <div><h3 id="ll-builder-title">Describe the song</h3><p>Only the idea is required. The controls turn it into a focused songwriting brief.</p></div>
+      </div>
+
+      <div class="ll-field ll-language-field">
+        <span class="ll-label" id="ll-language-label">Language / ಭಾಷೆ</span>
+        <div class="ll-segmented" id="ll-language" role="group" aria-labelledby="ll-language-label">
+          <button type="button" class="on" data-language="kannada" aria-pressed="true">ಕನ್ನಡ <small>Kannada</small></button>
+          <button type="button" data-language="english" aria-pressed="false">English</button>
+          <button type="button" data-language="bilingual" aria-pressed="false">ಕನ್ನಡ + English</button>
+        </div>
+      </div>
+
+      <label class="ll-field" for="ll-idea">
+        <span class="ll-label">Song idea, emotion or story / ಹಾಡಿನ ಕಲ್ಪನೆ <em>required</em></span>
+        <textarea id="ll-idea" class="ll-idea" rows="4" maxlength="1200" spellcheck="true"
+          placeholder="ಉದಾ: ಮೊದಲ ಮಳೆಯಲ್ಲಿ ಬಸ್ ನಿಲ್ದಾಣದಲ್ಲಿ ಮತ್ತೆ ಭೇಟಿಯಾಗುವ ಇಬ್ಬರು"></textarea>
+        <span class="ll-field-help"><span id="ll-idea-count">0 / 1200</span><span>Include the emotional change or story detail that matters most.</span></span>
+      </label>
+
+      <div class="ll-main-grid">
+        <label class="ll-field" for="ll-mood"><span class="ll-label">Mood / ಭಾವ</span>
+          <select id="ll-mood" class="mc-select">
+            <option>Romantic</option><option>Sad</option><option>Happy</option><option>Devotional</option>
+            <option>Motivational</option><option>Melancholic</option><option>Celebration</option>
+            <option>Folk</option><option>Cinematic</option><option>Custom</option>
+          </select>
+        </label>
+        <label class="ll-field" id="ll-custom-mood-wrap" for="ll-custom-mood" hidden><span class="ll-label">Custom mood</span>
+          <input id="ll-custom-mood" class="mc-select" type="text" placeholder="e.g. hopeful after heartbreak">
+        </label>
+        <label class="ll-field" for="ll-section"><span class="ll-label">Song section / ಹಾಡಿನ ಭಾಗ</span>
+          <select id="ll-section" class="mc-select">
+            <option>Full Song</option><option>Verse</option><option>Pre-Chorus</option>
+            <option selected>Chorus/Hook</option><option>Bridge</option><option>Intro</option><option>Outro</option><option>Custom</option>
+          </select>
+        </label>
+        <label class="ll-field" id="ll-custom-section-wrap" for="ll-custom-section" hidden><span class="ll-label">Custom section name</span>
+          <input id="ll-custom-section" class="mc-select" type="text" placeholder="e.g. Refrain">
+        </label>
+        <label class="ll-field" for="ll-scheme"><span class="ll-label">Rhyme scheme / ಪ್ರಾಸ ವಿನ್ಯಾಸ</span>
+          <select id="ll-scheme" class="mc-select">
+            <option value="auto">Auto / Let the writing AI choose</option>
+            <option value="AAAA">AAAA</option><option value="AABB">AABB</option><option value="ABAB">ABAB</option>
+            <option value="ABBA">ABBA</option><option value="ABCB">ABCB</option><option value="AABA">AABA</option>
+            <option value="AAAB">AAAB</option><option value="ABAC">ABAC</option><option value="AABC">AABC</option><option value="AAXA">AAXA</option>
+          </select>
+        </label>
+        <label class="ll-field" for="ll-style"><span class="ll-label">Rhyme style / ಪ್ರಾಸ ಶೈಲಿ</span>
+          <select id="ll-style" class="mc-select">
+            <option value="hybrid">Hybrid — Recommended</option>
+            <option value="perfect">Perfect</option><option value="near">Near / Loose</option>
+            <option value="internal">Internal</option><option value="multisyllabic">Multisyllabic</option>
+            <option value="phonetic">Phonetic</option><option value="suffix">Suffix / Kannada</option>
+            <option value="semantic">Semantic</option><option value="rhythmic">Rhythmic</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="ll-scheme-preview" id="ll-scheme-preview" aria-live="polite"></div>
+
+      <details class="ll-advanced">
+        <summary><span>Optional songwriting controls / ಐಚ್ಛಿಕ ನಿಯಂತ್ರಣಗಳು</span><small>Syllables, film-song mode, vocabulary and details to preserve</small></summary>
+        <div class="ll-advanced-body">
+          <div class="ll-advanced-grid">
+            <label class="ll-field" for="ll-syllables"><span class="ll-label">Line length / syllable preference</span>
+              <select id="ll-syllables" class="mc-select">
+                <option value="auto">Natural / no fixed target</option><option value="short">Short · about 4–7 syllables</option>
+                <option value="medium">Medium · about 8–11 syllables</option><option value="long">Long · about 12–16 syllables</option>
+              </select>
+            </label>
+            <label class="ll-field" for="ll-vocabulary"><span class="ll-label">Vocabulary style / ಪದಗಳ ಶೈಲಿ</span>
+              <select id="ll-vocabulary" class="mc-select">
+                <option value="spoken">Natural spoken language</option><option value="simple">Simple and direct</option>
+                <option value="poetic">Poetic imagery</option><option value="literary">Literary vocabulary</option>
+              </select>
+            </label>
+          </div>
+          <label class="ll-field" for="ll-key-phrases">
+            <span class="ll-label">Names, places, story details or key phrases to preserve</span>
+            <textarea id="ll-key-phrases" class="ll-key-phrases" rows="2" maxlength="500" placeholder="e.g. Ananya, first rain, Majestic bus stop, ‘ಮತ್ತೆ ಸಿಕ್ಕ ಕ್ಷಣ’"></textarea>
+          </label>
+          <label class="ll-mode-card">
+            <input id="ll-film-mode" type="checkbox">
+            <span class="ll-toggle" aria-hidden="true"></span>
+            <span><strong>Kannada Film Song / ಕನ್ನಡ ಚಲನಚಿತ್ರ ಗೀತೆ</strong><small>Ask for natural spoken Kannada, cinematic imagery, singable movement and strategic hook repetition.</small></span>
+          </label>
+        </div>
+      </details>
+
+      <div class="ll-generate-row">
+        <button type="button" class="btn primary ll-generate" id="ll-generate">✦ Generate songwriting prompt</button>
+        <p>The output is a writing brief to paste into ChatGPT, Claude, Gemini or another writing AI.</p>
+      </div>
+      <div class="ll-form-error" id="ll-form-error" role="alert" hidden></div>
+    </section>
+
+    <section class="panel ll-prompt-result" id="ll-prompt-result" aria-labelledby="ll-output-title" hidden>
+      <div class="ll-result-head">
+        <div class="ll-panel-title">
+          <span class="ll-step">02</span>
+          <div><h3 id="ll-output-title">Your songwriting prompt</h3><p id="ll-output-summary">Ready to copy.</p></div>
+        </div>
+        <span class="ll-ready">Ready</span>
+      </div>
+      <textarea id="ll-prompt-output" class="ll-prompt-output" readonly aria-label="Generated songwriting prompt"></textarea>
+      <div class="ll-output-actions">
+        <button type="button" class="btn primary" id="ll-copy-prompt">Copy Prompt</button>
+        <button type="button" class="btn" id="ll-clear-prompt">Clear</button>
+      </div>
+      <p class="ll-output-note">The prompt asks the writing AI for finished lyrics followed by short bilingual rhyme notes—without numerical rhyme scores.</p>
+    </section>
+
+    <section class="ll-guide" aria-labelledby="ll-guide-title">
+      <header class="ll-guide-head">
+        <p class="ll-kicker">Learn before choosing</p>
+        <h3 id="ll-guide-title">Rhyme Guide <span lang="kn">· ಪ್ರಾಸ ಮಾರ್ಗದರ್ಶಿ</span></h3>
+        <p>Simple bilingual explanations for choosing a rhyme that serves the song—not the other way around.</p>
+      </header>
+
+      <div class="ll-priority-rule">
+        <span>1 <b>Meaning</b></span><i>→</i><span>2 <b>Emotion</b></span><i>→</i><span>3 <b>Natural language</b></span><i>→</i><span>4 <b>Rhythm</b></span><i>→</i><span>5 <b>Rhyme</b></span>
+        <p lang="kn">ಮೊದಲು ಅರ್ಥ ಮತ್ತು ಭಾವ. ನಂತರ ಸಹಜ ಭಾಷೆ ಮತ್ತು ಲಯ. ಪ್ರಾಸವು ಹಾಡಿಗೆ ಸೇವೆ ಮಾಡಬೇಕು.</p>
+      </div>
+
+      <details class="ll-guide-section" open>
+        <summary><span>1. Core rhyme types</span><small lang="kn">ಮೂಲ ಪ್ರಾಸದ ವಿಧಗಳು</small></summary>
+        <div class="ll-rhyme-grid">
+          <article class="ll-rhyme-card"><h4>Perfect Rhyme <span lang="kn">· ಪೂರ್ಣ ಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>The stressed vowel and ending sounds match clearly.</p><p lang="kn">ಕೊನೆಯ ಮುಖ್ಯ ಸ್ವರ ಮತ್ತು ನಂತರದ ಧ್ವನಿಗಳು ಸ್ಪಷ್ಟವಾಗಿ ಹೊಂದುವುದು.</p><div class="ll-example"><b>English</b> night / light · fire / desire</div><div class="ll-example" lang="kn"><b>ಕನ್ನಡ</b> ಪ್ರೀತಿ / ರೀತಿ / ಗೀತಿ</div><small>Use it for a strong resolution, but only when the words remain natural.</small></article>
+          <article class="ll-rhyme-card"><h4>End Rhyme <span lang="kn">· ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>The rhyme appears at the ends of lines. It describes the position, not the strength.</p><p lang="kn">ಪ್ರಾಸದ ಪದಗಳು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಬರುವುದು. ಇದು ಪ್ರಾಸದ ಸ್ಥಾನವನ್ನು ಹೇಳುತ್ತದೆ.</p><div class="ll-example">night / light · ಕನಸು / ಮನಸು</div><small>Common in hooks, choruses and clear verse patterns.</small></article>
+          <article class="ll-rhyme-card"><h4>Near or Slant Rhyme <span lang="kn">· ಸಮೀಪ ಪ್ರಾಸ</span></h4><p>The sounds are related but not identical. Often more natural than a forced perfect rhyme.</p><p lang="kn">ಧ್ವನಿಗಳು ಹತ್ತಿರವಾಗಿರುತ್ತವೆ, ಆದರೆ ಸಂಪೂರ್ಣ ಒಂದೇ ಆಗುವುದಿಲ್ಲ.</p><div class="ll-example">heart / hard · ಮಾತು / ಹಾಡು</div><small>Useful when meaning and emotion need more freedom.</small></article>
+          <article class="ll-rhyme-card"><h4>Exact-Syllable Rhyme <span lang="kn">· ಸಮಾನ ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></h4><p>Two endings share a similar final syllable structure.</p><p lang="kn">ಕೊನೆಯ ಒಂದು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳ ರಚನೆ ಸಹಜವಾಗಿ ಹೊಂದುವುದು.</p><div class="ll-example" lang="kn">ಕನಸು / ಮನಸು</div><div class="ll-example">tenderly / slenderly</div><small>Good for smooth, singable repeated patterns.</small></article>
+          <article class="ll-rhyme-card"><h4>Identical Rhyme <span lang="kn">· ಒಂದೇ ಉಚ್ಚಾರಣೆಯ ಪ್ರಾಸ</span></h4><p>The same pronunciation returns, sometimes with a different meaning. Repeating the exact same word is usually weaker.</p><p lang="kn">ಒಂದೇ ಉಚ್ಚಾರಣೆ ಮತ್ತೆ ಬರುತ್ತದೆ. ಒಂದೇ ಪದವನ್ನು ಅತಿಯಾಗಿ ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</p><div class="ll-example">blue / blew · right / write</div><small>Use sparingly; repetition should have a lyrical purpose.</small></article>
+          <article class="ll-rhyme-card"><h4>Masculine Rhyme <span lang="kn">· ಅಂತಿಮ ಒತ್ತಿನ ಪ್ರಾಸ</span></h4><p>An English rhyme lands on one strong final stressed syllable.</p><p lang="kn">ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಕೊನೆಯ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕದ ಮೇಲೆ ಪ್ರಾಸ ಬೀಳುವುದು.</p><div class="ll-example">stand / land · bright / night</div><small>Creates a direct, decisive ending.</small></article>
+          <article class="ll-rhyme-card"><h4>Feminine Rhyme <span lang="kn">· ಬಹು-ಅಂತ್ಯದ ಪ್ರಾಸ</span></h4><p>The rhyme continues through an unstressed syllable after the main stress.</p><p lang="kn">ಮುಖ್ಯ ಒತ್ತಿನ ನಂತರದ ಮೃದು ಅಕ್ಷರಘಟಕವೂ ಪ್ರಾಸದಲ್ಲಿ ಭಾಗವಹಿಸುವುದು.</p><div class="ll-example">glory / story · lighting / fighting</div><small>Useful for flowing pop, theatre and conversational writing.</small></article>
+          <article class="ll-rhyme-card"><h4>Multisyllabic &amp; Compound <span lang="kn">· ಬಹು ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></h4><p>Two or more syllables—or a short phrase—participate in the rhyme.</p><p lang="kn">ಎರಡು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳು ಅಥವಾ ಸಣ್ಣ ಪದಗುಚ್ಛ ಪ್ರಾಸವಾಗುವುದು.</p><div class="ll-example">fire / desire · emotion / devotion</div><div class="ll-example" lang="kn">ಕಾಣುವೆ / ಹಾಡುವೆ / ಸಾಗುವೆ</div><small>Effective when it remains effortless to sing.</small></article>
+        </div>
+      </details>
+
+      <details class="ll-guide-section">
+        <summary><span>2. Kannada-friendly rhyme</span><small lang="kn">ಕನ್ನಡಕ್ಕೆ ಸಹಜವಾದ ಪ್ರಾಸ</small></summary>
+        <div class="ll-rhyme-grid">
+          <article class="ll-rhyme-card"><h4>Suffix Rhyme <span lang="kn">· ಪ್ರತ್ಯಯ ಪ್ರಾಸ</span></h4><p>Words share a spoken suffix or grammatical ending.</p><p lang="kn">ಪದಗಳ ಕೊನೆಯ ಪ್ರತ್ಯಯ ಅಥವಾ ವ್ಯಾಕರಣ ರೂಪದ ಧ್ವನಿ ಹೊಂದುವುದು.</p><div class="ll-example" lang="kn">ಪ್ರೀತಿಯಲಿ / ಕನಸಿನಲಿ / ನೆನಪಿನಲಿ</div><small>A matching suffix alone does not guarantee a strong rhyme; listen to the complete ending.</small></article>
+          <article class="ll-rhyme-card"><h4>Vowel-Family Rhyme <span lang="kn">· ಸ್ವರ ಕುಟುಂಬ ಪ್ರಾಸ</span></h4><p>The final vowel colour is similar even when every consonant does not match.</p><p lang="kn">ಕೊನೆಯ ಸ್ವರಧ್ವನಿ ಒಂದೇ ಕುಟುಂಬದಲ್ಲಿದ್ದು ಸಂಗೀತಾತ್ಮಕವಾಗಿ ಹತ್ತಿರವಾಗುವುದು.</p><div class="ll-example" lang="kn">ನಾನು / ನೀನು / ತಾನು / ಏನು</div><small>Useful for open, melodic Kannada lines.</small></article>
+          <article class="ll-rhyme-card"><h4>Consonant-End Rhyme <span lang="kn">· ವ್ಯಂಜನ ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>The closing consonant movement is similar.</p><p lang="kn">ಪದಗಳ ಕೊನೆಯ ವ್ಯಂಜನ ಧ್ವನಿ ಅಥವಾ ಮುಕ್ತಾಯದ ಚಲನೆ ಹೊಂದುವುದು.</p><div class="ll-example"><b>Listen for sound</b>, not merely the final written character.</div><small>Especially helpful when transliteration or spelling can mislead.</small></article>
+          <article class="ll-rhyme-card"><h4>Case-Ending Rhyme <span lang="kn">· ವಿಭಕ್ತಿ ಪ್ರಾಸ</span></h4><p>Kannada case endings create a repeated spoken shape.</p><p lang="kn">ಒಂದೇ ವಿಭಕ್ತಿ ಪ್ರತ್ಯಯವು ಸಾಲುಗಳ ಕೊನೆಯಲ್ಲಿ ಸಹಜವಾಗಿ ಮರಳುವುದು.</p><div class="ll-example" lang="kn">ನಿನ್ನಲ್ಲಿ / ನನ್ನಲ್ಲಿ / ಅವಳಲ್ಲಿ</div><small>Do not twist sentence order merely to place the case ending last.</small></article>
+          <article class="ll-rhyme-card"><h4>Verb-Ending Rhyme <span lang="kn">· ಕ್ರಿಯಾಪದ ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>Related verb forms create a singable repeated ending.</p><p lang="kn">ಕ್ರಿಯಾಪದಗಳ ಒಂದೇ ರೀತಿಯ ಅಂತ್ಯಧ್ವನಿ ಪ್ರಾಸ ನೀಡುವುದು.</p><div class="ll-example" lang="kn">ಬರುವೆ / ನಗುವೆ / ಕರೆಯುವೆ</div><small>Useful for movement, promises and hook repetition.</small></article>
+          <article class="ll-rhyme-card"><h4>Participial Rhyme <span lang="kn">· ಕೃದಂತ ಪ್ರಾಸ</span></h4><p>Similar participial or completed-action forms rhyme.</p><p lang="kn">ಮಾಡಿದ ಕ್ರಿಯೆಯನ್ನು ಸೂಚಿಸುವ ಸಮಾನ ರೂಪಗಳು ಪ್ರಾಸವಾಗುವುದು.</p><div class="ll-example" lang="kn">ನೋಡಿದ / ಆಡಿದ / ಹಾಡಿದ</div><small>Works naturally in story-led verses.</small></article>
+          <article class="ll-rhyme-card"><h4>Semantic + Phonetic <span lang="kn">· ಅರ್ಥ ಮತ್ತು ಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>The words sound related and also belong to a connected world of meaning.</p><p lang="kn">ಧ್ವನಿಯ ಜೊತೆಗೆ ಪದಗಳ ಅರ್ಥವೂ ಪರಸ್ಪರ ಸಂಬಂಧ ಹೊಂದಿರುವುದು.</p><div class="ll-example" lang="kn">ಪ್ರೀತಿ / ರೀತಿ / ನೀತಿ / ಗೀತಿ</div><small>Often stronger than choosing a sound-match with no emotional relevance.</small></article>
+        </div>
+        <aside class="ll-guide-warning"><strong>Kannada pronunciation matters / ಕನ್ನಡ ಉಚ್ಚಾರಣೆ ಮುಖ್ಯ.</strong><p>Two words are not a strong rhyme merely because their Unicode endings look alike. Say or sing the complete endings aloud.</p><p lang="kn">ಬರಹದ ಕೊನೆಯ ಅಕ್ಷರಗಳು ಒಂದೇ ರೀತಿ ಕಾಣುವುದರಿಂದ ಮಾತ್ರ ಉತ್ತಮ ಪ್ರಾಸವಾಗುವುದಿಲ್ಲ. ಪೂರ್ಣ ಅಂತ್ಯವನ್ನು ಉಚ್ಚರಿಸಿ ಕೇಳಿ.</p></aside>
+      </details>
+
+      <details class="ll-guide-section">
+        <summary><span>3. Internal and musical rhyme</span><small lang="kn">ಆಂತರಿಕ ಮತ್ತು ಸಂಗೀತಾತ್ಮಕ ಪ್ರಾಸ</small></summary>
+        <div class="ll-rhyme-grid">
+          <article class="ll-rhyme-card"><h4>Internal Rhyme <span lang="kn">· ಆಂತರಿಕ ಪ್ರಾಸ</span></h4><p>Rhyme happens inside a line instead of only at its end.</p><p lang="kn">ಪ್ರಾಸವು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಮಾತ್ರವಲ್ಲ, ಸಾಲಿನ ಒಳಗೆಯೂ ಬರುತ್ತದೆ.</p><div class="ll-example">I hear the light in the quiet night</div><div class="ll-example" lang="kn">ಮನದಲ್ಲಿ ಮಳೆಯಲಿ ಮೌನದ ಕನಸಲಿ</div><small>Adds movement without demanding end rhyme.</small></article>
+          <article class="ll-rhyme-card"><h4>Double Internal Rhyme <span lang="kn">· ದ್ವಿ ಆಂತರಿಕ ಪ್ರಾಸ</span></h4><p>Two rhyme points appear inside one line or paired lines.</p><p lang="kn">ಒಂದು ಸಾಲಿನಲ್ಲಿ ಅಥವಾ ಜೋಡಿ ಸಾಲುಗಳಲ್ಲಿ ಎರಡು ಪ್ರಾಸ ಬಿಂದುಗಳು ಇರುವುದು.</p><small>Powerful in rap and fast hooks; use lightly in lyrical ballads.</small></article>
+          <article class="ll-rhyme-card"><h4>Echo Rhyme <span lang="kn">· ಪ್ರತಿಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>A sound or key word returns later like an echo.</p><p lang="kn">ಮುಖ್ಯ ಪದ ಅಥವಾ ಧ್ವನಿ ಸ್ವಲ್ಪ ಹೊತ್ತಿನ ನಂತರ ಪ್ರತಿಧ್ವನಿಯಂತೆ ಮರಳುವುದು.</p><div class="ll-example">Come home… home</div><div class="ll-example" lang="kn">ನೀನೇ… ನೀನೇ</div><small>Useful for memorable hooks when repetition carries emotion.</small></article>
+          <article class="ll-rhyme-card"><h4>Phonetic Rhyme <span lang="kn">· ಉಚ್ಚಾರಣಾ ಪ್ರಾಸ</span></h4><p>Compare actual pronunciation rather than spelling.</p><p lang="kn">ಬರಹಕ್ಕಿಂತ ನಿಜವಾದ ಉಚ್ಚಾರಣೆಯ ಆಧಾರದಲ್ಲಿ ಪ್ರಾಸ ಆಯ್ಕೆ ಮಾಡುವುದು.</p><div class="ll-example">through does not rhyme with rough</div><small>Essential for both English irregular spelling and Kannada script endings.</small></article>
+          <article class="ll-rhyme-card"><h4>Stress Rhyme <span lang="kn">· ಒತ್ತಿನ ಪ್ರಾಸ</span></h4><p>English stressed syllables land in matching musical positions.</p><p lang="kn">ಇಂಗ್ಲಿಷ್ ಸಾಲುಗಳಲ್ಲಿ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕಗಳು ಸಮಾನ ಲಯಸ್ಥಾನದಲ್ಲಿ ಬರುವುದು.</p><small>Useful for pop, rap and rhythm-led English lyrics.</small></article>
+          <article class="ll-rhyme-card"><h4>Rhythmic Rhyme <span lang="kn">· ಲಯ ಪ್ರಾಸ</span></h4><p>Lines share a similar syllable movement even without an exact sound match.</p><p lang="kn">ಧ್ವನಿ ಸಂಪೂರ್ಣ ಹೊಂದದಿದ್ದರೂ ಸಾಲುಗಳ ಅಕ್ಷರಘಟಕ ಮತ್ತು ಲಯದ ಚಲನೆ ಹೊಂದುವುದು.</p><small>Choose it when the melody needs balanced phrasing.</small></article>
+          <article class="ll-rhyme-card"><h4>Semantic Rhyme <span lang="kn">· ಅರ್ಥ ಸಂಬಂಧ</span></h4><p>Words share an emotional or visual world without technically rhyming.</p><p lang="kn">ಧ್ವನಿ ಪ್ರಾಸವಿಲ್ಲದಿದ್ದರೂ ಒಂದೇ ಭಾವ ಅಥವಾ ಚಿತ್ರಲೋಕಕ್ಕೆ ಸೇರಿದ ಪದಗಳು.</p><div class="ll-example">rain / cloud / river · ಪ್ರೀತಿ / ಮಮತೆ / ಒಲವು</div><small>Protects meaning when sound rhyme would be artificial.</small></article>
+          <article class="ll-rhyme-card featured"><h4>Hybrid Rhyme <span lang="kn">· ಸಂಯೋಜಿತ ಪ್ರಾಸ</span></h4><p>Balances sound, rhythm, syllable flow and meaning. This is the recommended default.</p><p lang="kn">ಧ್ವನಿ, ಲಯ, ಅಕ್ಷರಘಟಕ ಮತ್ತು ಅರ್ಥವನ್ನು ಸಮತೋಲನಗೊಳಿಸುವ ಪ್ರಾಸ. ಇದು ಶಿಫಾರಸು ಮಾಡಿದ ಆಯ್ಕೆ.</p><div class="ll-example">Perfect where natural; near, semantic or rhythmic where the lyric needs freedom.</div><small>Well suited to film songs and emotionally natural writing.</small></article>
+        </div>
+      </details>
+
+      <details class="ll-guide-section ll-schemes-section" open>
+        <summary><span>4. Rhyme schemes</span><small lang="kn">ಪ್ರಾಸ ವಿನ್ಯಾಸಗಳು</small></summary>
+        <p class="ll-section-intro">Letters show rhyme families, not literal words. The same letter should return to a related spoken ending.</p>
+        <div class="ll-scheme-grid">
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span></div><h4>AAAA</h4><p>One strong family across all four lines.</p><p lang="kn">ನಾಲ್ಕೂ ಸಾಲುಗಳಿಗೆ ಒಂದೇ ಪ್ರಾಸ ಕುಟುಂಬ. ನೆನಪಾಗುವ ಹುಕ್‌ಗೆ ಸೂಕ್ತ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span></div><h4>AABB</h4><p>An opening couplet followed by a new couplet.</p><p lang="kn">ಮೊದಲ ಜೋಡಿಗೆ A; ನಂತರದ ಜೋಡಿಗೆ B. ಸ್ಪಷ್ಟ ಮತ್ತು ಸುಲಭ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-b">B</span></div><h4>ABAB</h4><p>Alternating families create forward motion.</p><p lang="kn">A ಮತ್ತು B ಪರ್ಯಾಯವಾಗಿ ಬಂದು ಪದ್ಯಕ್ಕೆ ಚಲನೆ ನೀಡುತ್ತವೆ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span><span class="family-a">A</span></div><h4>ABBA</h4><p>The outside lines frame a rhyming middle pair.</p><p lang="kn">ಹೊರಗಿನ A ಸಾಲುಗಳ ನಡುವೆ B ಪ್ರಾಸದ ಜೋಡಿ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span><span class="family-b">B</span></div><h4>ABCB</h4><p>Only lines 2 and 4 resolve together.</p><p lang="kn">2 ಮತ್ತು 4ನೇ ಸಾಲು ಮಾತ್ರ ಪ್ರಾಸ. ಕಥನಾತ್ಮಕ ಪದ್ಯಕ್ಕೆ ಹೆಚ್ಚು ಸ್ವಾತಂತ್ರ್ಯ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span></div><h4>AABA</h4><p>Three familiar returns with one contrasting line.</p><p lang="kn">ಒಂದು ವಿಭಿನ್ನ B ಸಾಲಿನ ಸುತ್ತ A ಪ್ರಾಸ ಮರಳುತ್ತದೆ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span></div><h4>AAAB</h4><p>Three repeated resolutions lead to a contrasting finish.</p><p lang="kn">ಮೊದಲ ಮೂರು A; ಕೊನೆಯ B ಸಾಲು ತಿರುವು ಅಥವಾ ಉತ್ತರ ನೀಡುತ್ತದೆ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-c">C</span></div><h4>ABAC</h4><p>A returns once; B and C remain open.</p><p lang="kn">A ಮಾತ್ರ ಮರಳುತ್ತದೆ; B ಮತ್ತು C ಸಾಲುಗಳು ಹೊಸ ಅಂತ್ಯ ಪಡೆಯುತ್ತವೆ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span></div><h4>AABC</h4><p>A rhyming opening gives way to two freer lines.</p><p lang="kn">ಮೊದಲ ಜೋಡಿ ಪ್ರಾಸ; ನಂತರದ ಸಾಲುಗಳು ಕಥೆಯನ್ನು ಮುಕ್ತವಾಗಿ ಮುಂದುವರಿಸುತ್ತವೆ.</p></article>
+          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="open">X</span><span class="family-a">A</span></div><h4>AAXA</h4><p>X is intentionally free; A remains the anchor.</p><p lang="kn">X ಸಾಲು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಮುಕ್ತ; A ಪ್ರಾಸ ಮುಖ್ಯ ಆಧಾರ.</p></article>
+        </div>
+      </details>
+
+      <aside class="ll-natural-rule">
+        <strong>Never force a rhyme / ಪ್ರಾಸವನ್ನು ಬಲವಂತ ಮಾಡಬೇಡಿ</strong>
+        <p>A meaningful, emotional and natural line with a loose rhyme can be better than an awkward perfect rhyme. Do not bend Kannada grammar, use an archaic word or repeat one ending merely to satisfy a pattern.</p>
+        <p lang="kn">ಅರ್ಥಪೂರ್ಣ, ಭಾವಪೂರ್ಣ ಮತ್ತು ಸಹಜವಾದ ಸಾಲು ಸಡಿಲ ಪ್ರಾಸ ಹೊಂದಿದ್ದರೂ ಉತ್ತಮವಾಗಿರಬಹುದು. ಪ್ರಾಸಕ್ಕಾಗಿ ಕನ್ನಡ ವ್ಯಾಕರಣವನ್ನು ತಿರುಚಬೇಡಿ, ಅಸಹಜ ಪದ ಬಳಸಬೇಡಿ.</p>
+      </aside>
+    </section>
+
+    <div id="ll-flash" class="ll-flash" role="status" aria-live="polite"></div>
+  </section>
+
   <!-- ═══════════════ QUICK ACCESS TAB ═══════════════ -->
   <section class="wrap mt-page" id="tab-quick-access" hidden>
     <header class="mt-hero">
@@ -848,6 +1057,8 @@
   <script src="js/pro-eq.js"></script>
   <script src="js/practical-eq.js"></script>
   <script src="js/practical-eq-app.js"></script>
+  <script src="js/lyrics-prompt.js"></script>
+  <script src="js/lyrics-lab.js"></script>
   <script src="js/mix-tools.js"></script>
   <script src="js/nav.js"></script>
 </body>

@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs', 'quick-access'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'raga', 'mix', 'master', 'songs', 'lyrics', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -142,6 +142,8 @@ load('song-studio.js');
 load('pro-eq.js');
 load('practical-eq.js');
 load('practical-eq-app.js');
+load('lyrics-prompt.js');
+load('lyrics-lab.js');
 load('mix-tools.js');
 load('nav.js');
 
@@ -283,6 +285,19 @@ assert(getEl('pq-results').innerHTML === '', 'unsupported file produces no fake 
 assert(typeof global.window.MASTER_CHECK.buildReleaseChecklist === 'function', 'buildReleaseChecklist exported');
 assert(typeof global.window.MIX_CHECK.assessMix === 'function', 'assessMix exported');
 assert(typeof global.window.RaagaStudio.switchTo === 'function', 'RaagaStudio.switchTo exposed');
+
+// ─── Lyrics Lab songwriting prompt builder ────────────────────────────────
+const LP = global.window.LYRICS_PROMPT;
+assert(typeof LP === 'object' && typeof LP.buildPrompt === 'function', 'Lyrics songwriting-prompt builder exported');
+assert(Object.keys(LP.SCHEMES).length === 11, 'Auto plus ten rhyme schemes are defined');
+assert(getEl('ll-scheme-preview').innerHTML.indexOf('Auto / AI chooses') >= 0, 'Lyrics Lab renders a visual Auto scheme preview');
+getEl('ll-idea').value = 'ಮಳೆಯಲ್ಲೊಂದು ಪ್ರೇಮಕಥೆ';
+getEl('ll-generate').click();
+assert(getEl('ll-prompt-output').value.indexOf('ಮಳೆಯಲ್ಲೊಂದು ಪ್ರೇಮಕಥೆ') >= 0, 'Generated prompt preserves the supplied Kannada idea');
+assert(getEl('ll-prompt-output').value.indexOf('Rhyme Notes / ಪ್ರಾಸದ ಟಿಪ್ಪಣಿ') >= 0, 'Prompt requests short bilingual rhyme notes');
+assert(getEl('ll-prompt-output').value.indexOf('numerical rhyme scores') >= 0, 'Prompt explicitly rejects invented numerical rhyme scores');
+assert(getEl('ll-prompt-result').hidden === false, 'Prompt result opens after generation');
+assert(typeof global.window.RaagaStudio.lyricsLab.generatePrompt === 'function', 'Lyrics Lab prompt controller registered');
 
 // ─── Quick Access (mixing engineer toolbox) ───────────────────────────────
 const MT = global.window.RaagaStudio.MIX_TOOLS;

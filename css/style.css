@@ -1304,7 +1304,7 @@ details .body .ex { color: var(--text); font-family: var(--kn-font); }
   .brand-flow, .brand .tag { display: none; }
   .tabnav {
     position: fixed; z-index: 50; left: 0; right: 0; bottom: 0;
-    display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 2px;
+    display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px;
     padding: 5px 5px calc(5px + env(safe-area-inset-bottom));
     border-width: 1px 0 0; border-radius: 0;
     background: rgba(24,20,18,.97); backdrop-filter: blur(16px);
