@@ -5,6 +5,11 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 
 ## ✅ Built today
 
+- **Practical EQ** (home) — per-recording vocal frequency diagnostic: multi-frame
+  STFT, adaptive f0/harmonic-aware analysis, decrease / increase / unchanged /
+  not-detected findings with measured frequency, range, confidence and severity,
+  ranked priorities and an interactive 20 Hz–20 kHz recommendation graph.
+  Analysis only — no EQ is ever applied to the audio.
 - **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
 - **Suno Custom Mode Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/
   instruments/production → separate Style, Lyrics and Exclude fields + full-state recipe library
