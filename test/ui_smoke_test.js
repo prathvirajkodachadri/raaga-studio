@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -142,6 +142,7 @@ load('song-studio.js');
 load('pro-eq.js');
 load('practical-eq.js');
 load('practical-eq-app.js');
+load('mix-tools.js');
 load('nav.js');
 
 // pro-eq parametric EQ (home tab)
@@ -282,6 +283,28 @@ assert(getEl('pq-results').innerHTML === '', 'unsupported file produces no fake 
 assert(typeof global.window.MASTER_CHECK.buildReleaseChecklist === 'function', 'buildReleaseChecklist exported');
 assert(typeof global.window.MIX_CHECK.assessMix === 'function', 'assessMix exported');
 assert(typeof global.window.RaagaStudio.switchTo === 'function', 'RaagaStudio.switchTo exposed');
+
+// ─── Quick Access (mixing engineer toolbox) ───────────────────────────────
+const MT = global.window.RaagaStudio.MIX_TOOLS;
+assert(Array.isArray(MT) && MT.length === 16, 'Quick Access ships 16 curated tools');
+assert(MT.every(t => t.name && t.url && t.url.indexOf('http') === 0 && t.status && t.categories && t.categories.length),
+  'every tool has a name, URL, status and category');
+assert(MT.slice(0, 8).every(t => t.status === 'free'), 'first 8 tools are completely free');
+assert(MT.slice(8).every(t => t.status === 'tier'), 'remaining tools are free tier');
+assert(MT.every(t => !t.status || t.status !== 'paid'), 'no tool is marked “Not Truly Free” yet');
+assert(MT.filter(t => t.categories.indexOf('daw') >= 0).length === 4, 'four DAWs present');
+// the full directory renders as cards
+assert(getEl('mt-groups').innerHTML.indexOf('SoundTools') >= 0, 'Quick Access renders SoundTools card');
+assert(getEl('mt-groups').innerHTML.indexOf('Completely Free') >= 0, 'Quick Access groups by status');
+assert(getEl('mt-groups').innerHTML.indexOf('rel="noopener noreferrer"') >= 0, 'external links open safely in a new tab');
+assert(getEl('mt-groups').innerHTML.indexOf('target="_blank"') >= 0, 'external links target a new tab');
+// search narrows the list by keyword
+getEl('mt-search').value = 'DAW';
+getEl('mt-search').dispatchEvent({ type: 'input' });
+assert(getEl('mt-groups').innerHTML.indexOf('BandLab') >= 0, 'DAW search surfaces BandLab');
+assert(getEl('mt-groups').innerHTML.indexOf('SoundTools') < 0, 'DAW search excludes non-DAW tools');
+getEl('mt-search').value = '';
+getEl('mt-search').dispatchEvent({ type: 'input' });
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
