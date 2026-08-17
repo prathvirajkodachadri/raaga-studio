@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs'];
 
 global.window = {
   addEventListener() {},
@@ -140,6 +140,8 @@ load('mix-check.js');
 load('mix-check-app.js');
 load('song-studio.js');
 load('pro-eq.js');
+load('practical-eq.js');
+load('practical-eq-app.js');
 load('nav.js');
 
 // pro-eq parametric EQ (home tab)
@@ -257,6 +259,24 @@ getEl('ss-ver-name').value = 'Mix v1';
 getEl('ss-ver-add').click();
 const withVer = JSON.parse(global.localStorage.getItem('raaga.songs'))[0];
 assert(withVer.versions.length === 1 && withVer.versions[0].name === 'Mix v1', 'version logged');
+
+// ─── Practical EQ (home tab) ──────────────────────────────────────────────
+const PEQ = global.window.PRACTICAL_EQ;
+assert(typeof PEQ === 'object', 'PRACTICAL_EQ engine exported');
+assert(typeof PEQ.analyzeFile === 'function', 'PRACTICAL_EQ.analyzeFile exported');
+assert(typeof PEQ.analyzeChannels === 'function', 'PRACTICAL_EQ.analyzeChannels exported');
+assert(PEQ.CHARACTERISTICS.length >= 20, 'characteristic catalogue defined (' + PEQ.CHARACTERISTICS.length + ')');
+assert(PEQ.CHARACTERISTICS.every(c => c.id && c.label && c.lo < c.hi && (c.dir === 'cut' || c.dir === 'boost')),
+  'every characteristic has an id, label, search region and direction');
+assert(typeof global.window.RaagaStudio.practicalEq === 'function' ||
+  typeof global.window.RaagaStudio.practicalEq === 'object', 'Practical EQ controller registered');
+assert(global.window.RaagaStudio.practicalEq.getResult() === null, 'Practical EQ starts with no result');
+// the controller must not have rendered anything before a file is uploaded
+assert(getEl('pq-results').innerHTML === '', 'Practical EQ shows no results until a file is analyzed');
+// rejecting a non-audio file surfaces a friendly message, not a crash
+global.window.RaagaStudio.practicalEq.analyzeFile({ name: 'notes.txt', type: 'text/plain', size: 10 });
+assert(getEl('pq-error').innerHTML.indexOf('Unsupported') >= 0, 'unsupported file type reports a friendly error');
+assert(getEl('pq-results').innerHTML === '', 'unsupported file produces no fake report');
 
 // engine exposed
 assert(typeof global.window.MASTER_CHECK.buildReleaseChecklist === 'function', 'buildReleaseChecklist exported');

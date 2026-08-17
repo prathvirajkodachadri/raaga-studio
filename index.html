@@ -9,10 +9,11 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
   <link rel="stylesheet" href="css/raga-reference.css">
+  <link rel="stylesheet" href="css/practical-eq.css">
 </head>
 <body>
 
-  <a class="skip-link" href="#tab-vocal-eq">Skip to studio tools</a>
+  <a class="skip-link" href="#tab-practical-eq">Skip to studio tools</a>
   <header class="topbar">
     <div class="logo" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
@@ -24,7 +25,8 @@
       <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
     </div>
     <nav class="tabnav" role="tablist" aria-label="Studio tools">
-      <button type="button" class="tab active" data-tab="vocal-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
+      <button type="button" class="tab active" data-tab="practical-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">◎</span><span class="tab-label desktop">Practical EQ</span><span class="tab-label mobile">Analyze</span></button>
+      <button type="button" class="tab" data-tab="vocal-eq" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
       <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♪</span><span class="tab-label desktop">Raga Reference</span><span class="tab-label mobile">Raga</span></button>
@@ -35,8 +37,58 @@
   </header>
 
   <main id="studio-tools">
-  <!-- ═══════════════ VOCAL EQ CHEAT SHEET (home) ═══════════════ -->
-  <section class="wrap veq-page" id="tab-vocal-eq">
+  <!-- ═══════════════ PRACTICAL EQ (home) ═══════════════ -->
+  <section class="wrap pq-page" id="tab-practical-eq">
+    <header class="pq-hero">
+      <div>
+        <p class="pq-kicker">Raaga Studio · vocal diagnostic</p>
+        <h2>Practical <span>EQ</span></h2>
+        <p class="mc-intro">
+          Upload one vocal recording and get a frequency report measured from <strong>that</strong> take:
+          what to decrease, what could be increased, and what is already balanced — with the measured
+          frequency, range, confidence and a recommended starting move. No EQ is applied and the
+          audio never leaves your browser.
+        </p>
+      </div>
+      <div class="pq-hero-flow" aria-label="Workflow">
+        <b>Upload</b><i>→</i><b>Analyze</b><i>→</i><b>Understand</b><i>→</i><b>Mix</b>
+      </div>
+    </header>
+
+    <div class="controls mc-controls">
+      <button class="btn primary" id="pq-browse" type="button">Upload vocal</button>
+      <button class="btn" id="pq-clear" type="button" disabled>Clear</button>
+      <span class="hint">WAV · MP3 · AIFF · M4A · FLAC — WAV preferred for professional analysis</span>
+      <input type="file" id="pq-file" accept="audio/*,.wav,.mp3,.aiff,.aif,.m4a,.flac,.ogg,.opus,.aac" hidden>
+    </div>
+
+    <div id="pq-dropzone" class="mc-dropzone" tabindex="0" role="button"
+         aria-label="Drop a vocal recording here or click to browse">
+      <div class="mc-drop-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M24 6v24M24 6l-8 8M24 6l8 8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 32v6a4 4 0 004 4h24a4 4 0 004-4v-6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="mc-drop-title">Drop your vocal file here</div>
+      <div class="mc-drop-sub">One isolated vocal track · WAV / MP3 / AIFF / M4A / FLAC</div>
+    </div>
+
+    <div id="pq-error" class="pq-error" hidden></div>
+
+    <div id="pq-progress-wrap" class="mc-progress-wrap" hidden>
+      <div class="mc-progress-track"><div id="pq-progress-bar" class="mc-progress-bar"></div></div>
+      <div class="pq-progress-head">
+        <span class="hint" id="pq-progress-label">Analyzing vocal…</span>
+        <span id="pq-progress-pct">0%</span>
+      </div>
+    </div>
+
+    <div id="pq-results" aria-live="polite"></div>
+  </section>
+
+  <!-- ═══════════════ VOCAL EQ CHEAT SHEET ═══════════════ -->
+  <section class="wrap veq-page" id="tab-vocal-eq" hidden>
     <article class="veq-board" aria-labelledby="veq-title">
       <header class="veq-hero">
         <div class="veq-title-wrap">
@@ -755,6 +807,8 @@
   <script src="js/mix-check-app.js"></script>
   <script src="js/song-studio.js"></script>
   <script src="js/pro-eq.js"></script>
+  <script src="js/practical-eq.js"></script>
+  <script src="js/practical-eq-app.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>

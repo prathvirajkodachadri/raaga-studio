@@ -3,11 +3,54 @@
 A single-page, zero-dependency studio for a Kannada music artist's full workflow:
 **compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-Seven tools in one page, no build step, no npm install. Files never leave the browser.
+Eight tools in one page, no build step, no npm install. Files never leave the browser.
 
 ## Tools
 
-### 0. Vocal EQ Cheat Sheet (home)
+### 0. Practical EQ (home) — vocal frequency diagnostic
+Upload **one vocal recording** and get a frequency report measured from *that*
+take. It is an analysis tool, not an EQ plugin: no audio is filtered, modified
+or rendered, and nothing is uploaded anywhere — decoding and analysis happen in
+the browser via the Web Audio API.
+
+Upload → Analyze → Understand → Mix. The only control is the file picker.
+
+**What it measures.** Frames are taken across the whole file (never a single
+moment), Hann-windowed, and binned onto a 1/12-octave grid. Silent frames are
+gated out, the fundamental is estimated per frame from the harmonic series, and
+the smoothing bandwidth adapts to that fundamental so one engine serves low
+male and high female voices without separate templates. Each characteristic is
+then judged against **this vocal's own spectral trend** — there is no stored
+"ideal vocal curve" anywhere in the code.
+
+Results are grouped into four sections, and a characteristic only appears where
+the audio supports it:
+
+| Section | Meaning |
+|---|---|
+| 🔻 **Decrease** | Measured excess — frequency, detected range, measured deviation, recommended starting cut, working range, Q, confidence, severity, and whether it is persistent / intermittent / transient |
+| 🔺 **Increase** | A region measurably low against the same trend |
+| 🟢 **Unchanged** | Within ±1.1 dB of the trend — leave it alone |
+| ⚪ **Not detected** | Not meaningfully present, or *Insufficient confidence* — never an invented value |
+
+Detectors cover rumble, plosive bursts, boominess, mud, boxiness, hollowness,
+nasal, honk, room resonance, harshness, shrillness, sibilance, tizziness, plus
+warmth, body, clarity, definition, presence, brightness, brilliance, air and
+openness. Narrow peaks that line up with the singer's own harmonic series are
+ignored rather than reported as resonances; sibilance and plosives are measured
+only on the frames where they actually occur.
+
+Findings are ranked into a **Top priorities** list, and the **frequency graph**
+(20 Hz–20 kHz log scale, ±6 dB) is drawn from the same result object — the
+measured spectrum sits behind the recommendation curve, every finding is a
+clickable/hoverable point with a tooltip, and unchanged regions sit on the 0 dB
+line. Graph and report can never disagree. Analysis JSON can be exported.
+
+Files with instruments, multiple sources or heavy noise are still analyzed but
+raise a reliability warning; silent, empty, too-short, unsupported and
+undecodable files produce plain-language errors.
+
+### 1. Vocal EQ Cheat Sheet
 The first page is a clear, web-native **Vocal Mixing EQ Cheat Sheet**. It keeps
 the visual frequency map from the studio reference while adding practical
 values that can be entered directly in Cubase or another EQ:
@@ -26,13 +69,13 @@ collapsed **Optional: open the interactive EQ** section. Its real biquad math,
 live audio, spectrum analyzer, eight presets and `window.PRO_EQ` test API are
 unchanged.
 
-### 1. ಛಂದಸ್ಸು (Prosody)
+### 2. ಛಂದಸ್ಸು (Prosody)
 Kannada **prosody scanner** (ಮಾತ್ರೆ-ಲಘು-ಗುರು) from the
 [ಕನ್ನಡ ದೀವಿಗೆ article](https://kannadadeevige.blogspot.com/2013/11/blog-post_8282.html).
 Scan your lyrics live while composing — every syllable is colour-marked with its
 mātra value, with the ಷಟ್ಪದಿ rule toggle and preloaded examples.
 
-### 2. Suno Custom Mode Builder
+### 3. Suno Custom Mode Builder
 Build the separate fields used by **Suno Custom Mode**: a focused **Style of Music**
 prompt, editable **Lyrics** with insertable section templates, an optional title, and
 an **Exclude** list for Advanced Options. Choose genre (Carnatic Fusion, Bhavageete,
@@ -42,7 +85,7 @@ the output updates live, instrumental settings stay consistent, and the current 
 preserved locally. Built-in starters cannot be accidentally deleted; saved **recipes**
 restore the complete editable form. Concise and detailed modes are available.
 
-### 3. Raga & Scale Reference
+### 4. Raga & Scale Reference
 A searchable library of **16 Carnatic + Hindustani ragas** (Hamsadhwani, Mohanam,
 Kalyani, Shankarabharanam, Hindolam, Abheri, Keeravani, Yaman, Madhuvanti…) mapped
 to the Suno → Cubase pipeline. Each raga shows:
@@ -59,13 +102,13 @@ to the Suno → Cubase pipeline. Each raga shows:
 The same raga list feeds the Suno Prompt Builder's **Key/Scale** dropdown, so both
 tabs stay in sync from one source of truth.
 
-### 4. Mix Check (pre-master)
+### 5. Mix Check (pre-master)
 Drop your **mixdown** (before mastering) and get a "ready for mastering?" verdict:
 headroom (integrated ≈ −18 to −14 LUFS, peaks ≤ −6 dBFS), crest factor / DR,
 clipping, stereo correlation & phase, low-end buildup, noise floor. Reuses the
 same analysis engine with **mixing targets** instead of mastering targets.
 
-### 5. Master Check (audio QA + release checklist)
+### 6. Master Check (audio QA + release checklist)
 Drop a master (WAV / FLAC / AIFF / MP3 / OGG…) and get:
 
 | Category | What it checks |
@@ -88,7 +131,7 @@ comparison** (uses the last mix from the Mix Check tab), JSON or print-to-PDF ex
 **Scoring:** weighted average (Loudness 25%, DR 20%, Clipping 20%, Frequency 10%,
 Stereo 10%, Silence 10%, Metadata 5%) → grade A–F.
 
-### 6. Song Studio (project registry & workflow)
+### 7. Song Studio (project registry & workflow)
 One card per song tracking **Idea → Composing → Suno → Mixing → Mastering → Released**:
 
 - Song registry with BPM / key / genre / status and Suno links
@@ -102,13 +145,16 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 
 ```
 raaga-studio/
-├── index.html                 # 7-tab UI (vocal EQ · prosody · suno · raga · mix · master · songs)
+├── index.html                 # 8-tab UI (practical EQ · vocal EQ · prosody · suno · raga · mix · master · songs)
 ├── css/
 │   ├── style.css              # shared dark studio theme
-│   ├── vocal-eq-cheatsheet.css # first-page cheat sheet layout
+│   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
+│   ├── vocal-eq-cheatsheet.css # cheat sheet layout
 │   └── raga-reference.css     # raga & scale reference cards
 ├── js/
-│   ├── pro-eq.js              # Pro-Q style parametric EQ (home) — biquad DSP + Web Audio
+│   ├── practical-eq.js        # Practical EQ analysis engine (home) — STFT, f0, detectors
+│   ├── practical-eq-app.js    # Practical EQ UI controller + frequency graph
+│   ├── pro-eq.js              # Pro-Q style parametric EQ — biquad DSP + Web Audio
 │   ├── prosody.js             # Kannada prosody engine
 │   ├── app.js                 # prosody UI controller
 │   ├── master-check.js        # audio analysis engine (Web Audio API) + release checklist
@@ -125,7 +171,8 @@ raaga-studio/
 └── test/
     ├── prosody_test.js        # Node prosody suite (33 checks)
     ├── master_check_test.js   # Node unit tests for scoring helpers (23 checks)
-    └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers (24 checks)
+    ├── practical_eq_test.js   # Practical EQ engine on synthesized vocals (41 checks)
+    └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers (64 checks)
 ```
 
 ## Run
@@ -135,17 +182,18 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #vocal-eq #suno #raga #mix #master #songs
+# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #songs
 ```
 
-> **Note:** Mix Check and Master Check need the Web Audio API (modern Chrome,
-> Firefox, Safari, Edge). Some codecs (e.g. FLAC) depend on browser decode support.
+> **Note:** Practical EQ, Mix Check and Master Check need the Web Audio API (modern
+> Chrome, Firefox, Safari, Edge). Some codecs (e.g. FLAC) depend on browser decode support.
 
 ## Tests
 
 ```bash
 node test/prosody_test.js
 node test/master_check_test.js
+node test/practical_eq_test.js
 node test/ui_smoke_test.js
 ```
 
