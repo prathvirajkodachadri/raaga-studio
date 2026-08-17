@@ -168,19 +168,19 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 - Session notes + **version log** (Mix v1, Master v2… with the chain you used)
 - Export all songs / one song as JSON, re-import anywhere; stored in localStorage
 
-### 8. Lyrics Lab (Kannada + English songwriting)
-A structured, on-device songwriting workspace—not a generic chatbot. Enter one idea and generate a
-Kannada, English or bilingual draft, or choose a section, mood, rhyme scheme and rhyme style first.
+### 8. Lyrics Lab (songwriting prompt builder + rhyme guide)
+A focused prompt builder for Kannada, English and bilingual songwriting. Enter an idea, choose the
+mood, section, rhyme scheme and rhyme style, then copy the structured brief into a writing AI.
+Lyrics Lab does not generate canned lyrics or invented rhyme scores.
 
 - Visual Auto / AAAA / AABB / ABAB / ABBA / ABCB / AABA / AAAB / ABAC / AABC / AAXA schemes
-- Lightweight Kannada akshara phonetic normalization and English stress/pronunciation analysis
-- Per-line rhyme family, detected ending, rhyme type, syllables, rhythm and scheme warnings
-- Separate strong sound, near sound and meaning-based candidates; selected-line refinement actions
-- Compact natural-language, semantic, repetition, forced-rhyme and hook-strength checks
-- Kannada Film Song mode, editable drafts, copy variants and TXT export
+- Hybrid, perfect, near, internal, multisyllabic, phonetic, Kannada suffix, semantic and rhythmic directions
+- Optional syllable length, vocabulary, key-phrase preservation and Kannada Film Song controls
+- Copyable output requesting finished lyrics followed by short bilingual rhyme notes
+- Detailed Kannada + English guide to sound rhymes, Kannada-friendly rhymes, musical rhymes and schemes
 
-The engine follows **Meaning → Emotion → Natural language → Rhythm → Rhyme** and calculates reports
-from the current text after every edit.
+Every prompt follows **Meaning → Emotion → Natural language → Rhythm → Rhyme** and explicitly tells
+the writing AI not to force grammar, repeat an ending unnecessarily or invent numerical scores.
 
 ### 9. Quick Access
 A curated, searchable mixing-engineer toolbox with safe external links grouped by free/free-tier status.
@@ -209,8 +209,8 @@ raaga-studio/
 │   ├── mix-check.js           # mix-target assessment engine
 │   ├── mix-check-app.js       # mix check tab controller
 │   ├── song-studio.js         # project registry, checklists, versions
-│   ├── lyrics-engine.js       # generation + Kannada/English phonetic/rhyme analysis
-│   ├── lyrics-lab.js          # Lyrics Lab editor, report, suggestions and export UI
+│   ├── lyrics-prompt.js       # pure songwriting-prompt builder and rhyme-scheme data
+│   ├── lyrics-lab.js          # Lyrics Lab prompt form, copy and local draft UI
 │   └── nav.js                 # shared tab navigation
 ├── sample_audio/              # optional test fixtures
 ├── docs/
@@ -219,7 +219,7 @@ raaga-studio/
     ├── prosody_test.js        # Node prosody suite (33 checks)
     ├── master_check_test.js   # Node unit tests for scoring helpers (23 checks)
     ├── practical_eq_test.js   # Practical EQ engine on synthesized vocals (81 checks)
-    ├── lyrics_engine_test.js  # phonetic/generation/analysis suite (59 checks)
+    ├── lyrics_prompt_test.js  # songwriting prompt-builder suite
     └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers
 ```
 
@@ -242,7 +242,7 @@ python3 -m http.server 8000
 node test/prosody_test.js
 node test/master_check_test.js
 node test/practical_eq_test.js
-node test/lyrics_engine_test.js
+node test/lyrics_prompt_test.js
 node test/ui_smoke_test.js
 ```
 
