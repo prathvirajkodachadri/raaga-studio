@@ -65,13 +65,28 @@
 
   var STYLE_INSTRUCTIONS = {
     perfect: 'Use perfect rhyme only where pronunciation genuinely matches. Never treat similar spelling as proof of rhyme.',
+    initial: 'Use initial rhyme (ಆದಿ ಪ್ರಾಸ / Aadi Prasa): let the opening sounds of lines echo each other. This is a classic Kannada prasa position—use it for striking openings and hooks, but keep the repeated beginnings natural and varied.',
+    'second-syllable': 'Use second-syllable rhyme (ದ್ವಿತೀಯಾಕ್ಷರ ಪ್ರಾಸ / Dvitiya Akshara Prasa): keep the second letter or syllable of each line the same even when the first letter differs. This is a hallmark of traditional Kannada verse and folk songs—it gives a sturdy, singable echo without repeating the first word.',
+    middle: 'Use middle rhyme (ಮಧ್ಯ ಪ್ರಾಸ / Madhya Prasa): place the rhyme in the middle of lines rather than at their ends. This is another classic Kannada prasa position—use it lightly so the lines still flow naturally.',
+    end: 'Use end rhyme (ಅಂತ್ಯ ಪ್ರಾಸ / Antya Prasa) at the ends of lines for a clear, singable pattern. Remember that end rhyme describes position, not strength—the ending sounds must still work musically.',
     near: 'Prefer natural near or slant rhymes. A close musical relationship is acceptable when an exact rhyme would sound forced.',
-    internal: 'Use occasional internal rhyme inside lines, without overcrowding every phrase.',
+    'exact-syllable': 'Prefer exact-syllable rhyme: match the final syllable structure closely so repeated endings sound smooth, singable and evenly balanced.',
+    identical: 'Use identical rhyme only with intent. Repeating the same pronunciation should carry lyrical meaning—avoid repeating the exact same word just to fill a line.',
+    masculine: 'Use masculine rhyme: strong rhymes that land on a single final stressed syllable for direct, decisive line endings.',
+    feminine: 'Use feminine rhyme: carry the rhyme through an unstressed trailing syllable for a softer, more flowing feel.',
     multisyllabic: 'Use multisyllabic rhyme where two or more ending syllables can match naturally.',
-    phonetic: 'Judge rhyme by spoken pronunciation rather than visible spelling or Unicode endings.',
     suffix: 'Use Kannada-friendly suffix and grammatical-ending rhyme carefully. Shared suffixes must still sound musical and must not create awkward grammar.',
-    semantic: 'Use semantic linking: connect images and emotions even when the words do not technically rhyme.',
+    'vowel-family': 'Use Kannada vowel-family rhyme: keep final vowel colours in the same family even when consonants differ, so the line stays melodic and natural.',
+    'case-ending': 'Use Kannada case-ending (vibhakti) rhyme only where sentence order stays natural; never twist grammar just to place the case ending last.',
+    'verb-ending': 'Use Kannada verb-ending rhyme: repeat natural verb endings such as ಬರುವೆ / ನಗುವೆ / ಕರೆಯುವೆ for movement, promises and singable hooks.',
+    participial: 'Use Kannada participial (kṛdanta) rhyme: similar completed-action forms such as ನೋಡಿದ / ಆಡಿದ / ಹಾಡಿದ for story-led lines.',
+    internal: 'Use occasional internal rhyme inside lines, without overcrowding every phrase.',
+    'double-internal': 'Use double internal rhyme: two rhyme points inside a line or paired lines. Keep it light in lyrical ballads; use it boldly in rap and fast hooks.',
+    echo: 'Use echo rhyme: return a key word or sound later like an echo, especially to make a hook memorable.',
+    phonetic: 'Judge rhyme by spoken pronunciation rather than visible spelling or Unicode endings.',
+    stress: 'Use stress rhyme: let English stressed syllables land in matching musical positions instead of forcing identical endings.',
     rhythmic: 'Prioritize matching rhythmic movement and singable syllable flow over exact ending sounds.',
+    semantic: 'Use semantic linking: connect images and emotions even when the words do not technically rhyme.',
     hybrid: 'Use Hybrid rhyme: balance pronunciation, rhythm, syllable flow and meaning instead of forcing identical endings.'
   };
 
@@ -89,8 +104,13 @@
     kannada: 'Kannada', english: 'English', bilingual: 'Kannada + English bilingual'
   };
   var STYLE_LABELS = {
-    perfect: 'Perfect', near: 'Near / Loose', internal: 'Internal', multisyllabic: 'Multisyllabic',
-    phonetic: 'Phonetic', suffix: 'Suffix / Kannada', semantic: 'Semantic', rhythmic: 'Rhythmic', hybrid: 'Hybrid'
+    perfect: 'Perfect', initial: 'Initial (Aadi)', 'second-syllable': 'Second-Syllable (Dvitiya Akshara)',
+    middle: 'Middle (Madhya)', end: 'End (Antya)', near: 'Near / Loose', 'exact-syllable': 'Exact-Syllable',
+    identical: 'Identical', masculine: 'Masculine', feminine: 'Feminine', multisyllabic: 'Multisyllabic',
+    suffix: 'Suffix / Kannada', 'vowel-family': 'Vowel-Family', 'case-ending': 'Case-Ending',
+    'verb-ending': 'Verb-Ending', participial: 'Participial', internal: 'Internal',
+    'double-internal': 'Double Internal', echo: 'Echo', phonetic: 'Phonetic', stress: 'Stress',
+    rhythmic: 'Rhythmic', semantic: 'Semantic', hybrid: 'Hybrid'
   };
   var SYLLABLE_LABELS = {
     auto: 'Natural; no fixed syllable target', short: 'Short and singable, roughly 4–7 syllables per line',

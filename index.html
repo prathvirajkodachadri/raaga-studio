@@ -862,11 +862,42 @@
         </label>
         <label class="ll-field" for="ll-style"><span class="ll-label">Rhyme style / ಪ್ರಾಸ ಶೈಲಿ</span>
           <select id="ll-style" class="mc-select">
-            <option value="hybrid">Hybrid — Recommended</option>
-            <option value="perfect">Perfect</option><option value="near">Near / Loose</option>
-            <option value="internal">Internal</option><option value="multisyllabic">Multisyllabic</option>
-            <option value="phonetic">Phonetic</option><option value="suffix">Suffix / Kannada</option>
-            <option value="semantic">Semantic</option><option value="rhythmic">Rhythmic</option>
+            <optgroup label="Recommended / ಶಿಫಾರಸು">
+              <option value="hybrid">Hybrid — Recommended · ಸಂಯೋಜಿತ</option>
+            </optgroup>
+            <optgroup label="Traditional Kannada prasa / ಸಾಂಪ್ರದಾಯಿಕ ಕನ್ನಡ ಪ್ರಾಸ">
+              <option value="initial">Initial (Aadi) · ಆದಿ ಪ್ರಾಸ</option>
+              <option value="second-syllable">Second-Syllable (Dvitiya Akshara) · ದ್ವಿತೀಯಾಕ್ಷರ ಪ್ರಾಸ</option>
+              <option value="middle">Middle (Madhya) · ಮಧ್ಯ ಪ್ರಾಸ</option>
+              <option value="end">End (Antya) · ಅಂತ್ಯ ಪ್ರಾಸ</option>
+            </optgroup>
+            <optgroup label="Core styles / ಮೂಲ ಶೈಲಿಗಳು">
+              <option value="perfect">Perfect · ಪೂರ್ಣ ಧ್ವನಿ</option>
+              <option value="near">Near / Loose · ಸಮೀಪ</option>
+              <option value="exact-syllable">Exact-Syllable · ಸಮಾನ ಅಕ್ಷರಘಟಕ</option>
+              <option value="identical">Identical · ಒಂದೇ ಉಚ್ಚಾರಣೆ</option>
+              <option value="masculine">Masculine · ಅಂತಿಮ ಒತ್ತಿನ</option>
+              <option value="feminine">Feminine · ಬಹು-ಅಂತ್ಯದ</option>
+              <option value="multisyllabic">Multisyllabic · ಬಹು ಅಕ್ಷರಘಟಕ</option>
+            </optgroup>
+            <optgroup label="Kannada-friendly / ಕನ್ನಡಕ್ಕೆ ಸಹಜ">
+              <option value="suffix">Suffix · ಪ್ರತ್ಯಯ</option>
+              <option value="vowel-family">Vowel-Family · ಸ್ವರ ಕುಟುಂಬ</option>
+              <option value="case-ending">Case-Ending · ವಿಭಕ್ತಿ</option>
+              <option value="verb-ending">Verb-Ending · ಕ್ರಿಯಾಪದ</option>
+              <option value="participial">Participial · ಕೃದಂತ</option>
+            </optgroup>
+            <optgroup label="Internal &amp; musical / ಆಂತರಿಕ ಮತ್ತು ಸಂಗೀತಾತ್ಮಕ">
+              <option value="internal">Internal · ಆಂತರಿಕ</option>
+              <option value="double-internal">Double Internal · ದ್ವಿ ಆಂತರಿಕ</option>
+              <option value="echo">Echo · ಪ್ರತಿಧ್ವನಿ</option>
+              <option value="phonetic">Phonetic · ಉಚ್ಚಾರಣಾ</option>
+              <option value="stress">Stress · ಒತ್ತಿನ</option>
+              <option value="rhythmic">Rhythmic · ಲಯ</option>
+            </optgroup>
+            <optgroup label="Meaning-first / ಅರ್ಥ ಪ್ರಧಾನ">
+              <option value="semantic">Semantic · ಅರ್ಥ ಸಂಬಂಧ</option>
+            </optgroup>
           </select>
         </label>
       </div>
@@ -939,60 +970,280 @@
 
       <details class="ll-guide-section" open>
         <summary><span>1. Core rhyme types</span><small lang="kn">ಮೂಲ ಪ್ರಾಸದ ವಿಧಗಳು</small></summary>
-        <div class="ll-rhyme-grid">
-          <article class="ll-rhyme-card"><h4>Perfect Rhyme <span lang="kn">· ಪೂರ್ಣ ಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>The stressed vowel and ending sounds match clearly.</p><p lang="kn">ಕೊನೆಯ ಮುಖ್ಯ ಸ್ವರ ಮತ್ತು ನಂತರದ ಧ್ವನಿಗಳು ಸ್ಪಷ್ಟವಾಗಿ ಹೊಂದುವುದು.</p><div class="ll-example"><b>English</b> night / light · fire / desire</div><div class="ll-example" lang="kn"><b>ಕನ್ನಡ</b> ಪ್ರೀತಿ / ರೀತಿ / ಗೀತಿ</div><small>Use it for a strong resolution, but only when the words remain natural.</small></article>
-          <article class="ll-rhyme-card"><h4>End Rhyme <span lang="kn">· ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>The rhyme appears at the ends of lines. It describes the position, not the strength.</p><p lang="kn">ಪ್ರಾಸದ ಪದಗಳು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಬರುವುದು. ಇದು ಪ್ರಾಸದ ಸ್ಥಾನವನ್ನು ಹೇಳುತ್ತದೆ.</p><div class="ll-example">night / light · ಕನಸು / ಮನಸು</div><small>Common in hooks, choruses and clear verse patterns.</small></article>
-          <article class="ll-rhyme-card"><h4>Near or Slant Rhyme <span lang="kn">· ಸಮೀಪ ಪ್ರಾಸ</span></h4><p>The sounds are related but not identical. Often more natural than a forced perfect rhyme.</p><p lang="kn">ಧ್ವನಿಗಳು ಹತ್ತಿರವಾಗಿರುತ್ತವೆ, ಆದರೆ ಸಂಪೂರ್ಣ ಒಂದೇ ಆಗುವುದಿಲ್ಲ.</p><div class="ll-example">heart / hard · ಮಾತು / ಹಾಡು</div><small>Useful when meaning and emotion need more freedom.</small></article>
-          <article class="ll-rhyme-card"><h4>Exact-Syllable Rhyme <span lang="kn">· ಸಮಾನ ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></h4><p>Two endings share a similar final syllable structure.</p><p lang="kn">ಕೊನೆಯ ಒಂದು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳ ರಚನೆ ಸಹಜವಾಗಿ ಹೊಂದುವುದು.</p><div class="ll-example" lang="kn">ಕನಸು / ಮನಸು</div><div class="ll-example">tenderly / slenderly</div><small>Good for smooth, singable repeated patterns.</small></article>
-          <article class="ll-rhyme-card"><h4>Identical Rhyme <span lang="kn">· ಒಂದೇ ಉಚ್ಚಾರಣೆಯ ಪ್ರಾಸ</span></h4><p>The same pronunciation returns, sometimes with a different meaning. Repeating the exact same word is usually weaker.</p><p lang="kn">ಒಂದೇ ಉಚ್ಚಾರಣೆ ಮತ್ತೆ ಬರುತ್ತದೆ. ಒಂದೇ ಪದವನ್ನು ಅತಿಯಾಗಿ ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</p><div class="ll-example">blue / blew · right / write</div><small>Use sparingly; repetition should have a lyrical purpose.</small></article>
-          <article class="ll-rhyme-card"><h4>Masculine Rhyme <span lang="kn">· ಅಂತಿಮ ಒತ್ತಿನ ಪ್ರಾಸ</span></h4><p>An English rhyme lands on one strong final stressed syllable.</p><p lang="kn">ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಕೊನೆಯ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕದ ಮೇಲೆ ಪ್ರಾಸ ಬೀಳುವುದು.</p><div class="ll-example">stand / land · bright / night</div><small>Creates a direct, decisive ending.</small></article>
-          <article class="ll-rhyme-card"><h4>Feminine Rhyme <span lang="kn">· ಬಹು-ಅಂತ್ಯದ ಪ್ರಾಸ</span></h4><p>The rhyme continues through an unstressed syllable after the main stress.</p><p lang="kn">ಮುಖ್ಯ ಒತ್ತಿನ ನಂತರದ ಮೃದು ಅಕ್ಷರಘಟಕವೂ ಪ್ರಾಸದಲ್ಲಿ ಭಾಗವಹಿಸುವುದು.</p><div class="ll-example">glory / story · lighting / fighting</div><small>Useful for flowing pop, theatre and conversational writing.</small></article>
-          <article class="ll-rhyme-card"><h4>Multisyllabic &amp; Compound <span lang="kn">· ಬಹು ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></h4><p>Two or more syllables—or a short phrase—participate in the rhyme.</p><p lang="kn">ಎರಡು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳು ಅಥವಾ ಸಣ್ಣ ಪದಗುಚ್ಛ ಪ್ರಾಸವಾಗುವುದು.</p><div class="ll-example">fire / desire · emotion / devotion</div><div class="ll-example" lang="kn">ಕಾಣುವೆ / ಹಾಡುವೆ / ಸಾಗುವೆ</div><small>Effective when it remains effortless to sing.</small></article>
+        <div class="ll-table-wrap">
+          <table class="ll-rhyme-table">
+            <thead>
+              <tr>
+                <th>Rhyme type <span lang="kn">· ಪ್ರಾಸ</span></th>
+                <th>What it means <span lang="kn">· ಅರ್ಥ</span></th>
+                <th>Example <span lang="kn">· ಉದಾಹರಣೆ</span></th>
+                <th>Best for / Tip <span lang="kn">· ಸೂಚನೆ</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Rhyme type"><b>Perfect Rhyme</b> <span lang="kn">· ಪೂರ್ಣ ಧ್ವನಿ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The stressed vowel and ending sounds match clearly.<span lang="kn">ಕೊನೆಯ ಮುಖ್ಯ ಸ್ವರ ಮತ್ತು ನಂತರದ ಧ್ವನಿಗಳು ಸ್ಪಷ್ಟವಾಗಿ ಹೊಂದುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">night / light · fire / desire</span><span class="ll-example" lang="kn">ಪ್ರೀತಿ / ರೀತಿ / ಗೀತಿ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Use it for a strong resolution, but only when the words remain natural.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Initial Rhyme</b> <span lang="kn">· ಆದಿ ಪ್ರಾಸ (Aadi Prasa)</span></td>
+                <td data-label="What it means">The rhyme lands at the beginnings of lines — the opening sounds echo each other. A classic position in traditional Kannada prosody.<span lang="kn">ಪ್ರಾಸದ ಪದಗಳು ಸಾಲಿನ ಆರಂಭದಲ್ಲಿ ಬರುತ್ತವೆ — ಮೊದಲ ಧ್ವನಿಯೇ ಪ್ರತಿಧ್ವನಿಸುತ್ತದೆ. ಕನ್ನಡದ ಸಾಂಪ್ರದಾಯಿಕ ಪ್ರಾಸ ಪ್ರಕಾರ.</span></td>
+                <td data-label="Example"><span class="ll-example"><u>Ne</u>ver say goodbye, <u>ne</u>ver walk away</span><span class="ll-example" lang="kn"><u>ನೀ</u>ನೇ ನನ್ನ ಹಾಡು, <u>ನೀ</u>ನೇ ನನ್ನ ಉಸಿರು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Use it for striking openings and hooks, but keep the repeated beginning natural and varied.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Second-Syllable Rhyme</b> <span lang="kn">· ದ್ವಿತೀಯಾಕ್ಷರ ಪ್ರಾಸ (Dvitiya Akshara Prasa)</span></td>
+                <td data-label="What it means">The second letter (akshara) of each line matches, even when the first letter differs. A hallmark of traditional Kannada verse and folk songs.<span lang="kn">ಪ್ರತಿ ಸಾಲಿನ ಎರಡನೇ ಅಕ್ಷರ ಒಂದೇ ಆಗಿರುತ್ತದೆ; ಮೊದಲ ಅಕ್ಷರ ಬೇರೆಯಾದರೂ ತೊಂದರೆಯಿಲ್ಲ. ಕನ್ನಡದ ಸಾಂಪ್ರದಾಯಿಕ ಮತ್ತು ಜನಪದ ಪದ್ಯಗಳ ಪ್ರಮುಖ ಲಕ್ಷಣ.</span></td>
+                <td data-label="Example"><span class="ll-example">ba<u>ṇṇa</u>da hūvu · ma<u>ṇṇa</u>da hūvu</span><span class="ll-example" lang="kn">ಬ<u>ಣ್ಣ</u>ದ ಹೂವು · ಮ<u>ಣ್ಣ</u>ದ ಹೂವು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Sturdy and singable; gives a consistent echo without repeating the first word.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Middle Rhyme</b> <span lang="kn">· ಮಧ್ಯ ಪ್ರಾಸ (Madhya Prasa)</span></td>
+                <td data-label="What it means">The rhyme falls in the middle of the lines rather than at their ends. Another classic Kannada prasa position.<span lang="kn">ಪ್ರಾಸವು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಲ್ಲ, ಮಧ್ಯಭಾಗದಲ್ಲಿ ಬರುತ್ತದೆ. ಕನ್ನಡದ ಸಾಂಪ್ರದಾಯಿಕ ಪ್ರಾಸ ಪ್ರಕಾರ.</span></td>
+                <td data-label="Example"><span class="ll-example">We <u>walk</u> the road, we <u>talk</u> in code</span><span class="ll-example" lang="kn">ನಿನ್ನ <u>ಕನಸಲಿ</u> ನಾನು, ನಿನ್ನ <u>ಮನಸಲಿ</u> ನಾನು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Adds internal musicality; use lightly so the lines still flow naturally.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>End Rhyme</b> <span lang="kn">· ಅಂತ್ಯ ಪ್ರಾಸ (Antya Prasa)</span></td>
+                <td data-label="What it means">The rhyme appears at the ends of lines. It describes the position, not the strength.<span lang="kn">ಪ್ರಾಸದ ಪದಗಳು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಬರುವುದು. ಇದು ಪ್ರಾಸದ ಸ್ಥಾನವನ್ನು ಹೇಳುತ್ತದೆ.</span></td>
+                <td data-label="Example"><span class="ll-example">night / light · ಕನಸು / ಮನಸು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Common in hooks, choruses and clear verse patterns.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Near or Slant Rhyme</b> <span lang="kn">· ಸಮೀಪ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The sounds are related but not identical. Often more natural than a forced perfect rhyme.<span lang="kn">ಧ್ವನಿಗಳು ಹತ್ತಿರವಾಗಿರುತ್ತವೆ, ಆದರೆ ಸಂಪೂರ್ಣ ಒಂದೇ ಆಗುವುದಿಲ್ಲ.</span></td>
+                <td data-label="Example"><span class="ll-example">heart / hard · ಮಾತು / ಹಾಡು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful when meaning and emotion need more freedom.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Exact-Syllable Rhyme</b> <span lang="kn">· ಸಮಾನ ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Two endings share a similar final syllable structure.<span lang="kn">ಕೊನೆಯ ಒಂದು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳ ರಚನೆ ಸಹಜವಾಗಿ ಹೊಂದುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">tenderly / slenderly</span><span class="ll-example" lang="kn">ಕನಸು / ಮನಸು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Good for smooth, singable repeated patterns.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Identical Rhyme</b> <span lang="kn">· ಒಂದೇ ಉಚ್ಚಾರಣೆಯ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The same pronunciation returns, sometimes with a different meaning. Repeating the exact same word is usually weaker.<span lang="kn">ಒಂದೇ ಉಚ್ಚಾರಣೆ ಮತ್ತೆ ಬರುತ್ತದೆ. ಒಂದೇ ಪದವನ್ನು ಅತಿಯಾಗಿ ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</span></td>
+                <td data-label="Example"><span class="ll-example">blue / blew · right / write</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Use sparingly; repetition should have a lyrical purpose.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Masculine Rhyme</b> <span lang="kn">· ಅಂತಿಮ ಒತ್ತಿನ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">An English rhyme lands on one strong final stressed syllable.<span lang="kn">ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಕೊನೆಯ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕದ ಮೇಲೆ ಪ್ರಾಸ ಬೀಳುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">stand / land · bright / night</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Creates a direct, decisive ending.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Feminine Rhyme</b> <span lang="kn">· ಬಹು-ಅಂತ್ಯದ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The rhyme continues through an unstressed syllable after the main stress.<span lang="kn">ಮುಖ್ಯ ಒತ್ತಿನ ನಂತರದ ಮೃದು ಅಕ್ಷರಘಟಕವೂ ಪ್ರಾಸದಲ್ಲಿ ಭಾಗವಹಿಸುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">glory / story · lighting / fighting</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful for flowing pop, theatre and conversational writing.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Multisyllabic &amp; Compound</b> <span lang="kn">· ಬಹು ಅಕ್ಷರಘಟಕ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Two or more syllables—or a short phrase—participate in the rhyme.<span lang="kn">ಎರಡು ಅಥವಾ ಹೆಚ್ಚು ಅಕ್ಷರಘಟಕಗಳು ಅಥವಾ ಸಣ್ಣ ಪದಗುಚ್ಛ ಪ್ರಾಸವಾಗುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">fire / desire · emotion / devotion</span><span class="ll-example" lang="kn">ಕಾಣುವೆ / ಹಾಡುವೆ / ಸಾಗುವೆ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Effective when it remains effortless to sing.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </details>
 
       <details class="ll-guide-section">
         <summary><span>2. Kannada-friendly rhyme</span><small lang="kn">ಕನ್ನಡಕ್ಕೆ ಸಹಜವಾದ ಪ್ರಾಸ</small></summary>
-        <div class="ll-rhyme-grid">
-          <article class="ll-rhyme-card"><h4>Suffix Rhyme <span lang="kn">· ಪ್ರತ್ಯಯ ಪ್ರಾಸ</span></h4><p>Words share a spoken suffix or grammatical ending.</p><p lang="kn">ಪದಗಳ ಕೊನೆಯ ಪ್ರತ್ಯಯ ಅಥವಾ ವ್ಯಾಕರಣ ರೂಪದ ಧ್ವನಿ ಹೊಂದುವುದು.</p><div class="ll-example" lang="kn">ಪ್ರೀತಿಯಲಿ / ಕನಸಿನಲಿ / ನೆನಪಿನಲಿ</div><small>A matching suffix alone does not guarantee a strong rhyme; listen to the complete ending.</small></article>
-          <article class="ll-rhyme-card"><h4>Vowel-Family Rhyme <span lang="kn">· ಸ್ವರ ಕುಟುಂಬ ಪ್ರಾಸ</span></h4><p>The final vowel colour is similar even when every consonant does not match.</p><p lang="kn">ಕೊನೆಯ ಸ್ವರಧ್ವನಿ ಒಂದೇ ಕುಟುಂಬದಲ್ಲಿದ್ದು ಸಂಗೀತಾತ್ಮಕವಾಗಿ ಹತ್ತಿರವಾಗುವುದು.</p><div class="ll-example" lang="kn">ನಾನು / ನೀನು / ತಾನು / ಏನು</div><small>Useful for open, melodic Kannada lines.</small></article>
-          <article class="ll-rhyme-card"><h4>Consonant-End Rhyme <span lang="kn">· ವ್ಯಂಜನ ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>The closing consonant movement is similar.</p><p lang="kn">ಪದಗಳ ಕೊನೆಯ ವ್ಯಂಜನ ಧ್ವನಿ ಅಥವಾ ಮುಕ್ತಾಯದ ಚಲನೆ ಹೊಂದುವುದು.</p><div class="ll-example"><b>Listen for sound</b>, not merely the final written character.</div><small>Especially helpful when transliteration or spelling can mislead.</small></article>
-          <article class="ll-rhyme-card"><h4>Case-Ending Rhyme <span lang="kn">· ವಿಭಕ್ತಿ ಪ್ರಾಸ</span></h4><p>Kannada case endings create a repeated spoken shape.</p><p lang="kn">ಒಂದೇ ವಿಭಕ್ತಿ ಪ್ರತ್ಯಯವು ಸಾಲುಗಳ ಕೊನೆಯಲ್ಲಿ ಸಹಜವಾಗಿ ಮರಳುವುದು.</p><div class="ll-example" lang="kn">ನಿನ್ನಲ್ಲಿ / ನನ್ನಲ್ಲಿ / ಅವಳಲ್ಲಿ</div><small>Do not twist sentence order merely to place the case ending last.</small></article>
-          <article class="ll-rhyme-card"><h4>Verb-Ending Rhyme <span lang="kn">· ಕ್ರಿಯಾಪದ ಅಂತ್ಯ ಪ್ರಾಸ</span></h4><p>Related verb forms create a singable repeated ending.</p><p lang="kn">ಕ್ರಿಯಾಪದಗಳ ಒಂದೇ ರೀತಿಯ ಅಂತ್ಯಧ್ವನಿ ಪ್ರಾಸ ನೀಡುವುದು.</p><div class="ll-example" lang="kn">ಬರುವೆ / ನಗುವೆ / ಕರೆಯುವೆ</div><small>Useful for movement, promises and hook repetition.</small></article>
-          <article class="ll-rhyme-card"><h4>Participial Rhyme <span lang="kn">· ಕೃದಂತ ಪ್ರಾಸ</span></h4><p>Similar participial or completed-action forms rhyme.</p><p lang="kn">ಮಾಡಿದ ಕ್ರಿಯೆಯನ್ನು ಸೂಚಿಸುವ ಸಮಾನ ರೂಪಗಳು ಪ್ರಾಸವಾಗುವುದು.</p><div class="ll-example" lang="kn">ನೋಡಿದ / ಆಡಿದ / ಹಾಡಿದ</div><small>Works naturally in story-led verses.</small></article>
-          <article class="ll-rhyme-card"><h4>Semantic + Phonetic <span lang="kn">· ಅರ್ಥ ಮತ್ತು ಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>The words sound related and also belong to a connected world of meaning.</p><p lang="kn">ಧ್ವನಿಯ ಜೊತೆಗೆ ಪದಗಳ ಅರ್ಥವೂ ಪರಸ್ಪರ ಸಂಬಂಧ ಹೊಂದಿರುವುದು.</p><div class="ll-example" lang="kn">ಪ್ರೀತಿ / ರೀತಿ / ನೀತಿ / ಗೀತಿ</div><small>Often stronger than choosing a sound-match with no emotional relevance.</small></article>
+        <div class="ll-table-wrap">
+          <table class="ll-rhyme-table">
+            <thead>
+              <tr>
+                <th>Rhyme type <span lang="kn">· ಪ್ರಾಸ</span></th>
+                <th>What it means <span lang="kn">· ಅರ್ಥ</span></th>
+                <th>Example <span lang="kn">· ಉದಾಹರಣೆ</span></th>
+                <th>Best for / Tip <span lang="kn">· ಸೂಚನೆ</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Rhyme type"><b>Suffix Rhyme</b> <span lang="kn">· ಪ್ರತ್ಯಯ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Words share a spoken suffix or grammatical ending.<span lang="kn">ಪದಗಳ ಕೊನೆಯ ಪ್ರತ್ಯಯ ಅಥವಾ ವ್ಯಾಕರಣ ರೂಪದ ಧ್ವನಿ ಹೊಂದುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ಪ್ರೀತಿಯಲಿ / ಕನಸಿನಲಿ / ನೆನಪಿನಲಿ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">A matching suffix alone does not guarantee a strong rhyme; listen to the complete ending.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Vowel-Family Rhyme</b> <span lang="kn">· ಸ್ವರ ಕುಟುಂಬ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The final vowel colour is similar even when every consonant does not match.<span lang="kn">ಕೊನೆಯ ಸ್ವರಧ್ವನಿ ಒಂದೇ ಕುಟುಂಬದಲ್ಲಿದ್ದು ಸಂಗೀತಾತ್ಮಕವಾಗಿ ಹತ್ತಿರವಾಗುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ನಾನು / ನೀನು / ತಾನು / ಏನು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful for open, melodic Kannada lines.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Consonant-End Rhyme</b> <span lang="kn">· ವ್ಯಂಜನ ಅಂತ್ಯ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The closing consonant movement is similar.<span lang="kn">ಪದಗಳ ಕೊನೆಯ ವ್ಯಂಜನ ಧ್ವನಿ ಅಥವಾ ಮುಕ್ತಾಯದ ಚಲನೆ ಹೊಂದುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">Listen for sound, not merely the final written character.</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Especially helpful when transliteration or spelling can mislead.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Case-Ending Rhyme</b> <span lang="kn">· ವಿಭಕ್ತಿ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Kannada case endings create a repeated spoken shape.<span lang="kn">ಒಂದೇ ವಿಭಕ್ತಿ ಪ್ರತ್ಯಯವು ಸಾಲುಗಳ ಕೊನೆಯಲ್ಲಿ ಸಹಜವಾಗಿ ಮರಳುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ನಿನ್ನಲ್ಲಿ / ನನ್ನಲ್ಲಿ / ಅವಳಲ್ಲಿ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Do not twist sentence order merely to place the case ending last.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Verb-Ending Rhyme</b> <span lang="kn">· ಕ್ರಿಯಾಪದ ಅಂತ್ಯ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Related verb forms create a singable repeated ending.<span lang="kn">ಕ್ರಿಯಾಪದಗಳ ಒಂದೇ ರೀತಿಯ ಅಂತ್ಯಧ್ವನಿ ಪ್ರಾಸ ನೀಡುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ಬರುವೆ / ನಗುವೆ / ಕರೆಯುವೆ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful for movement, promises and hook repetition.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Participial Rhyme</b> <span lang="kn">· ಕೃದಂತ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Similar participial or completed-action forms rhyme.<span lang="kn">ಮಾಡಿದ ಕ್ರಿಯೆಯನ್ನು ಸೂಚಿಸುವ ಸಮಾನ ರೂಪಗಳು ಪ್ರಾಸವಾಗುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ನೋಡಿದ / ಆಡಿದ / ಹಾಡಿದ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Works naturally in story-led verses.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Semantic + Phonetic</b> <span lang="kn">· ಅರ್ಥ ಮತ್ತು ಧ್ವನಿ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">The words sound related and also belong to a connected world of meaning.<span lang="kn">ಧ್ವನಿಯ ಜೊತೆಗೆ ಪದಗಳ ಅರ್ಥವೂ ಪರಸ್ಪರ ಸಂಬಂಧ ಹೊಂದಿರುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example" lang="kn">ಪ್ರೀತಿ / ರೀತಿ / ನೀತಿ / ಗೀತಿ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Often stronger than choosing a sound-match with no emotional relevance.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <aside class="ll-guide-warning"><strong>Kannada pronunciation matters / ಕನ್ನಡ ಉಚ್ಚಾರಣೆ ಮುಖ್ಯ.</strong><p>Two words are not a strong rhyme merely because their Unicode endings look alike. Say or sing the complete endings aloud.</p><p lang="kn">ಬರಹದ ಕೊನೆಯ ಅಕ್ಷರಗಳು ಒಂದೇ ರೀತಿ ಕಾಣುವುದರಿಂದ ಮಾತ್ರ ಉತ್ತಮ ಪ್ರಾಸವಾಗುವುದಿಲ್ಲ. ಪೂರ್ಣ ಅಂತ್ಯವನ್ನು ಉಚ್ಚರಿಸಿ ಕೇಳಿ.</p></aside>
       </details>
 
       <details class="ll-guide-section">
         <summary><span>3. Internal and musical rhyme</span><small lang="kn">ಆಂತರಿಕ ಮತ್ತು ಸಂಗೀತಾತ್ಮಕ ಪ್ರಾಸ</small></summary>
-        <div class="ll-rhyme-grid">
-          <article class="ll-rhyme-card"><h4>Internal Rhyme <span lang="kn">· ಆಂತರಿಕ ಪ್ರಾಸ</span></h4><p>Rhyme happens inside a line instead of only at its end.</p><p lang="kn">ಪ್ರಾಸವು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಮಾತ್ರವಲ್ಲ, ಸಾಲಿನ ಒಳಗೆಯೂ ಬರುತ್ತದೆ.</p><div class="ll-example">I hear the light in the quiet night</div><div class="ll-example" lang="kn">ಮನದಲ್ಲಿ ಮಳೆಯಲಿ ಮೌನದ ಕನಸಲಿ</div><small>Adds movement without demanding end rhyme.</small></article>
-          <article class="ll-rhyme-card"><h4>Double Internal Rhyme <span lang="kn">· ದ್ವಿ ಆಂತರಿಕ ಪ್ರಾಸ</span></h4><p>Two rhyme points appear inside one line or paired lines.</p><p lang="kn">ಒಂದು ಸಾಲಿನಲ್ಲಿ ಅಥವಾ ಜೋಡಿ ಸಾಲುಗಳಲ್ಲಿ ಎರಡು ಪ್ರಾಸ ಬಿಂದುಗಳು ಇರುವುದು.</p><small>Powerful in rap and fast hooks; use lightly in lyrical ballads.</small></article>
-          <article class="ll-rhyme-card"><h4>Echo Rhyme <span lang="kn">· ಪ್ರತಿಧ್ವನಿ ಪ್ರಾಸ</span></h4><p>A sound or key word returns later like an echo.</p><p lang="kn">ಮುಖ್ಯ ಪದ ಅಥವಾ ಧ್ವನಿ ಸ್ವಲ್ಪ ಹೊತ್ತಿನ ನಂತರ ಪ್ರತಿಧ್ವನಿಯಂತೆ ಮರಳುವುದು.</p><div class="ll-example">Come home… home</div><div class="ll-example" lang="kn">ನೀನೇ… ನೀನೇ</div><small>Useful for memorable hooks when repetition carries emotion.</small></article>
-          <article class="ll-rhyme-card"><h4>Phonetic Rhyme <span lang="kn">· ಉಚ್ಚಾರಣಾ ಪ್ರಾಸ</span></h4><p>Compare actual pronunciation rather than spelling.</p><p lang="kn">ಬರಹಕ್ಕಿಂತ ನಿಜವಾದ ಉಚ್ಚಾರಣೆಯ ಆಧಾರದಲ್ಲಿ ಪ್ರಾಸ ಆಯ್ಕೆ ಮಾಡುವುದು.</p><div class="ll-example">through does not rhyme with rough</div><small>Essential for both English irregular spelling and Kannada script endings.</small></article>
-          <article class="ll-rhyme-card"><h4>Stress Rhyme <span lang="kn">· ಒತ್ತಿನ ಪ್ರಾಸ</span></h4><p>English stressed syllables land in matching musical positions.</p><p lang="kn">ಇಂಗ್ಲಿಷ್ ಸಾಲುಗಳಲ್ಲಿ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕಗಳು ಸಮಾನ ಲಯಸ್ಥಾನದಲ್ಲಿ ಬರುವುದು.</p><small>Useful for pop, rap and rhythm-led English lyrics.</small></article>
-          <article class="ll-rhyme-card"><h4>Rhythmic Rhyme <span lang="kn">· ಲಯ ಪ್ರಾಸ</span></h4><p>Lines share a similar syllable movement even without an exact sound match.</p><p lang="kn">ಧ್ವನಿ ಸಂಪೂರ್ಣ ಹೊಂದದಿದ್ದರೂ ಸಾಲುಗಳ ಅಕ್ಷರಘಟಕ ಮತ್ತು ಲಯದ ಚಲನೆ ಹೊಂದುವುದು.</p><small>Choose it when the melody needs balanced phrasing.</small></article>
-          <article class="ll-rhyme-card"><h4>Semantic Rhyme <span lang="kn">· ಅರ್ಥ ಸಂಬಂಧ</span></h4><p>Words share an emotional or visual world without technically rhyming.</p><p lang="kn">ಧ್ವನಿ ಪ್ರಾಸವಿಲ್ಲದಿದ್ದರೂ ಒಂದೇ ಭಾವ ಅಥವಾ ಚಿತ್ರಲೋಕಕ್ಕೆ ಸೇರಿದ ಪದಗಳು.</p><div class="ll-example">rain / cloud / river · ಪ್ರೀತಿ / ಮಮತೆ / ಒಲವು</div><small>Protects meaning when sound rhyme would be artificial.</small></article>
-          <article class="ll-rhyme-card featured"><h4>Hybrid Rhyme <span lang="kn">· ಸಂಯೋಜಿತ ಪ್ರಾಸ</span></h4><p>Balances sound, rhythm, syllable flow and meaning. This is the recommended default.</p><p lang="kn">ಧ್ವನಿ, ಲಯ, ಅಕ್ಷರಘಟಕ ಮತ್ತು ಅರ್ಥವನ್ನು ಸಮತೋಲನಗೊಳಿಸುವ ಪ್ರಾಸ. ಇದು ಶಿಫಾರಸು ಮಾಡಿದ ಆಯ್ಕೆ.</p><div class="ll-example">Perfect where natural; near, semantic or rhythmic where the lyric needs freedom.</div><small>Well suited to film songs and emotionally natural writing.</small></article>
+        <div class="ll-table-wrap">
+          <table class="ll-rhyme-table">
+            <thead>
+              <tr>
+                <th>Rhyme type <span lang="kn">· ಪ್ರಾಸ</span></th>
+                <th>What it means <span lang="kn">· ಅರ್ಥ</span></th>
+                <th>Example <span lang="kn">· ಉದಾಹರಣೆ</span></th>
+                <th>Best for / Tip <span lang="kn">· ಸೂಚನೆ</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Rhyme type"><b>Internal Rhyme</b> <span lang="kn">· ಆಂತರಿಕ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Rhyme happens inside a line instead of only at its end.<span lang="kn">ಪ್ರಾಸವು ಸಾಲಿನ ಕೊನೆಯಲ್ಲಿ ಮಾತ್ರವಲ್ಲ, ಸಾಲಿನ ಒಳಗೆಯೂ ಬರುತ್ತದೆ.</span></td>
+                <td data-label="Example"><span class="ll-example">I hear the light in the quiet night</span><span class="ll-example" lang="kn">ಮನದಲ್ಲಿ ಮಳೆಯಲಿ ಮೌನದ ಕನಸಲಿ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Adds movement without demanding end rhyme.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Double Internal Rhyme</b> <span lang="kn">· ದ್ವಿ ಆಂತರಿಕ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Two rhyme points appear inside one line or paired lines.<span lang="kn">ಒಂದು ಸಾಲಿನಲ್ಲಿ ಅಥವಾ ಜೋಡಿ ಸಾಲುಗಳಲ್ಲಿ ಎರಡು ಪ್ರಾಸ ಬಿಂದುಗಳು ಇರುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">“I hold the <b>night</b> and chase the <b>light</b>”</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Powerful in rap and fast hooks; use lightly in lyrical ballads.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Echo Rhyme</b> <span lang="kn">· ಪ್ರತಿಧ್ವನಿ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">A sound or key word returns later like an echo.<span lang="kn">ಮುಖ್ಯ ಪದ ಅಥವಾ ಧ್ವನಿ ಸ್ವಲ್ಪ ಹೊತ್ತಿನ ನಂತರ ಪ್ರತಿಧ್ವನಿಯಂತೆ ಮರಳುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">Come home… home</span><span class="ll-example" lang="kn">ನೀನೇ… ನೀನೇ</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful for memorable hooks when repetition carries emotion.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Phonetic Rhyme</b> <span lang="kn">· ಉಚ್ಚಾರಣಾ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Compare actual pronunciation rather than spelling.<span lang="kn">ಬರಹಕ್ಕಿಂತ ನಿಜವಾದ ಉಚ್ಚಾರಣೆಯ ಆಧಾರದಲ್ಲಿ ಪ್ರಾಸ ಆಯ್ಕೆ ಮಾಡುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">through does not rhyme with rough</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Essential for both English irregular spelling and Kannada script endings.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Stress Rhyme</b> <span lang="kn">· ಒತ್ತಿನ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">English stressed syllables land in matching musical positions.<span lang="kn">ಇಂಗ್ಲಿಷ್ ಸಾಲುಗಳಲ್ಲಿ ಒತ್ತಿರುವ ಅಕ್ಷರಘಟಕಗಳು ಸಮಾನ ಲಯಸ್ಥಾನದಲ್ಲಿ ಬರುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">re<u>mem</u>ber / De<u>cem</u>ber</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Useful for pop, rap and rhythm-led English lyrics.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Rhythmic Rhyme</b> <span lang="kn">· ಲಯ ಪ್ರಾಸ</span></td>
+                <td data-label="What it means">Lines share a similar syllable movement even without an exact sound match.<span lang="kn">ಧ್ವನಿ ಸಂಪೂರ್ಣ ಹೊಂದದಿದ್ದರೂ ಸಾಲುಗಳ ಅಕ್ಷರಘಟಕ ಮತ್ತು ಲಯದ ಚಲನೆ ಹೊಂದುವುದು.</span></td>
+                <td data-label="Example"><span class="ll-example">walking the long way home / waiting for you to call</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Choose it when the melody needs balanced phrasing.</td>
+              </tr>
+              <tr>
+                <td data-label="Rhyme type"><b>Semantic Rhyme</b> <span lang="kn">· ಅರ್ಥ ಸಂಬಂಧ</span></td>
+                <td data-label="What it means">Words share an emotional or visual world without technically rhyming.<span lang="kn">ಧ್ವನಿ ಪ್ರಾಸವಿಲ್ಲದಿದ್ದರೂ ಒಂದೇ ಭಾವ ಅಥವಾ ಚಿತ್ರಲೋಕಕ್ಕೆ ಸೇರಿದ ಪದಗಳು.</span></td>
+                <td data-label="Example"><span class="ll-example">rain / cloud / river · ಪ್ರೀತಿ / ಮಮತೆ / ಒಲವು</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Protects meaning when sound rhyme would be artificial.</td>
+              </tr>
+              <tr class="ll-row-featured">
+                <td data-label="Rhyme type"><b>Hybrid Rhyme</b> <span lang="kn">· ಸಂಯೋಜಿತ ಪ್ರಾಸ</span> <span class="ll-recommended">Recommended</span></td>
+                <td data-label="What it means">Balances sound, rhythm, syllable flow and meaning. This is the recommended default.<span lang="kn">ಧ್ವನಿ, ಲಯ, ಅಕ್ಷರಘಟಕ ಮತ್ತು ಅರ್ಥವನ್ನು ಸಮತೋಲನಗೊಳಿಸುವ ಪ್ರಾಸ. ಇದು ಶಿಫಾರಸು ಮಾಡಿದ ಆಯ್ಕೆ.</span></td>
+                <td data-label="Example"><span class="ll-example">Perfect where natural; near, semantic or rhythmic where the lyric needs freedom.</span></td>
+                <td data-label="Best for / Tip" class="ll-tip">Well suited to film songs and emotionally natural writing.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </details>
 
       <details class="ll-guide-section ll-schemes-section" open>
         <summary><span>4. Rhyme schemes</span><small lang="kn">ಪ್ರಾಸ ವಿನ್ಯಾಸಗಳು</small></summary>
         <p class="ll-section-intro">Letters show rhyme families, not literal words. The same letter should return to a related spoken ending.</p>
-        <div class="ll-scheme-grid">
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span></div><h4>AAAA</h4><p>One strong family across all four lines.</p><p lang="kn">ನಾಲ್ಕೂ ಸಾಲುಗಳಿಗೆ ಒಂದೇ ಪ್ರಾಸ ಕುಟುಂಬ. ನೆನಪಾಗುವ ಹುಕ್‌ಗೆ ಸೂಕ್ತ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span></div><h4>AABB</h4><p>An opening couplet followed by a new couplet.</p><p lang="kn">ಮೊದಲ ಜೋಡಿಗೆ A; ನಂತರದ ಜೋಡಿಗೆ B. ಸ್ಪಷ್ಟ ಮತ್ತು ಸುಲಭ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-b">B</span></div><h4>ABAB</h4><p>Alternating families create forward motion.</p><p lang="kn">A ಮತ್ತು B ಪರ್ಯಾಯವಾಗಿ ಬಂದು ಪದ್ಯಕ್ಕೆ ಚಲನೆ ನೀಡುತ್ತವೆ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span><span class="family-a">A</span></div><h4>ABBA</h4><p>The outside lines frame a rhyming middle pair.</p><p lang="kn">ಹೊರಗಿನ A ಸಾಲುಗಳ ನಡುವೆ B ಪ್ರಾಸದ ಜೋಡಿ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span><span class="family-b">B</span></div><h4>ABCB</h4><p>Only lines 2 and 4 resolve together.</p><p lang="kn">2 ಮತ್ತು 4ನೇ ಸಾಲು ಮಾತ್ರ ಪ್ರಾಸ. ಕಥನಾತ್ಮಕ ಪದ್ಯಕ್ಕೆ ಹೆಚ್ಚು ಸ್ವಾತಂತ್ರ್ಯ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span></div><h4>AABA</h4><p>Three familiar returns with one contrasting line.</p><p lang="kn">ಒಂದು ವಿಭಿನ್ನ B ಸಾಲಿನ ಸುತ್ತ A ಪ್ರಾಸ ಮರಳುತ್ತದೆ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span></div><h4>AAAB</h4><p>Three repeated resolutions lead to a contrasting finish.</p><p lang="kn">ಮೊದಲ ಮೂರು A; ಕೊನೆಯ B ಸಾಲು ತಿರುವು ಅಥವಾ ಉತ್ತರ ನೀಡುತ್ತದೆ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-c">C</span></div><h4>ABAC</h4><p>A returns once; B and C remain open.</p><p lang="kn">A ಮಾತ್ರ ಮರಳುತ್ತದೆ; B ಮತ್ತು C ಸಾಲುಗಳು ಹೊಸ ಅಂತ್ಯ ಪಡೆಯುತ್ತವೆ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span></div><h4>AABC</h4><p>A rhyming opening gives way to two freer lines.</p><p lang="kn">ಮೊದಲ ಜೋಡಿ ಪ್ರಾಸ; ನಂತರದ ಸಾಲುಗಳು ಕಥೆಯನ್ನು ಮುಕ್ತವಾಗಿ ಮುಂದುವರಿಸುತ್ತವೆ.</p></article>
-          <article class="ll-scheme-card"><div class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="open">X</span><span class="family-a">A</span></div><h4>AAXA</h4><p>X is intentionally free; A remains the anchor.</p><p lang="kn">X ಸಾಲು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಮುಕ್ತ; A ಪ್ರಾಸ ಮುಖ್ಯ ಆಧಾರ.</p></article>
+        <div class="ll-table-wrap">
+          <table class="ll-rhyme-table ll-scheme-table">
+            <thead>
+              <tr>
+                <th>Pattern <span lang="kn">· ಮಾದರಿ</span></th>
+                <th>Name <span lang="kn">· ಹೆಸರು</span></th>
+                <th>What it means <span lang="kn">· ಅರ್ಥ</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span></span></td>
+                <td data-label="Name"><b>AAAA</b></td>
+                <td data-label="What it means">One strong family across all four lines.<span lang="kn">ನಾಲ್ಕೂ ಸಾಲುಗಳಿಗೆ ಒಂದೇ ಪ್ರಾಸ ಕುಟುಂಬ. ನೆನಪಾಗುವ ಹುಕ್‌ಗೆ ಸೂಕ್ತ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span></span></td>
+                <td data-label="Name"><b>AABB</b></td>
+                <td data-label="What it means">An opening couplet followed by a new couplet.<span lang="kn">ಮೊದಲ ಜೋಡಿಗೆ A; ನಂತರದ ಜೋಡಿಗೆ B. ಸ್ಪಷ್ಟ ಮತ್ತು ಸುಲಭ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-b">B</span></span></td>
+                <td data-label="Name"><b>ABAB</b></td>
+                <td data-label="What it means">Alternating families create forward motion.<span lang="kn">A ಮತ್ತು B ಪರ್ಯಾಯವಾಗಿ ಬಂದು ಪದ್ಯಕ್ಕೆ ಚಲನೆ ನೀಡುತ್ತವೆ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-b">B</span><span class="family-a">A</span></span></td>
+                <td data-label="Name"><b>ABBA</b></td>
+                <td data-label="What it means">The outside lines frame a rhyming middle pair.<span lang="kn">ಹೊರಗಿನ A ಸಾಲುಗಳ ನಡುವೆ B ಪ್ರಾಸದ ಜೋಡಿ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span><span class="family-b">B</span></span></td>
+                <td data-label="Name"><b>ABCB</b></td>
+                <td data-label="What it means">Only lines 2 and 4 resolve together.<span lang="kn">2 ಮತ್ತು 4ನೇ ಸಾಲು ಮಾತ್ರ ಪ್ರಾಸ. ಕಥನಾತ್ಮಕ ಪದ್ಯಕ್ಕೆ ಹೆಚ್ಚು ಸ್ವಾತಂತ್ರ್ಯ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span></span></td>
+                <td data-label="Name"><b>AABA</b></td>
+                <td data-label="What it means">Three familiar returns with one contrasting line.<span lang="kn">ಒಂದು ವಿಭಿನ್ನ B ಸಾಲಿನ ಸುತ್ತ A ಪ್ರಾಸ ಮರಳುತ್ತದೆ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span></span></td>
+                <td data-label="Name"><b>AAAB</b></td>
+                <td data-label="What it means">Three repeated resolutions lead to a contrasting finish.<span lang="kn">ಮೊದಲ ಮೂರು A; ಕೊನೆಯ B ಸಾಲು ತಿರುವು ಅಥವಾ ಉತ್ತರ ನೀಡುತ್ತದೆ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-b">B</span><span class="family-a">A</span><span class="family-c">C</span></span></td>
+                <td data-label="Name"><b>ABAC</b></td>
+                <td data-label="What it means">A returns once; B and C remain open.<span lang="kn">A ಮಾತ್ರ ಮರಳುತ್ತದೆ; B ಮತ್ತು C ಸಾಲುಗಳು ಹೊಸ ಅಂತ್ಯ ಪಡೆಯುತ್ತವೆ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="family-b">B</span><span class="family-c">C</span></span></td>
+                <td data-label="Name"><b>AABC</b></td>
+                <td data-label="What it means">A rhyming opening gives way to two freer lines.<span lang="kn">ಮೊದಲ ಜೋಡಿ ಪ್ರಾಸ; ನಂತರದ ಸಾಲುಗಳು ಕಥೆಯನ್ನು ಮುಕ್ತವಾಗಿ ಮುಂದುವರಿಸುತ್ತವೆ.</span></td>
+              </tr>
+              <tr>
+                <td data-label="Pattern"><span class="ll-pattern"><span class="family-a">A</span><span class="family-a">A</span><span class="open">X</span><span class="family-a">A</span></span></td>
+                <td data-label="Name"><b>AAXA</b></td>
+                <td data-label="What it means">X is intentionally free; A remains the anchor.<span lang="kn">X ಸಾಲು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಮುಕ್ತ; A ಪ್ರಾಸ ಮುಖ್ಯ ಆಧಾರ.</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </details>
 
