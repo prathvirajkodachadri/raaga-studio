@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
   <link rel="stylesheet" href="css/raga-reference.css">
   <link rel="stylesheet" href="css/practical-eq.css">
+  <link rel="stylesheet" href="css/mix-tools.css">
 </head>
 <body>
 
@@ -33,6 +34,7 @@
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
+      <button type="button" class="tab" data-tab="quick-access" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⚡</span><span class="tab-label desktop">Quick Access</span><span class="tab-label mobile">Quick</span></button>
     </nav>
   </header>
 
@@ -795,6 +797,43 @@
     </div>
   </section>
 
+  <!-- ═══════════════ QUICK ACCESS TAB ═══════════════ -->
+  <section class="wrap mt-page" id="tab-quick-access" hidden>
+    <header class="mt-hero">
+      <p class="mt-kicker">Raaga Studio · mixing engineer toolbox</p>
+      <h2>Mixing Engineer <span>Quick Access</span></h2>
+      <p class="mc-intro">
+        Useful online tools for editing, vocals, stems, production and mixing —
+        open any tool with one click. No accounts, no uploads — just quick links.
+      </p>
+    </header>
+
+    <div class="mt-controls">
+      <input type="search" id="mt-search" class="mt-search"
+             placeholder="Search mixing tools…" aria-label="Search mixing tools">
+      <div class="mt-filters" id="mt-filters" role="group" aria-label="Filter tools">
+        <button type="button" class="mt-filter on" data-filter="all">All</button>
+        <button type="button" class="mt-filter" data-filter="free">🟢 Free</button>
+        <button type="button" class="mt-filter" data-filter="tier">🟡 Free Tier</button>
+        <button type="button" class="mt-filter" data-filter="editing">Audio Editing</button>
+        <button type="button" class="mt-filter" data-filter="vocal">Vocal / Stems</button>
+        <button type="button" class="mt-filter" data-filter="daw">DAW / Production</button>
+        <button type="button" class="mt-filter" data-filter="ai">AI / Audio</button>
+        <button type="button" class="mt-filter" id="mt-favs-filter" data-filter="favs" hidden>★ Favorites</button>
+      </div>
+    </div>
+
+    <div class="mt-recent" id="mt-recent" hidden></div>
+
+    <p class="mt-count" id="mt-count" aria-live="polite"></p>
+    <div class="mt-groups" id="mt-groups"></div>
+
+    <p class="mt-warning">
+      These are external services. Raaga Studio does not control their pricing, availability,
+      privacy policies or features. Check each service before uploading sensitive or unreleased audio.
+    </p>
+  </section>
+
   </main>
 
   <script src="js/prosody.js"></script>
@@ -809,6 +848,7 @@
   <script src="js/pro-eq.js"></script>
   <script src="js/practical-eq.js"></script>
   <script src="js/practical-eq-app.js"></script>
+  <script src="js/mix-tools.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>
