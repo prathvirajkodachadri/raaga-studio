@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/raga-reference.css">
   <link rel="stylesheet" href="css/practical-eq.css">
   <link rel="stylesheet" href="css/mix-tools.css">
+  <link rel="stylesheet" href="css/lyrics-lab.css">
 </head>
 <body>
 
@@ -34,6 +35,7 @@
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
+      <button type="button" class="tab" data-tab="lyrics" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಕ</span><span class="tab-label desktop">Lyrics Lab</span><span class="tab-label mobile">Lyrics</span></button>
       <button type="button" class="tab" data-tab="quick-access" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⚡</span><span class="tab-label desktop">Quick Access</span><span class="tab-label mobile">Quick</span></button>
     </nav>
   </header>
@@ -797,6 +799,195 @@
     </div>
   </section>
 
+  <!-- ═══════════════ LYRICS LAB TAB ═══════════════ -->
+  <section class="wrap ll-page" id="tab-lyrics" hidden>
+    <header class="ll-hero">
+      <div>
+        <p class="ll-kicker">Raaga Studio · songwriting &amp; rhyme intelligence</p>
+        <h2>Lyrics <span>Lab</span></h2>
+        <p class="mc-intro">Write Kannada &amp; English lyrics with rhyme, rhythm, phonetics and meaning.</p>
+      </div>
+      <ol class="ll-priority" aria-label="Songwriting priority order">
+        <li>Meaning</li><li>Emotion</li><li>Natural language</li><li>Rhythm</li><li>Rhyme</li>
+      </ol>
+    </header>
+
+    <section class="panel ll-compose" aria-labelledby="ll-start-title">
+      <div class="ll-compose-head">
+        <div><span class="ll-step">01</span><div><h3 id="ll-start-title">Start with the song</h3><p>Only the idea is required. Everything else has a useful default.</p></div></div>
+        <span class="ll-private">On-device workspace</span>
+      </div>
+
+      <div class="ll-field ll-language-field">
+        <span class="ll-label" id="ll-language-label">Language</span>
+        <div class="ll-segmented" id="ll-language" role="group" aria-labelledby="ll-language-label">
+          <button type="button" class="on" data-language="kannada" aria-pressed="true">ಕನ್ನಡ <small>Kannada</small></button>
+          <button type="button" data-language="english" aria-pressed="false">English</button>
+          <button type="button" data-language="bilingual" aria-pressed="false">ಕನ್ನಡ + English</button>
+        </div>
+      </div>
+
+      <label class="ll-field" for="ll-idea">
+        <span class="ll-label">Song idea, feeling or story <em>required</em></span>
+        <textarea id="ll-idea" class="ll-idea" rows="3" maxlength="800" spellcheck="true"
+          placeholder="e.g. ಮಳೆಯಲ್ಲೊಂದು ಪ್ರೇಮಕಥೆ — two people meet again at a bus stop"></textarea>
+        <span class="ll-field-help"><span id="ll-idea-count">0 / 800</span><span>Names and key phrases are kept in the draft.</span></span>
+      </label>
+
+      <div class="ll-essential-grid">
+        <label class="ll-field" for="ll-mood"><span class="ll-label">Mood</span>
+          <select id="ll-mood" class="mc-select">
+            <option>Romantic</option><option>Sad</option><option>Happy</option><option>Devotional</option>
+            <option>Motivational</option><option>Melancholic</option><option>Celebration</option>
+            <option>Folk</option><option>Cinematic</option><option>Custom</option>
+          </select>
+        </label>
+        <label class="ll-field" id="ll-custom-mood-wrap" for="ll-custom-mood" hidden><span class="ll-label">Custom mood</span>
+          <input id="ll-custom-mood" class="mc-select" type="text" placeholder="e.g. hopeful after heartbreak">
+        </label>
+        <label class="ll-field" for="ll-section"><span class="ll-label">Song section</span>
+          <select id="ll-section" class="mc-select">
+            <option>Full Song</option><option>Verse</option><option>Pre-Chorus</option>
+            <option selected>Chorus/Hook</option><option>Bridge</option><option>Intro</option><option>Outro</option><option>Custom</option>
+          </select>
+        </label>
+        <label class="ll-field" id="ll-custom-section-wrap" for="ll-custom-section" hidden><span class="ll-label">Custom section name</span>
+          <input id="ll-custom-section" class="mc-select" type="text" placeholder="e.g. Refrain">
+        </label>
+        <label class="ll-field" for="ll-scheme"><span class="ll-label">Rhyme scheme</span>
+          <select id="ll-scheme" class="mc-select">
+            <option value="auto">Auto / Let Lyrics Lab choose</option>
+            <option value="AAAA">AAAA</option><option value="AABB">AABB</option><option value="ABAB">ABAB</option>
+            <option value="ABBA">ABBA</option><option value="ABCB">ABCB</option><option value="AABA">AABA</option>
+            <option value="AAAB">AAAB</option><option value="ABAC">ABAC</option><option value="AABC">AABC</option><option value="AAXA">AAXA</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="ll-scheme-preview" id="ll-scheme-preview" aria-live="polite"></div>
+
+      <details class="ll-advanced">
+        <summary><span>Advanced songwriting controls</span><small>Rhyme style, syllables &amp; Kannada Film Song mode</small></summary>
+        <div class="ll-advanced-body">
+          <div class="ll-advanced-grid">
+            <label class="ll-field" for="ll-style"><span class="ll-label">Rhyme style</span>
+              <select id="ll-style" class="mc-select">
+                <option value="hybrid">Hybrid — Recommended</option>
+                <option value="perfect">Perfect</option><option value="near">Near / Loose</option>
+                <option value="internal">Internal</option><option value="multisyllabic">Multisyllabic</option>
+                <option value="phonetic">Phonetic</option><option value="suffix">Suffix / Kannada</option>
+                <option value="semantic">Semantic</option><option value="rhythmic">Rhythmic</option>
+              </select>
+              <small>Hybrid balances sound, rhythm, syllables and meaning instead of forcing an ending.</small>
+            </label>
+            <label class="ll-field" for="ll-syllables"><span class="ll-label">Line length / syllable feel</span>
+              <select id="ll-syllables" class="mc-select">
+                <option value="auto">Natural / no fixed target</option><option value="short">Short · 4–7 syllables</option>
+                <option value="medium">Medium · 8–11 syllables</option><option value="long">Long · 12–16 syllables</option>
+              </select>
+            </label>
+            <label class="ll-field" for="ll-vocabulary"><span class="ll-label">Language register</span>
+              <select id="ll-vocabulary" class="mc-select">
+                <option value="spoken">Natural spoken language</option><option value="simple">Simple / direct</option>
+                <option value="poetic">Poetic imagery</option><option value="literary">Literary — only when wanted</option>
+              </select>
+            </label>
+            <label class="ll-field" for="ll-avoid"><span class="ll-label">Words or clichés to avoid <em>optional</em></span>
+              <input id="ll-avoid" class="mc-select" type="text" placeholder="e.g. forever, destiny">
+            </label>
+          </div>
+          <label class="ll-mode-card">
+            <input id="ll-film-mode" type="checkbox">
+            <span class="ll-toggle" aria-hidden="true"></span>
+            <span><strong>Kannada Film Song</strong><small>Natural spoken Kannada, cinematic imagery, flexible rhyme and singable hooks.</small></span>
+          </label>
+          <p class="ll-method-note"><strong>Phonetic first:</strong> Kannada endings are normalized into spoken akshara components; English endings use a compact pronunciation lexicon plus stress-aware fallback rules. Similar spelling alone never proves a rhyme.</p>
+        </div>
+      </details>
+
+      <div class="ll-generate-row">
+        <button type="button" class="btn primary ll-generate" id="ll-generate">✦ Generate lyrics</button>
+        <p>Natural meaning wins over an exact rhyme. You can edit and re-analyze every line.</p>
+      </div>
+      <div class="ll-form-error" id="ll-form-error" role="alert" hidden></div>
+    </section>
+
+    <section class="ll-results" id="ll-results" aria-live="polite" hidden>
+      <header class="ll-results-head">
+        <div><span class="ll-step">02</span><div><h3>Your lyric draft</h3><p id="ll-result-summary">Generated and analyzed on this device.</p></div></div>
+        <span class="ll-overall" id="ll-overall">Good</span>
+      </header>
+
+      <div class="ll-result-grid">
+        <section class="panel ll-editor-panel" aria-labelledby="ll-editor-title">
+          <div class="ll-panel-head"><div><h4 id="ll-editor-title">Lyrics editor</h4><p>Edit freely, then analyze the changes.</p></div><span id="ll-save-state">Draft ready</span></div>
+          <textarea id="ll-editor" class="ll-editor" spellcheck="true" aria-label="Generated lyrics editor"></textarea>
+          <div class="ll-editor-actions">
+            <button type="button" class="btn primary" id="ll-analyze">Analyze edits</button>
+            <button type="button" class="btn" id="ll-copy">Copy lyrics</button>
+            <button type="button" class="btn" id="ll-copy-labels">Copy with labels</button>
+            <button type="button" class="btn" id="ll-copy-analysis">Copy analysis</button>
+            <button type="button" class="btn" id="ll-download">Download TXT</button>
+          </div>
+        </section>
+
+        <aside class="panel ll-quality-panel" aria-labelledby="ll-quality-title">
+          <div class="ll-panel-head"><div><h4 id="ll-quality-title">Lyrics quality check</h4><p>Helpful heuristics, not objective verdicts.</p></div></div>
+          <div id="ll-quality" class="ll-quality"></div>
+          <div class="ll-quality-note" id="ll-quality-note"></div>
+        </aside>
+      </div>
+
+      <section class="panel ll-analysis-panel" aria-labelledby="ll-analysis-title">
+        <div class="ll-panel-head ll-analysis-head">
+          <div><h4 id="ll-analysis-title">Line-level rhyme analysis</h4><p>Select any word for separate sound-rhyme and meaning suggestions.</p></div>
+          <div class="ll-analysis-legend"><span><i class="ll-dot good"></i> consistent</span><span><i class="ll-dot warn"></i> review</span></div>
+        </div>
+        <div id="ll-line-analysis" class="ll-lines"></div>
+      </section>
+
+      <section class="panel ll-assistant" id="ll-assistant" aria-labelledby="ll-assistant-title" hidden>
+        <div class="ll-panel-head">
+          <div><h4 id="ll-assistant-title">Side-by-side rhyme assistant</h4><p>Suggestions stay separated by purpose—sound is never presented as meaning.</p></div>
+          <button type="button" class="btn sm" id="ll-close-assistant">✕ Close</button>
+        </div>
+        <div class="ll-assistant-grid">
+          <div class="ll-current"><span class="ll-mini-label">Current line</span><p id="ll-current-line"></p><small id="ll-current-meta"></small></div>
+          <div class="ll-alternatives"><span class="ll-mini-label">Suggested alternatives</span><div id="ll-alternatives"></div></div>
+        </div>
+        <div class="ll-candidate-groups" id="ll-candidates"></div>
+      </section>
+
+      <section class="panel ll-refine" aria-labelledby="ll-refine-title">
+        <div class="ll-panel-head"><div><h4 id="ll-refine-title">Refine the selected line</h4><p>Choose a line above first. Rewrites never replace the full song.</p></div></div>
+        <div class="ll-refine-actions" id="ll-refine-actions">
+          <button type="button" class="btn" data-refine="improve-rhyme">Improve rhyme</button>
+          <button type="button" class="btn" data-refine="natural">Make more natural</button>
+          <button type="button" class="btn" data-refine="cinematic">More cinematic</button>
+          <button type="button" class="btn" data-refine="poetic">More poetic</button>
+          <button type="button" class="btn" data-refine="simplify-kannada">Simplify Kannada</button>
+          <button type="button" class="btn" data-refine="emotion">Increase emotion</button>
+          <button type="button" class="btn" data-refine="rhythm">Improve rhythm</button>
+          <button type="button" class="btn" data-refine="keep-meaning-change-rhyme">Keep meaning, change rhyme</button>
+          <button type="button" class="btn" data-refine="keep-rhyme-improve-meaning">Keep rhyme, improve meaning</button>
+          <button type="button" class="btn" data-refine="hook">Make hook stronger</button>
+        </div>
+      </section>
+
+      <details class="ll-rhyme-guide">
+        <summary>What Lyrics Lab recognizes</summary>
+        <div class="ll-guide-grid">
+          <div><strong>Ending</strong><p>Perfect, end, exact-syllable, near/slant, identical, masculine/feminine, multisyllabic and compound relationships.</p></div>
+          <div><strong>Kannada friendly</strong><p>Suffix, vowel-family, consonant-end, case-ending, verb-ending, participial and semantic + phonetic rhymes.</p></div>
+          <div><strong>Inside the line</strong><p>Internal, double-internal and echo rhyme, including repeated sounds used for a hook.</p></div>
+          <div><strong>Musical</strong><p>Rhythmic, stress, phonetic, semantic and hybrid relationships—without forcing every line to rhyme.</p></div>
+        </div>
+      </details>
+    </section>
+
+    <div id="ll-flash" class="ll-flash" role="status" aria-live="polite"></div>
+  </section>
+
   <!-- ═══════════════ QUICK ACCESS TAB ═══════════════ -->
   <section class="wrap mt-page" id="tab-quick-access" hidden>
     <header class="mt-hero">
@@ -848,6 +1039,8 @@
   <script src="js/pro-eq.js"></script>
   <script src="js/practical-eq.js"></script>
   <script src="js/practical-eq-app.js"></script>
+  <script src="js/lyrics-engine.js"></script>
+  <script src="js/lyrics-lab.js"></script>
   <script src="js/mix-tools.js"></script>
   <script src="js/nav.js"></script>
 </body>

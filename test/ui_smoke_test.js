@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'mix', 'master', 'songs', 'quick-access'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'raga', 'mix', 'master', 'songs', 'lyrics', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -142,6 +142,8 @@ load('song-studio.js');
 load('pro-eq.js');
 load('practical-eq.js');
 load('practical-eq-app.js');
+load('lyrics-engine.js');
+load('lyrics-lab.js');
 load('mix-tools.js');
 load('nav.js');
 
@@ -283,6 +285,23 @@ assert(getEl('pq-results').innerHTML === '', 'unsupported file produces no fake 
 assert(typeof global.window.MASTER_CHECK.buildReleaseChecklist === 'function', 'buildReleaseChecklist exported');
 assert(typeof global.window.MIX_CHECK.assessMix === 'function', 'assessMix exported');
 assert(typeof global.window.RaagaStudio.switchTo === 'function', 'RaagaStudio.switchTo exposed');
+
+// ─── Lyrics Lab (Kannada + English songwriting) ───────────────────────────
+const LE = global.window.LYRICS_ENGINE;
+assert(typeof LE === 'object' && typeof LE.analyzeLyrics === 'function', 'Lyrics phonetic analysis engine exported');
+assert(LE.compareWords('night', 'light', { language: 'english' }).type === 'Perfect', 'English pronunciation detects night / light as perfect');
+assert(LE.compareWords('through', 'rough', { language: 'english' }).overall < 50, 'English engine does not trust similar spelling alone');
+assert(LE.compareWords('ಪ್ರೀತಿ', 'ರೀತಿ', { language: 'kannada' }).overall >= 75, 'Kannada spoken endings detect ಪ್ರೀತಿ / ರೀತಿ');
+assert(LE.compareWords('ಪ್ರೀತಿ', 'ಬೀದಿ', { language: 'kannada' }).type.indexOf('Near') >= 0, 'Kannada engine distinguishes a near rhyme from perfect');
+assert(LE.resolveScheme('Chorus/Hook', 'Romantic') === 'AABB', 'Auto scheme selects AABB for a romantic hook');
+assert(getEl('ll-scheme-preview').innerHTML.indexOf('AABB') >= 0, 'Lyrics Lab renders a visual auto-scheme preview');
+getEl('ll-idea').value = 'ಮಳೆಯಲ್ಲೊಂದು ಪ್ರೇಮಕಥೆ';
+getEl('ll-generate').click();
+assert(getEl('ll-editor').value.indexOf('ಮಳೆಯಲ್ಲೊಂದು') >= 0, 'Lyrics generation preserves the supplied Kannada idea');
+assert(getEl('ll-results').hidden === false, 'Lyrics results open after generation');
+assert(getEl('ll-line-analysis').innerHTML.indexOf('syllables') >= 0, 'Line-level syllable and rhyme analysis rendered');
+assert(getEl('ll-quality').innerHTML.indexOf('Natural-language flow') >= 0, 'Compact lyric quality panel rendered');
+assert(typeof global.window.RaagaStudio.lyricsLab.analyze === 'function', 'Lyrics Lab controller registered');
 
 // ─── Quick Access (mixing engineer toolbox) ───────────────────────────────
 const MT = global.window.RaagaStudio.MIX_TOOLS;
