@@ -9,6 +9,12 @@ Master in Cubase**. Everything below is mapped to that pipeline.
   STFT, adaptive f0/harmonic-aware analysis, decrease / increase / unchanged /
   not-detected findings with measured frequency, range, confidence and severity,
   ranked priorities and an interactive 20 Hz–20 kHz recommendation graph.
+  Each finding also reports a measured static/dynamic/persistent/intermittent
+  behavior, octave width + detected range, a suggested EQ shape (bell/shelf/
+  high-pass/de-esser derived from the measurement), and an evidence-weighted
+  0–100% confidence that weakens or suppresses the recommendation. A vocal
+  profile (fundamental + range) and recording-quality summary (clipping, noise
+  floor, low-frequency energy, low signal, stereo) lead the report.
   Analysis only — no EQ is ever applied to the audio.
 - **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
 - **Suno Custom Mode Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/

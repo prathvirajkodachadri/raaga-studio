@@ -40,10 +40,37 @@ openness. Narrow peaks that line up with the singer's own harmonic series are
 ignored rather than reported as resonances; sibilance and plosives are measured
 only on the frames where they actually occur.
 
+Every finding also carries four measured descriptors that turn a raw frequency
+into an actionable mix decision:
+
+- **Behavior** — *static / dynamic / persistent / intermittent*, classified from
+  frame-to-frame energy variation, the percentage of active frames containing
+  the characteristic, and its persistence across phrases. Sibilance is *dynamic*,
+  a steady broad buildup is *static*, a repeated narrow peak is *persistent*.
+- **Width** — the measured octave width of the deviation, labeled *very narrow
+  / narrow / medium / broad / very broad* plus the detected range (e.g.
+  728–756 Hz).
+- **Suggested EQ shape** — derived from the measured width, location and
+  temporal behavior: High-pass, Low-pass, Bell (broad / medium / narrow), High
+  Shelf, Low Shelf, Dynamic Bell / Dynamic EQ, or De-esser. Not a plugin — just
+  the type of move to make in your own EQ.
+- **Confidence (0–100%)** — evidence-weighted from deviation strength, frame
+  consistency, recording quality, amount of material, peak prominence, temporal
+  stability and harmonic separation. 90–100% very strong, 75–89% strong, 60–74%
+  moderate (verify by ear), 50–59% weak (reported as a *possible issue* with no
+  invented gain), and below 50% no recommendation is generated at all.
+
+The report opens with a **vocal profile** (estimated fundamental, vocal range,
+delivery and fundamental confidence) and a **recording-quality summary** that
+flags clipping, high noise floor, low-frequency environmental energy, very low
+signal, sparse vocal material, stereo input and possible non-vocal sources —
+only where the audio actually shows them.
+
 Findings are ranked into a **Top priorities** list, and the **frequency graph**
 (20 Hz–20 kHz log scale, ±6 dB) is drawn from the same result object — the
 measured spectrum sits behind the recommendation curve, every finding is a
-clickable/hoverable point with a tooltip, and unchanged regions sit on the 0 dB
+clickable/hoverable point with a tooltip showing frequency, gain, range, width,
+behavior, suggested shape and confidence, and unchanged regions sit on the 0 dB
 line. Graph and report can never disagree. Analysis JSON can be exported.
 
 Files with instruments, multiple sources or heavy noise are still analyzed but
@@ -171,7 +198,7 @@ raaga-studio/
 └── test/
     ├── prosody_test.js        # Node prosody suite (33 checks)
     ├── master_check_test.js   # Node unit tests for scoring helpers (23 checks)
-    ├── practical_eq_test.js   # Practical EQ engine on synthesized vocals (41 checks)
+    ├── practical_eq_test.js   # Practical EQ engine on synthesized vocals (81 checks)
     └── ui_smoke_test.js       # DOM-stub smoke tests for all controllers (64 checks)
 ```
 

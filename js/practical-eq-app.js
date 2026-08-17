@@ -234,19 +234,23 @@
 
     // detected points
     pts.forEach(function (p) {
-      var x = xOf(p.frequency), y = yOf(Math.max(-DBMAX, Math.min(DBMAX, p.gain)));
+      var gy = (p.gain == null) ? 0 : Math.max(-DBMAX, Math.min(DBMAX, p.gain));
+      var x = xOf(p.frequency), y = yOf(gy);
       var cls = p.status === 'decrease' ? 'pq-pt-down' : 'pq-pt-up';
+      if (p.possible) cls += ' pq-pt-possible';
       if (p.range && p.range.length === 2) {
         s += '<rect class="pq-range ' + cls + '-range" x="' + xOf(p.range[0]).toFixed(1) + '" y="' + PAD.t +
           '" width="' + Math.max(2, xOf(p.range[1]) - xOf(p.range[0])).toFixed(1) + '" height="' + (GH - PAD.t - PAD.b) + '"/>';
       }
-      s += '<line class="pq-stem ' + cls + '-stem" x1="' + x.toFixed(1) + '" y1="' + yOf(0).toFixed(1) +
-        '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>';
+      if (!p.possible) {
+        s += '<line class="pq-stem ' + cls + '-stem" x1="' + x.toFixed(1) + '" y1="' + yOf(0).toFixed(1) +
+          '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>';
+      }
       s += '<circle class="pq-pt ' + cls + '" data-kind="' + p.status + '" data-id="' + escapeHtml(p.id) + '" ' +
         'cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="7" tabindex="0" role="button" ' +
-        'aria-label="' + escapeHtml(p.characteristic + ' ' + hz(p.frequency) + ' ' + gain(p.gain)) + '"/>';
+        'aria-label="' + escapeHtml(p.characteristic + ' ' + hz(p.frequency) + (p.possible ? ' · possible issue, verify by ear' : ' ' + gain(p.gain))) + '"/>';
       s += '<text class="pq-pt-label" x="' + x.toFixed(1) + '" y="' + (p.status === 'decrease' ? y + 22 : y - 13).toFixed(1) +
-        '" text-anchor="middle">' + escapeHtml(p.characteristic) + '</text>';
+        '" text-anchor="middle">' + escapeHtml(p.characteristic) + (p.possible ? ' ?' : '') + '</text>';
     });
 
     s += '</svg>';
@@ -265,15 +269,23 @@
     h += '<dt>Measured frequency</dt><dd>' + hz(item.frequency) + '</dd>';
     if (item.range) h += '<dt>Detected range</dt><dd>' + hz(item.range[0]) + ' – ' + hz(item.range[1]) + '</dd>';
     h += '<dt>Measured deviation</dt><dd>' + gain(item.measuredDeviation) + '</dd>';
-    h += '<dt>Recommended start</dt><dd class="pq-tt-strong">' + gain(item.gain) + '</dd>';
-    if (item.gainRange) {
-      var a = Math.min(item.gainRange[0], item.gainRange[1]), b = Math.max(item.gainRange[0], item.gainRange[1]);
-      h += '<dt>Working range</dt><dd>' + gain(a) + ' to ' + gain(b) + '</dd>';
+    if (item.gain != null) {
+      h += '<dt>Recommended start</dt><dd class="pq-tt-strong">' + gain(item.gain) + '</dd>';
+      if (item.gainRange) {
+        var a = Math.min(item.gainRange[0], item.gainRange[1]), b = Math.max(item.gainRange[0], item.gainRange[1]);
+        h += '<dt>Working range</dt><dd>' + gain(a) + ' to ' + gain(b) + '</dd>';
+      }
+    } else {
+      h += '<dt>Recommended</dt><dd class="pq-tt-strong">Verify by ear</dd>';
     }
-    if (item.q) h += '<dt>Suggested Q</dt><dd>' + item.q.toFixed(1) + '</dd>';
+    if (item.widthLabel && item.widthLabel !== '—') h += '<dt>Width</dt><dd>' + escapeHtml(item.widthLabel) + '</dd>';
+    if (item.behaviorLabel) h += '<dt>Behavior</dt><dd>' + escapeHtml(item.behaviorLabel) + '</dd>';
+    if (item.eqShapeLabel) {
+      h += '<dt>Suggested</dt><dd>' + escapeHtml(item.eqShapeLabel) +
+        (item.q != null && /bell|dynamic/.test(item.eqShape) ? ' · Q ' + item.q.toFixed(1) : '') + '</dd>';
+    }
     if (item.severity) h += '<dt>Severity</dt><dd>' + escapeHtml(item.severity) + '</dd>';
     h += '<dt>Confidence</dt><dd>' + pct(item.confidence) + '</dd>';
-    h += '<dt>Behaviour</dt><dd>' + escapeHtml(item.persistence || '—') + '</dd>';
     h += '</dl>';
     return h;
   }
@@ -333,12 +345,6 @@
     bits.push(['Channels', src.channelLabel]);
     if (src.bitDepth) bits.push(['Bit depth', src.bitDepth + '-bit']);
     bits.push(['Format', src.format]);
-    if (result.voice.fundamental) {
-      bits.push(['Fundamental', hz(result.voice.fundamental) + ' · ' + result.voice.label]);
-    } else {
-      bits.push(['Fundamental', 'Not stable']);
-    }
-    bits.push(['Delivery', result.voice.delivery]);
     bits.push(['Frames analyzed', result.analysis.activeFrames + ' of ' + result.analysis.frames]);
 
     var h = '<section class="panel pq-file">';
@@ -356,11 +362,62 @@
     return h;
   }
 
+  function voiceCard(r) {
+    var v = r.voice;
+    var h = '<section class="panel pq-voice">';
+    h += '<h3>Vocal profile</h3>';
+    if (v.fundamental) {
+      h += '<div class="pq-file-grid">';
+      h += '<div><dt>Estimated fundamental</dt><dd>' + (v.ambiguous ? '~' : '') + hz(v.fundamental) + '</dd></div>';
+      if (v.range && v.range.length === 2) {
+        h += '<div><dt>Estimated vocal range</dt><dd>' + hz(v.range[0]) + ' – ' + hz(v.range[1]) + '</dd></div>';
+      }
+      h += '<div><dt>Confidence</dt><dd>' + pct(v.confidence) + '</dd></div>';
+      h += '<div><dt>Delivery</dt><dd>' + escapeHtml(v.delivery) + '</dd></div>';
+      h += '</div>';
+      if (v.ambiguous) h += '<p class="hint">Pitch is unstable or ambiguous — the fundamental is an estimate.</p>';
+    } else {
+      h += '<p class="hint">No stable fundamental could be estimated from this recording.</p>';
+    }
+    h += '</section>';
+    return h;
+  }
+
+  function qualitySummary(src, r) {
+    var q = r.quality;
+    var items = [];
+    items.push(q.veryLowSignal
+      ? { ok: false, text: 'Vocal level is very low' }
+      : { ok: true, text: 'Good signal level' });
+    items.push(q.clipped
+      ? { ok: false, text: 'Possible clipping detected' }
+      : { ok: true, text: 'No significant clipping' });
+    items.push(q.snr < 24
+      ? { ok: false, text: 'High noise floor' }
+      : q.snr < 34
+        ? { ok: 'warn', text: 'Moderate background noise' }
+        : { ok: true, text: 'Clean noise floor' });
+    items.push((r.analysis.activeFrames < 10 || q.activeFraction < 0.25)
+      ? { ok: false, text: 'Limited consistent vocal material' }
+      : { ok: true, text: 'Stable vocal material' });
+    if (src.channels > 1) items.push({ ok: 'info', text: 'Stereo — analyzed as combined signal' });
+
+    var h = '<section class="panel pq-quality"><h3>Recording quality</h3><ul class="pq-quality-list">';
+    items.forEach(function (it) {
+      var mark = it.ok === true ? '✓' : it.ok === 'info' ? 'ℹ' : '⚠';
+      var cls = it.ok === true ? 'pq-q-ok' : it.ok === 'info' ? 'pq-q-info' : 'pq-q-warn';
+      h += '<li class="' + cls + '"><span class="pq-q-mark" aria-hidden="true">' + mark + '</span><span>' + escapeHtml(it.text) + '</span></li>';
+    });
+    h += '</ul></section>';
+    return h;
+  }
+
   function warningsHtml(result) {
     if (!result.warnings.length) return '';
     var h = '<div class="pq-warnings">';
     result.warnings.forEach(function (w) {
-      h += '<div class="pq-warn pq-warn-' + escapeHtml(w.level) + '">' + escapeHtml(w.text) + '</div>';
+      var icon = w.level === 'warn' ? '⚠ ' : 'ℹ ';
+      h += '<div class="pq-warn pq-warn-' + escapeHtml(w.level) + '"><span class="pq-warn-ico" aria-hidden="true">' + icon + '</span>' + escapeHtml(w.text) + '</div>';
     });
     h += '</div>';
     return h;
@@ -387,34 +444,59 @@
     return h;
   }
 
+  function confTierClass(tier) { return 'pq-conf-' + String(tier || 'moderate'); }
+
   function itemHtml(item) {
     var down = item.status === 'decrease';
-    var h = '<article class="pq-item ' + (down ? 'pq-down' : 'pq-up') + '" data-card="' + escapeHtml(item.id) + '">';
+    var gainText = item.possible
+      ? '<span class="pq-item-possible">Possible issue</span>'
+      : gain(item.gain);
+    var h = '<article class="pq-item ' + (down ? 'pq-down' : 'pq-up') + (item.possible ? ' pq-possible' : '') + '" data-card="' + escapeHtml(item.id) + '">';
     h += '<header class="pq-item-head">';
     h += '<span class="pq-item-icon" aria-hidden="true">' + (down ? '🔻' : '🔺') + '</span>';
     h += '<h4>' + escapeHtml(item.characteristic) + '</h4>';
     h += '<span class="pq-item-freq">' + hz(item.frequency) + '</span>';
-    h += '<span class="pq-item-gain">' + gain(item.gain) + '</span>';
+    h += '<span class="pq-item-gain">' + gainText + '</span>';
     h += '</header>';
 
+    // always-visible summary chips (the five headline answers at a glance)
+    h += '<div class="pq-chips">';
+    if (item.severity) h += '<span class="pq-badge ' + sevClass(item.severity) + '">' + escapeHtml(item.severity) + '</span>';
+    if (item.behaviorLabel) h += '<span class="pq-chip pq-chip-behavior">' + escapeHtml(item.behaviorLabel) + '</span>';
+    if (item.widthLabel && item.widthLabel !== '—') h += '<span class="pq-chip pq-chip-width">' + escapeHtml(item.widthLabel) + '</span>';
+    h += '<span class="pq-chip pq-chip-conf ' + confTierClass(item.confidenceTier) + '" title="' + escapeHtml(item.confidenceLabel || '') + '">' + pct(item.confidence) + ' conf.</span>';
+    h += '</div>';
+
+    // progressive disclosure — the technical detail stays one click away
+    h += '<details class="pq-item-details"><summary><span class="pq-details-more">Details</span></summary>';
     h += '<dl class="pq-item-grid">';
     if (item.range) h += '<div><dt>Detected range</dt><dd>' + hz(item.range[0]) + ' – ' + hz(item.range[1]) + '</dd></div>';
+    if (item.widthOctaves != null) h += '<div><dt>Width</dt><dd>' + escapeHtml(item.widthLabel) + ' · ~' + item.widthOctaves.toFixed(2) + ' oct</dd></div>';
     h += '<div><dt>Measured deviation</dt><dd>' + gain(item.measuredDeviation) + '</dd></div>';
-    h += '<div><dt>Recommended start</dt><dd class="pq-strong">' + gain(item.gain) + '</dd></div>';
-    if (item.gainRange) {
-      var a = Math.min(item.gainRange[0], item.gainRange[1]), b = Math.max(item.gainRange[0], item.gainRange[1]);
-      h += '<div><dt>Working range</dt><dd>' + gain(a) + ' to ' + gain(b) + '</dd></div>';
+    if (item.gain != null) {
+      h += '<div><dt>Recommended start</dt><dd class="pq-strong">' + gain(item.gain) + '</dd></div>';
+      if (item.gainRange) {
+        var a = Math.min(item.gainRange[0], item.gainRange[1]), b = Math.max(item.gainRange[0], item.gainRange[1]);
+        h += '<div><dt>Working range</dt><dd>' + gain(a) + ' to ' + gain(b) + '</dd></div>';
+      }
     }
-    if (item.q) h += '<div><dt>Suggested Q</dt><dd>' + item.q.toFixed(1) + '</dd></div>';
-    h += '<div><dt>Confidence</dt><dd>' + pct(item.confidence) + '</dd></div>';
-    if (item.severity) h += '<div><dt>Severity</dt><dd><span class="pq-badge ' + sevClass(item.severity) + '">' + escapeHtml(item.severity) + '</span></dd></div>';
-    h += '<div><dt>Behaviour</dt><dd>' + escapeHtml(item.persistence) + '</dd></div>';
+    if (item.eqShapeLabel) {
+      h += '<div><dt>Suggested EQ</dt><dd>' + escapeHtml(item.eqShapeLabel) + '</dd></div>';
+      if (item.q != null && /bell|dynamic/.test(item.eqShape)) h += '<div><dt>Suggested Q</dt><dd>' + item.q.toFixed(1) + '</dd></div>';
+    }
+    h += '<div><dt>Confidence</dt><dd>' + pct(item.confidence) + ' · ' + escapeHtml(item.confidenceLabel || '') + '</dd></div>';
     h += '</dl>';
 
+    if (item.behaviorMeaning) h += '<p class="pq-item-note">' + escapeHtml(item.behaviorMeaning) + '</p>';
+    if (item.eqReason) h += '<p class="pq-item-note">' + escapeHtml(item.eqReason) + '</p>';
+    if (item.audibleEffect) h += '<p class="pq-item-note pq-item-hear"><b>What you may hear:</b> ' + escapeHtml(item.audibleEffect) + '</p>';
+    if (item.verifyByEar) h += '<p class="pq-item-verify">' + (item.possible ? 'Possible issue — ' : '') + 'Verify by ear before making an EQ move.</p>';
     h += '<p class="pq-item-why">' + escapeHtml(item.explanation) + '</p>';
     if (item.alsoMatched && item.alsoMatched.length) {
       h += '<p class="hint">Also covers: ' + escapeHtml(item.alsoMatched.join(', ')) + '</p>';
     }
+    h += '</details>';
+
     h += '</article>';
     return h;
   }
@@ -429,7 +511,9 @@
 
     h += '<div class="pq-report">';
     h += sourceCard(src, r);
+    h += qualitySummary(src, r);
     h += warningsHtml(r);
+    h += voiceCard(r);
 
     // graph
     h += '<section class="panel pq-graph-card">';

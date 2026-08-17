@@ -235,6 +235,103 @@ var mono = PEQ.analyzeChannels([one], SR, {});
 var duped = PEQ.analyzeChannels([one, one], SR, {});
 assert(JSON.stringify(mono.decrease) === JSON.stringify(duped.decrease),
   'dual-mono stereo gives the same answer as mono');
+assert(duped.warnings.some(function (w) { return w.code === 'stereo'; }),
+  'stereo recording raises an informational stereo warning');
+
+// ─── new descriptors (width / behaviour / shape / confidence / quality) ───
+var ALL_BEHAVIORS = ['static', 'dynamic', 'persistent', 'intermittent'];
+var ALL_WIDTHS = ['very-narrow', 'narrow', 'medium', 'broad', 'very-broad', 'unknown'];
+var ALL_SHAPES = ['high-pass', 'low-pass', 'bell-broad', 'bell-medium', 'bell-narrow', 'high-shelf', 'low-shelf', 'dynamic-bell', 'de-ess'];
+var ALL_TIERS = ['very-strong', 'strong', 'moderate', 'weak'];
+
+var allFindings = A.decrease.concat(A.increase, B.decrease, B.increase);
+assert(allFindings.every(function (f) { return f.widthClass && ALL_WIDTHS.indexOf(f.widthClass) >= 0; }),
+  'every finding reports a measured width class');
+assert(allFindings.every(function (f) { return f.behavior && ALL_BEHAVIORS.indexOf(f.behavior) >= 0; }),
+  'every finding reports a static/dynamic/persistent/intermittent behaviour');
+assert(allFindings.every(function (f) { return f.eqShape && ALL_SHAPES.indexOf(f.eqShape) >= 0 && f.eqShapeLabel; }),
+  'every finding suggests an EQ shape from the allowed set');
+assert(allFindings.every(function (f) { return ALL_TIERS.indexOf(f.confidenceTier) >= 0 && f.confidenceLabel; }),
+  'every finding carries a confidence tier and label');
+assert(allFindings.every(function (f) { return typeof f.audibleEffect === 'string' && f.audibleEffect.length > 0; }),
+  'every finding explains what you may hear');
+
+// confidence must change the result, not decorate it
+assert(allFindings.every(function (f) {
+  return !(f.confidence < 0.6) || (f.possible === true && f.gain == null && f.verifyByEar === true);
+}), 'weak evidence (50–59%) → possible issue, no invented gain, verify by ear');
+assert(allFindings.every(function (f) { return !(f.confidence >= 0.6) || f.gain != null; }),
+  'confident evidence (≥60%) carries a recommended gain');
+assert(B.decrease.some(function (f) { return f.possible; }),
+  'Vocal B: a weak-evidence finding is reported as a possible issue');
+
+// temporal classification is data-driven
+assert(find(B.decrease, 'sibilance').behavior === 'dynamic', 'sibilance classified DYNAMIC from its temporal behaviour');
+assert(find(B.decrease, 'sibilance').eqShape === 'de-ess', 'sibilance suggests a de-esser / dynamic HF control');
+var narrowB = B.decrease.filter(function (f) { return f.widthClass === 'narrow' || f.widthClass === 'very-narrow'; });
+assert(narrowB.length > 0, 'Vocal B: a narrow-width finding is measured');
+assert(narrowB.every(function (f) { return f.behavior === 'persistent' || f.behavior === 'intermittent'; }),
+  'narrow features are persistent or intermittent, never static');
+assert(narrowB.some(function (f) { return f.eqShape === 'bell-narrow'; }), 'narrow finding suggests Bell — Narrow');
+
+// width classification derives from the measured octave width
+assert(PEQ._internals.widthClassOf(0.05).id === 'narrow', 'widthClassOf(0.05 oct) → narrow');
+assert(PEQ._internals.widthClassOf(0.7).id === 'broad', 'widthClassOf(0.7 oct) → broad');
+assert(PEQ._internals.widthClassOf(1.3).id === 'broad', 'widthClassOf(1.3 oct) → broad');
+
+// behaviour classifier is driven by frames/segments/burstiness
+assert(PEQ._internals.classifyBehavior({ frac: 0.8, burstiness: 0.2, segments: 1 }, 0.7) === 'static', 'broad & consistent → static');
+assert(PEQ._internals.classifyBehavior({ frac: 0.8, burstiness: 0.2, segments: 3 }, 0.1) === 'persistent', 'narrow & repeated → persistent');
+assert(PEQ._internals.classifyBehavior({ frac: 0.2, burstiness: 0.8, segments: 5 }, 0.1) === 'dynamic', 'bursty → dynamic');
+assert(PEQ._internals.classifyBehavior({ frac: 0.15, burstiness: 0.1, segments: 1 }, 0.1) === 'intermittent', 'occasional → intermittent');
+
+// EQ shape is derived from the measured characteristic, not hard-coded
+assert(PEQ._internals.eqShapeFor({ id: 'mud', dir: 'cut', frequency: 286, widthClass: 'broad', behavior: 'static' }).shape === 'bell-broad', 'broad mud → Bell — Broad');
+assert(PEQ._internals.eqShapeFor({ id: 'resonance', dir: 'cut', frequency: 742, widthClass: 'narrow', behavior: 'persistent' }).shape === 'bell-narrow', 'narrow resonance → Bell — Narrow');
+assert(PEQ._internals.eqShapeFor({ id: 'air', dir: 'boost', frequency: 13200, widthClass: 'broad', behavior: 'static' }).shape === 'high-shelf', 'air → High Shelf');
+assert(PEQ._internals.eqShapeFor({ id: 'sibilance', dir: 'cut', frequency: 7100, widthClass: 'narrow', behavior: 'dynamic' }).shape === 'de-ess', 'sibilance → de-esser');
+assert(PEQ._internals.eqShapeFor({ id: 'rumble', dir: 'cut', frequency: 48, widthClass: 'broad', behavior: 'static' }).shape === 'high-pass', 'rumble → High-pass');
+
+// confidence tiers map to the documented 0–100% bands
+assert(PEQ._internals.confidenceTier(0.94).id === 'very-strong', '94% → very strong evidence');
+assert(PEQ._internals.confidenceTier(0.84).id === 'strong', '84% → strong evidence');
+assert(PEQ._internals.confidenceTier(0.68).id === 'moderate', '68% → moderate evidence');
+assert(PEQ._internals.confidenceTier(0.54).id === 'weak', '54% → weak evidence');
+assert(PEQ._internals.confidenceTier(0.4).id === 'insufficient', '<50% → insufficient confidence');
+
+// vocal fundamental + range + honest confidence
+assert(typeof A.voice.confidence === 'number' && A.voice.confidence >= 0 && A.voice.confidence <= 1,
+  'voice fundamental confidence is a 0–1 value');
+assert(Array.isArray(A.voice.range) && A.voice.range.length === 2, 'voice exposes an estimated vocal range');
+assert(typeof A.voice.ambiguous === 'boolean', 'voice flags ambiguous/unstable pitch');
+
+// recording-quality diagnostics
+assert(typeof A.quality.clipped === 'boolean' && typeof A.quality.veryLowSignal === 'boolean',
+  'quality reports clipping and low-signal flags');
+assert(isFinite(A.quality.peakDbFS) && isFinite(A.quality.crestDb), 'quality reports sample peak and crest factor');
+assert(A.warnings.every(function (w) { return w.level && w.code && w.text; }), 'warnings carry level/code/text');
+
+// clipped material is flagged as such
+var clip = new Float32Array(SR * 2);
+for (var ci = 0; ci < clip.length; ci++) clip[ci] = Math.max(-1, Math.min(1, 1.5 * Math.sin(2 * Math.PI * 180 * ci / SR)));
+var clippedTake = PEQ.analyzeChannels([clip], SR, {});
+assert(clippedTake.quality.clipped === true, 'clipped recording is flagged');
+
+// clipping in a single stereo channel is caught even when the mono downmix cancels it
+var clipL = new Float32Array(SR * 2);
+var clipR = new Float32Array(SR * 2);
+for (var ci2 = 0; ci2 < clipL.length; ci2++) {
+  clipL[ci2] = Math.max(-1, Math.min(1, 1.5 * Math.sin(2 * Math.PI * 180 * ci2 / SR)));
+  clipR[ci2] = -clipL[ci2] * 0.9;
+}
+var stereoClip = PEQ.analyzeChannels([clipL, clipR], SR, {});
+assert(stereoClip.quality.clipped === true, 'clipping in a single stereo channel is flagged');
+
+// very quiet material is flagged as low signal
+var quietSig = new Float32Array(SR * 2);
+for (var qi = 0; qi < quietSig.length; qi++) quietSig[qi] = 0.0008 * Math.sin(2 * Math.PI * 160 * qi / SR) + 0.0002 * (Math.sin(qi * 0.7) + Math.sin(qi * 1.3));
+var quietTake = PEQ.analyzeChannels([quietSig], SR, {});
+assert(quietTake.quality.veryLowSignal === true, 'very low-level recording is flagged');
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);

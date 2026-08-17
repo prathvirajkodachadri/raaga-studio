@@ -348,6 +348,15 @@
     var hiQ = f0s.length ? percentile(f0s, 0.9) : NaN;
     var semitoneRange = (isNum(lowQ) && isNum(hiQ) && lowQ > 0) ? 12 * Math.log2(hiQ / lowQ) : 0;
 
+    // Fundamental confidence: per-frame harmonic-match strength, how many
+    // frames contributed, and how consistent those strengths were. A weak or
+    // unstable match is reported honestly rather than as a precise F0.
+    var strengthMed = strengths.length ? median(strengths) : 0;
+    var strengthSpread = strengths.length > 2
+      ? percentile(strengths, 0.9) - percentile(strengths, 0.1) : 1;
+    var strengthStability = clamp(1 - strengthSpread, 0, 1);
+    var f0Confidence = clamp(0.55 * strengthMed + 0.25 * clamp(f0s.length / 20, 0, 1) + 0.20 * strengthStability, 0, 0.97);
+
     var label = 'Unknown range';
     if (f0) {
       if (f0 < 110) label = 'Low male range';
@@ -359,8 +368,10 @@
 
     return {
       f0: f0,
-      f0Confidence: clamp(strength * (f0s.length / Math.max(4, f0s.length + 3)) + (f0s.length > 8 ? 0.25 : 0), 0, 0.98),
+      f0Confidence: f0Confidence,
       f0Frames: f0s.length,
+      f0Lo: isNum(lowQ) && lowQ > 0 ? lowQ : null,
+      f0Hi: isNum(hiQ) && hiQ > 0 ? hiQ : null,
       semitoneRange: semitoneRange,
       delivery: !f0 ? 'unclear' : semitoneRange > 5 ? 'sung' : 'spoken / steady',
       label: label
@@ -634,16 +645,56 @@
     };
   }
 
+  /**
+   * Temporal profile of a finding across the active frames. Returns how much
+   * of the take agrees (frac), how the energy is concentrated in time
+   * (burstiness), and how many separate phrase segments it spans (segments).
+   * This is the raw material for the STATIC / DYNAMIC / PERSISTENT /
+   * INTERMITTENT classification and part of the confidence score.
+   */
+  function profileFromSeries(excess, thresh) {
+    var n = excess.length;
+    if (!n) return { frac: 0, burstiness: 0, segments: 0, series: [] };
+    var present = new Uint8Array(n);
+    var agree = 0;
+    for (var i = 0; i < n; i++) if (excess[i] >= thresh) { present[i] = 1; agree++; }
+    var frac = agree / n;
+
+    // temporal concentration: share of the total excess held by the busiest 15%
+    var sorted = Array.prototype.slice.call(excess).sort(function (a, b) { return b - a; });
+    var total = 0, top = 0, topN = Math.max(1, Math.ceil(n * 0.15));
+    for (var j = 0; j < n; j++) { total += sorted[j]; if (j < topN) top += sorted[j]; }
+    var share = total > 0 ? top / total : 0;
+    var burstiness = clamp((share - 0.15) / 0.85, 0, 1);
+
+    // persistence across phrases: contiguous agreeing runs (1-frame gap tolerated)
+    var segments = 0, run = false, gap = 0;
+    for (var k = 0; k < n; k++) {
+      if (present[k]) { if (!run) { segments++; run = true; } gap = 0; }
+      else if (run) { gap++; if (gap > 1) run = false; }
+    }
+
+    return { frac: frac, burstiness: burstiness, segments: segments, series: excess };
+  }
+
+  /** Per-frame behaviour of a region-based finding (band range vs reference). */
+  function temporalProfile(active, i0, i1, refRange, expected, deviation) {
+    var n = active.length;
+    if (!n || !isNum(deviation) || Math.abs(deviation) < 1e-6) {
+      return { frac: 0, burstiness: 0, segments: 0, series: [] };
+    }
+    var sign = deviation > 0 ? 1 : -1;
+    var excess = new Float64Array(n);
+    for (var i = 0; i < n; i++) {
+      var v = frameRegionLevel(active[i], i0, i1, refRange[0], refRange[1]) - expected;
+      excess[i] = Math.max(0, v * sign);
+    }
+    return profileFromSeries(excess, Math.abs(deviation) * 0.4);
+  }
+
   /** Fraction of active frames that agree with the aggregate finding. */
   function temporalConsistency(active, i0, i1, refRange, expected, deviation) {
-    if (!active.length || !isNum(deviation) || Math.abs(deviation) < 1e-6) return 0;
-    var sign = deviation > 0 ? 1 : -1;
-    var agree = 0;
-    for (var i = 0; i < active.length; i++) {
-      var v = frameRegionLevel(active[i], i0, i1, refRange[0], refRange[1]) - expected;
-      if (v * sign >= Math.abs(deviation) * 0.4) agree++;
-    }
-    return agree / active.length;
+    return temporalProfile(active, i0, i1, refRange, expected, deviation).frac;
   }
 
   function severityOf(magnitude, confidence) {
@@ -654,19 +705,149 @@
     return 'Low';
   }
 
-  function confidenceOf(deviation, consistency, quality, frames) {
-    var mag = clamp(Math.abs(deviation) / 6, 0, 1);
-    var frameFactor = clamp(frames / 60, 0.3, 1);
-    var c = 0.30 + 0.30 * mag + 0.26 * clamp(consistency, 0, 1) + 0.09 * quality + 0.05 * frameFactor;
-    return clamp(c, 0, 0.97);
-  }
-
   function roundHz(f) {
     if (!isNum(f)) return null;
     if (f >= 10000) return Math.round(f / 100) * 100;
     if (f >= 1000) return Math.round(f / 10) * 10;
     return Math.round(f);
   }
+
+  // ─── 2b. Derived descriptors (width / behaviour / EQ shape / confidence) ──
+
+  /** Width classification from the *measured* deviation width in octaves. */
+  var WIDTH_CLASSES = [
+    { id: 'very-narrow', label: 'Very narrow', max: 0.04 },
+    { id: 'narrow', label: 'Narrow', max: 0.4 },
+    { id: 'medium', label: 'Medium', max: 0.7 },
+    { id: 'broad', label: 'Broad', max: 1.6 },
+    { id: 'very-broad', label: 'Very broad', max: Infinity }
+  ];
+  function widthClassOf(widthOct) {
+    if (!isNum(widthOct) || widthOct <= 0) return { id: 'unknown', label: '—' };
+    for (var i = 0; i < WIDTH_CLASSES.length; i++) {
+      if (widthOct < WIDTH_CLASSES[i].max) return WIDTH_CLASSES[i];
+    }
+    return WIDTH_CLASSES[WIDTH_CLASSES.length - 1];
+  }
+
+  var BEHAVIOR_META = {
+    static: { label: 'Static', meaning: 'Present relatively consistently across active vocal sections.' },
+    dynamic: { label: 'Dynamic', meaning: 'Appears strongly only during certain moments rather than continuously.' },
+    persistent: { label: 'Persistent', meaning: 'A narrow feature that appears repeatedly across many vocal sections.' },
+    intermittent: { label: 'Intermittent', meaning: 'Appears only occasionally in the recording.' }
+  };
+
+  /**
+   * STATIC / DYNAMIC / PERSISTENT / INTERMITTENT — computed from the measured
+   * frame-to-frame behaviour, never from the characteristic's name.
+   */
+  function classifyBehavior(profile, widthOct) {
+    var frac = profile ? (profile.frac || 0) : 0;
+    var burst = profile ? (profile.burstiness || 0) : 0;
+    var segs = profile ? (profile.segments || 1) : 1;
+    var narrow = isNum(widthOct) && widthOct < 0.4;
+
+    if (burst >= 0.55 && (segs >= 2 || frac < 0.6)) return 'dynamic';
+    if (frac < 0.25) return 'intermittent';
+    if (narrow) return frac >= 0.6 ? 'persistent' : 'intermittent';
+    return 'static';
+  }
+
+  var EQ_SHAPES = {
+    'high-pass': 'High-pass',
+    'low-pass': 'Low-pass',
+    'bell-broad': 'Bell — Broad',
+    'bell-medium': 'Bell — Medium',
+    'bell-narrow': 'Bell — Narrow',
+    'high-shelf': 'High Shelf',
+    'low-shelf': 'Low Shelf',
+    'dynamic-bell': 'Dynamic Bell / Dynamic EQ',
+    'de-ess': 'Dynamic EQ / De-esser'
+  };
+
+  /** Suggested EQ move type, derived from measured width/location/behaviour. */
+  function eqShapeFor(o) {
+    var f = isNum(o.frequency) ? o.frequency : 0;
+    var wc = o.widthClass || 'unknown';
+    var isCut = o.dir === 'cut';
+    var narrow = wc === 'very-narrow' || wc === 'narrow';
+    var medium = wc === 'medium';
+
+    if (o.id === 'sibilance') {
+      return { shape: 'de-ess', reason: 'High-frequency bursts occur mainly during consonant events, so a dynamic high-frequency control (de-esser) is more musical than a static cut.' };
+    }
+    if (o.id === 'rumble' || (isCut && f > 0 && f < 95)) {
+      return { shape: 'high-pass', reason: 'Low-frequency energy extends below the useful vocal range — a high-pass filter removes it without touching the voice.' };
+    }
+    if (o.id === 'plosive') {
+      return { shape: 'dynamic-bell', reason: 'Low-frequency bursts only hit on P/B sounds, so a dynamic low band keeps the body intact between bursts.' };
+    }
+    if (!isCut && f >= 10000) {
+      return { shape: 'high-shelf', reason: 'The upper octave is relatively subdued — a gentle high shelf lifts the whole top end evenly.' };
+    }
+    if (!isCut && f <= 140) {
+      return { shape: 'low-shelf', reason: 'The low body is relatively subdued — a low shelf adds weight evenly.' };
+    }
+    if ((o.behavior === 'dynamic' || o.behavior === 'intermittent') && (narrow || medium)) {
+      return { shape: 'dynamic-bell', reason: 'The problem comes and goes, so a static EQ move would dull the moments that are fine — a dynamic EQ only engages when the excess actually appears.' };
+    }
+    if (narrow) return { shape: 'bell-narrow', reason: 'A narrow, well-defined problem region — a narrow bell targets it precisely with minimal collateral change.' };
+    if (medium) return { shape: 'bell-medium', reason: 'A moderate-width problem region — a medium bell matches its measured width.' };
+    return { shape: 'bell-broad', reason: 'A broad problem region — a wide bell matches its measured width across the whole area.' };
+  }
+
+  /**
+   * Evidence-weighted confidence (0–1). Every term is measurable from the
+   * uploaded audio: deviation strength, frame consistency, recording quality,
+   * amount of material, peak prominence, temporal stability and harmonic
+   * separation. The result drives the recommendation tier, not just display.
+   */
+  function computeConfidence(o) {
+    var mag = clamp(Math.abs(o.deviation) / 6, 0, 1);
+    var cons = clamp(isNum(o.consistency) ? o.consistency : 0, 0, 1);
+    var qual = clamp(isNum(o.quality) ? o.quality : 0, 0, 1);
+    var frameFactor = clamp((o.frames || 0) / 60, 0.2, 1);
+    var prominence = clamp(isNum(o.prominence) ? o.prominence : mag, 0, 1);
+    var stability = clamp(isNum(o.stability) ? o.stability : 0.5, 0, 1);
+    var harmonicSep = clamp(isNum(o.harmonicSeparation) ? o.harmonicSeparation : 0.5, 0, 1);
+    var c = 0.10 + 0.20 * mag + 0.24 * cons + 0.14 * qual + 0.10 * frameFactor +
+      0.10 * prominence + 0.08 * stability + 0.04 * harmonicSep;
+    return clamp(c, 0, 0.98);
+  }
+
+  function confidenceTier(c) {
+    if (c >= 0.90) return { id: 'very-strong', label: 'Very strong evidence' };
+    if (c >= 0.75) return { id: 'strong', label: 'Strong evidence' };
+    if (c >= 0.60) return { id: 'moderate', label: 'Moderate evidence' };
+    if (c >= 0.50) return { id: 'weak', label: 'Weak evidence' };
+    return { id: 'insufficient', label: 'Insufficient confidence' };
+  }
+
+  /** Descriptive "what you may hear" text — descriptive only, never EQ values. */
+  var AUDIBLE = {
+    rumble: { hears: 'Low rumble or room thud underneath the voice.' },
+    plosive: { hears: 'Thumpy P/B pops hitting the microphone.' },
+    boominess: { hears: 'Tubby, boomy low end.' },
+    warmth: { hearsAfter: 'More body and warmth in the voice.' },
+    body: { hearsAfter: 'More weight and size in the voice.' },
+    mud: { hears: 'Cloudy, congested low-mids that eat space in the mix.' },
+    boxiness: { hears: 'Cardboard, small-room character.' },
+    hollow: { hearsAfter: 'A fuller, less scooped midrange.' },
+    nasal: { hears: 'Pinched, honky nasal tone.' },
+    honk: { hears: 'Forward, honky delivery.' },
+    resonance: { hears: 'Roomy, ringing, tonal resonance.' },
+    clarity: { hearsAfter: 'More articulation and word clarity.' },
+    definition: { hearsAfter: 'More edge and intelligibility.' },
+    presence: { hearsAfter: 'A closer, more in-front voice.' },
+    harshness: { hears: 'Fatiguing, aggressive upper-mid edge.' },
+    shrillness: { hears: 'Thin, piercing high-mids.' },
+    sibilance: { hears: 'Sharp S / SH sounds.' },
+    tizziness: { hears: 'Fizzy, grainy top end.' },
+    brightness: { hearsAfter: 'More high-frequency openness.' },
+    brilliance: { hearsAfter: 'More sheen above the sibilant range.' },
+    air: { hearsAfter: 'More openness and breath.' },
+    openness: { hearsAfter: 'A more open, unrestricted top octave.' }
+  };
 
   // ─── 3. Characteristic detection ──────────────────────────────────────────
 
@@ -736,7 +917,22 @@
   function finding(ch, ctx, opts) {
     var dev = opts.deviation;
     var mag = Math.abs(dev);
-    var conf = confidenceOf(dev, opts.consistency, ctx.quality.factor, ctx.active.length);
+
+    var profile = opts.profile || { frac: opts.consistency != null ? opts.consistency : 0.5, burstiness: 0, segments: 1 };
+    var frac = opts.consistency != null ? clamp(opts.consistency, 0, 1) : (profile.frac || 0);
+    var width = widthClassOf(opts.widthOct);
+    var behavior = opts.behavior || classifyBehavior({ frac: frac, burstiness: profile.burstiness || 0, segments: profile.segments || 1 }, opts.widthOct);
+
+    var conf = computeConfidence({
+      deviation: dev,
+      consistency: frac,
+      quality: ctx.quality.factor,
+      frames: ctx.active.length,
+      prominence: opts.prominence,
+      stability: opts.stability != null ? opts.stability : 1 - (profile.burstiness || 0),
+      harmonicSeparation: opts.harmonicSeparation
+    });
+    var tier = confidenceTier(conf);
 
     if (mag < BALANCED_DB) {
       return balanced(ch, dev, { frequency: roundHz(opts.centre), range: opts.range });
@@ -744,37 +940,72 @@
     if (conf < MIN_CONFIDENCE) {
       return {
         id: ch.id, characteristic: ch.label, group: ch.group, status: 'notDetected',
-        reason: 'Insufficient confidence — measured ' + fmtGain(dev) + ' deviation was not consistent enough across the recording.',
+        reason: 'Insufficient confidence — the measured ' + fmtGain(dev) +
+          ' deviation was not consistent enough across the recording. No EQ recommendation generated.',
         insufficient: true
       };
     }
 
     var isCut = ch.dir === 'cut';
-    // Recommended starting move: a partial correction of what was measured,
-    // never the full deviation, and never below the audible-change floor.
-    var k = isCut ? (opts.narrow ? 0.62 : 0.52) : 0.46;
-    var maxMove = isCut ? 6.5 : 3.2;
-    var gainMag = clamp(mag * k, 0.8, maxMove);
-    var gain = isCut ? -gainMag : gainMag;
-    var tol = clamp(gainMag * 0.35, 0.4, 1.4);
+    // Weak evidence (50–59%) → a possible issue only; no precise move is
+    // invented, and the engineer is told to verify by ear first.
+    var possible = conf < 0.60;
+    var verifyByEar = conf < 0.75;
+
+    var gain = null, gainRange = null;
+    if (!possible) {
+      // Recommended starting move: a partial correction of what was measured,
+      // never the full deviation, and never below the audible-change floor.
+      var k = isCut ? (opts.narrow ? 0.62 : 0.52) : 0.46;
+      var maxMove = isCut ? 6.5 : 3.2;
+      var gainMag = clamp(mag * k, 0.8, maxMove);
+      gain = isCut ? -gainMag : gainMag;
+      var tol = clamp(gainMag * 0.35, 0.4, 1.4);
+      gainRange = [Math.round((gain - (isCut ? tol : -tol)) * 10) / 10, Math.round((gain + (isCut ? tol : -tol)) * 10) / 10];
+      gain = Math.round(gain * 10) / 10;
+    }
+
+    var centre = roundHz(opts.centre);
+    var shape = eqShapeFor({
+      id: ch.id, dir: isCut ? 'cut' : 'boost', frequency: centre,
+      widthClass: width.id, behavior: behavior
+    });
+    var bMeta = BEHAVIOR_META[behavior] || { label: behavior, meaning: '' };
+    var audible = AUDIBLE[ch.id];
+    var audibleEffect = audible
+      ? (isCut ? (audible.hears || audible.hearsAfter) : (audible.hearsAfter || audible.hears))
+      : null;
 
     return {
       id: ch.id,
       characteristic: ch.label,
       group: ch.group,
       status: isCut ? 'decrease' : 'increase',
-      frequency: roundHz(opts.centre),
+      frequency: centre,
       range: opts.range ? [roundHz(opts.range[0]), roundHz(opts.range[1])] : null,
       measuredDeviation: Math.round(dev * 10) / 10,
-      gain: Math.round(gain * 10) / 10,
-      gainRange: [Math.round((gain - (isCut ? tol : -tol)) * 10) / 10, Math.round((gain + (isCut ? tol : -tol)) * 10) / 10],
+      gain: gain,
+      gainRange: gainRange,
       q: opts.q != null ? Math.round(opts.q * 10) / 10 : null,
       widthOctaves: opts.widthOct != null ? Math.round(opts.widthOct * 100) / 100 : null,
+      widthClass: width.id,
+      widthLabel: width.label,
+      behavior: behavior,
+      behaviorLabel: bMeta.label,
+      behaviorMeaning: bMeta.meaning,
+      eqShape: shape.shape,
+      eqShapeLabel: EQ_SHAPES[shape.shape],
+      eqReason: shape.reason,
       confidence: Math.round(conf * 100) / 100,
+      confidenceTier: tier.id,
+      confidenceLabel: tier.label,
+      verifyByEar: verifyByEar,
+      possible: possible,
       severity: isCut ? severityOf(mag, conf) : null,
-      consistency: Math.round(clamp(opts.consistency, 0, 1) * 100) / 100,
-      persistence: opts.persistence || (opts.consistency > 0.6 ? 'persistent' : opts.consistency > 0.25 ? 'intermittent' : 'transient'),
+      consistency: Math.round(clamp(frac, 0, 1) * 100) / 100,
+      persistence: opts.persistence || (frac > 0.6 ? 'persistent' : frac > 0.25 ? 'intermittent' : 'transient'),
       explanation: opts.explanation || ch.why,
+      audibleEffect: audibleEffect,
       score: mag * conf * (isCut ? 1.15 : 1)
     };
   }
@@ -850,6 +1081,8 @@
       widthOct: Math.log2(bands[hi2].hi / bands[lo2].lo),
       q: 0.8,
       consistency: Math.max(stationarity, 0.4),
+      profile: { frac: 0.5 + 0.5 * stationarity, burstiness: 1 - stationarity, segments: 1 },
+      stability: stationarity,
       persistence: stationarity > 0.6 ? 'persistent' : 'intermittent',
       explanation: 'Energy at ' + fmtHz(centre) + ' measures ' + fmtGain(bestDev) +
         ' above what this voice’s own roll-off below its fundamental (' + fmtHz(f0) +
@@ -893,11 +1126,11 @@
 
     var dev = clamp((burst - 12) * 0.5, 0, 8);
     if (dev < BALANCED_DB) return notDetected(ch, 'Low-frequency bursts are present but too small to act on.');
-    var conf = confidenceOf(dev, clamp(frac * 12, 0.2, 1), ctx.quality.factor, active.length);
-    if (conf < MIN_CONFIDENCE) {
-      return { id: ch.id, characteristic: ch.label, group: ch.group, status: 'notDetected',
-        reason: 'Insufficient confidence in the plosive measurement.', insufficient: true };
-    }
+
+    // Burst profile for behaviour/confidence — plosives are concentrated in time.
+    var pExcess = series.map(function (v) { return Math.max(0, v - med); });
+    var pProfile = profileFromSeries(pExcess, Math.max(9, burst * 0.7));
+
     var f = finding(ch, ctx, {
       deviation: dev,
       centre: centre,
@@ -905,6 +1138,7 @@
       widthOct: Math.log2(bands[idx[1]].hi / bands[idx[0]].lo),
       q: 0.9,
       consistency: clamp(frac * 12, 0.2, 1),
+      profile: pProfile,
       persistence: 'transient',
       explanation: Math.round(frac * 1000) / 10 + '% of the analysed frames show a low-frequency burst up to ' +
         fmtGain(burst) + ' above the typical low end, centred near ' + fmtHz(centre) + '. A high-pass or a short dip on those words is usually enough.'
@@ -930,7 +1164,7 @@
     for (var b = i0; b <= i1; b++) { envRef += ctx.envelope[b]; n++; }
     envRef /= Math.max(1, n);
     var dev = measured - envRef;
-    var cons = temporalConsistency(ctx.active, i0, i1, refRange,
+    var profile = temporalProfile(ctx.active, i0, i1, refRange,
       envRef + (regionLevel(ctx.meanPow, refRange[0], refRange[1], ctx.refDb)), dev);
 
     return finding(ch, ctx, {
@@ -939,7 +1173,9 @@
       range: [cand.lo, cand.hi],
       widthOct: cand.widthOct,
       q: qFromWidth(cand.widthOct),
-      consistency: cons,
+      consistency: profile.frac,
+      profile: profile,
+      prominence: clamp((cand.peak - 1.5) / 8, 0, 1),
       narrow: true,
       explanation: 'A ' + (cand.widthOct < 0.4 ? 'narrow' : 'moderately wide') + ' concentration at ' + fmtHz(cand.centre) +
         ' measures ' + fmtGain(dev) + ' above the surrounding spectral envelope of this vocal.'
@@ -990,6 +1226,8 @@
     for (var b2 = span.loIdx; b2 <= span.hiIdx; b2++) { envRef += ctx.envelope[b2]; n++; }
     envRef /= Math.max(1, n);
     var dev = regionLevel(ctx.meanPow, span.loIdx, span.hiIdx, ctx.refDb) - envRef;
+    var rProfile = temporalProfile(ctx.active, span.loIdx, span.hiIdx, refRange,
+      envRef + regionLevel(ctx.meanPow, refRange[0], refRange[1], ctx.refDb), dev);
 
     return finding(ch, ctx, {
       deviation: dev,
@@ -998,6 +1236,9 @@
       widthOct: span.widthOct,
       q: qFromWidth(span.widthOct),
       consistency: best.persist,
+      profile: rProfile,
+      prominence: clamp((best.peak - 2) / 10, 0, 1),
+      harmonicSeparation: 0.65,
       narrow: true,
       persistence: best.persist > 0.7 ? 'persistent' : 'intermittent',
       explanation: 'A narrow peak at ' + fmtHz(span.centre) + ' sits ' + fmtGain(dev) +
@@ -1059,6 +1300,10 @@
       return d;
     })(), idx[0], idx[1], 1);
 
+    // Temporal profile: sibilance is intermittent by nature — verify from data.
+    var sExcess = series.map(function (v) { return Math.max(0, v - med); });
+    var sProfile = profileFromSeries(sExcess, burst * 0.6);
+
     return finding(ch, ctx, {
       deviation: dev,
       centre: centre,
@@ -1066,6 +1311,7 @@
       widthOct: half ? half.widthOct : null,
       q: half ? qFromWidth(half.widthOct) : 3,
       consistency: clamp(frac * 3.5, 0, 1),
+      profile: sProfile,
       narrow: true,
       persistence: 'intermittent',
       explanation: 'Sibilant frames (' + Math.round(frac * 100) + '% of the take) peak at ' + fmtHz(centre) +
@@ -1106,8 +1352,9 @@
     }
 
     var span = deviationCentre(bands, devTilt, idx[0], idx[1], wantSign);
-    var cons = temporalConsistency(ctx.active, span ? span.loIdx : idx[0], span ? span.hiIdx : idx[1], refRange,
-      exp + regionLevel(ctx.meanPow, refRange[0], refRange[1], ctx.refDb) - regionLevel(ctx.meanPow, refRange[0], refRange[1], ctx.refDb), dev);
+    var bI0 = span ? span.loIdx : idx[0];
+    var bI1 = span ? span.hiIdx : idx[1];
+    var bProfile = temporalProfile(ctx.active, bI0, bI1, refRange, exp, dev);
 
     var centre = span ? span.centre : centreF;
     var range = span ? [span.lo, span.hi] : [bands[idx[0]].lo, bands[idx[1]].hi];
@@ -1119,7 +1366,8 @@
       range: range,
       widthOct: widthOct,
       q: qFromWidth(widthOct),
-      consistency: cons,
+      consistency: bProfile.frac,
+      profile: bProfile,
       explanation: (ch.dir === 'cut'
         ? 'This vocal measures ' + fmtGain(dev) + ' above its own spectral trend across ' + fmtHz(range[0]) + '–' + fmtHz(range[1]) + ', peaking near ' + fmtHz(centre) + '. '
         : 'This vocal measures ' + fmtGain(dev) + ' relative to its own spectral trend across ' + fmtHz(range[0]) + '–' + fmtHz(range[1]) + ', with the deepest point near ' + fmtHz(centre) + '. ') + ch.why
@@ -1128,7 +1376,7 @@
 
   // ─── 4. Recording quality / content classification ────────────────────────
 
-  function analyzeQuality(ctx, mono, sr) {
+  function analyzeQuality(ctx, mono, sr, channels) {
     var bands = ctx.bands, rel = ctx.rel, meanPow = ctx.meanPow;
 
     // noise floor: quietest 10% of frames, broadband
@@ -1137,6 +1385,33 @@
     var noiseDb = median(quiet.map(function (f) { return f.rmsDb; }));
     var peakDb = Math.max.apply(null, frames.map(function (f) { return f.rmsDb; }));
     var snr = peakDb - noiseDb;
+
+    // digital clipping / near-clipping, measured on the actual samples of every
+    // channel (a clipped channel can partially cancel in the mono downmix).
+    var peakSample = 0, clipped = 0, nearClip = 0;
+    var srcs = channels && channels.length ? channels : [mono];
+    for (var s = 0; s < srcs.length; s++) {
+      var sc = srcs[s];
+      var cClipped = 0, cNear = 0;
+      for (var i = 0; i < sc.length; i++) {
+        var a = sc[i] < 0 ? -sc[i] : sc[i];
+        if (a > peakSample) peakSample = a;
+        if (a >= 0.999) cClipped++;
+        else if (a >= 0.97) cNear++;
+      }
+      clipped = Math.max(clipped, cClipped);
+      nearClip = Math.max(nearClip, cNear);
+    }
+    var peakDbFS = peakSample > 0 ? db(peakSample * peakSample) : -120;
+    var clippedFlag = clipped / mono.length > 1e-4 || nearClip / mono.length > 0.002;
+
+    // crest factor of the active frames (how much the take's level swings)
+    var activeRms = ctx.active.map(function (f) { return f.rms; });
+    var meanRms = activeRms.length
+      ? activeRms.reduce(function (a2, b2) { return a2 + b2; }, 0) / activeRms.length : 0;
+    var crestDb = (meanRms > 0 && isFinite(peakDb)) ? peakDb - db(meanRms * meanRms) : 0;
+
+    var activeFraction = ctx.allFrames.length ? ctx.active.length / ctx.allFrames.length : 0;
 
     // bandwidth / codec cutoff: highest band still within 25 dB of the 2–6 kHz level
     var midIdx = bandIndexRange(bands, 2000, 6000);
@@ -1180,7 +1455,15 @@
       flatness: Math.round(flatness * 1000) / 1000,
       lowRel: Math.round(lowRel * 10) / 10,
       centroid: Math.round(centroid),
-      factor: clamp(quality, 0, 1)
+      factor: clamp(quality, 0, 1),
+      peakDb: Math.round(peakDb * 10) / 10,
+      peakDbFS: Math.round(peakDbFS * 10) / 10,
+      clipped: clippedFlag,
+      clippedSamples: clipped,
+      nearClipFraction: Math.round(nearClip / mono.length * 1e6) / 1e6,
+      crestDb: Math.round(crestDb * 10) / 10,
+      veryLowSignal: peakDb < -30,
+      activeFraction: Math.round(activeFraction * 100) / 100
     };
   }
 
@@ -1188,26 +1471,42 @@
     var w = [];
     var q = ctx.quality, v = ctx.voice;
 
+    if (q.clipped) {
+      w.push({ level: 'warn', code: 'clipping', text: 'Possible clipping detected. Some frequency recommendations may be less reliable.' });
+    }
+    if (q.veryLowSignal) {
+      w.push({ level: 'warn', code: 'low-signal', text: 'The vocal level is very low. Analysis confidence may be reduced.' });
+    }
+    if (q.snr < 24) {
+      w.push({ level: 'warn', code: 'noise-floor', text: 'High noise floor detected (' + q.snr.toFixed(0) + ' dB SNR). High-frequency analysis may be less reliable.' });
+    }
+    if (q.lowRel > -6) {
+      w.push({ level: 'warn', code: 'lf-noise', text: 'Strong low-frequency environmental energy detected. Possible sources: HVAC / traffic / handling noise / room vibration.' });
+    }
+    if (ctx.active.length < 10 || q.activeFraction < 0.25) {
+      w.push({ level: 'warn', code: 'few-frames', text: 'Not enough consistent vocal material was detected. Some characteristics cannot be determined reliably.' });
+    }
+
     var busy = 0;
     if (q.flatness > 0.16) busy++;
     if (q.lowRel > -4) busy++;
     if (v.f0Confidence < 0.35) busy++;
     if (q.centroid > 3500) busy++;
-
     if (busy >= 2) {
       w.push({
-        level: 'warn',
-        text: 'This tool is optimized for isolated vocal recordings. The analysis may be less reliable when the file contains instruments, multiple sound sources or heavy background noise.'
+        level: 'warn', code: 'multi-source',
+        text: 'This recording may contain additional sound sources. Practical EQ is optimized for isolated vocal recordings. Results may be less reliable.'
       });
     }
-    if (q.snr < 18) {
-      w.push({ level: 'warn', text: 'Low signal-to-noise ratio (' + q.snr.toFixed(0) + ' dB) — quiet-region noise may influence the high-frequency readings.' });
+
+    if (ctx.channels > 1) {
+      w.push({ level: 'info', code: 'stereo', text: 'Stereo recording detected. Analysis is based on the combined vocal signal.' });
     }
     if (q.hfCutoff && q.hfCutoff < 17000) {
-      w.push({ level: 'info', text: 'Content stops around ' + fmtHz(q.hfCutoff) + ' (typical of lossy encoding). Air/brilliance findings above that point are suppressed.' });
+      w.push({ level: 'info', code: 'hf-cutoff', text: 'Content stops around ' + fmtHz(q.hfCutoff) + ' (typical of lossy encoding). Air/brilliance findings above that point are suppressed.' });
     }
     if (!v.f0) {
-      w.push({ level: 'info', text: 'No stable vocal fundamental was found, so harmonic-aware checks fall back to spectral-envelope measurements only.' });
+      w.push({ level: 'info', code: 'no-f0', text: 'No stable vocal fundamental was found, so harmonic-aware checks fall back to spectral-envelope measurements only.' });
     }
     return w;
   }
@@ -1261,6 +1560,7 @@
 
     var priorities = decrease.concat(increase)
       .slice()
+      .filter(function (f) { return !f.possible; })
       .sort(function (a, b) { return b.score - a.score; })
       .slice(0, 5)
       .map(function (f, i) {
@@ -1341,10 +1641,10 @@
     var ctx = {
       bands: bands, rel: agg.rel, smoothRel: smoothRel, meanPow: agg.meanPow, refDb: agg.refDb, specDb: agg.specDb,
       envelope: envelope, broadTrend: broadTrend, narrowRel: narrowRel, tilt: tilt, active: active, allFrames: stft.frames,
-      voice: voice, nyquist: sampleRate / 2, sampleRate: sampleRate, duration: duration
+      voice: voice, nyquist: sampleRate / 2, sampleRate: sampleRate, duration: duration, channels: channels.length
     };
     ctx.bandNoise = bandNoiseFloor(stft.frames, bands.length, agg.refDb);
-    ctx.quality = analyzeQuality(ctx, mono, sampleRate);
+    ctx.quality = analyzeQuality(ctx, mono, sampleRate, channels);
 
     report(0.78, 'Detecting resonance, mud, sibilance and presence…');
     var findings = detectAll(ctx);
@@ -1375,7 +1675,10 @@
         confidence: Math.round(voice.f0Confidence * 100) / 100,
         label: voice.label,
         delivery: voice.delivery,
-        pitchRangeSemitones: Math.round(voice.semitoneRange * 10) / 10
+        pitchRangeSemitones: Math.round(voice.semitoneRange * 10) / 10,
+        range: (voice.f0 && voice.f0Lo && voice.f0Hi)
+          ? [Math.round(voice.f0Lo), Math.round(voice.f0Hi)] : null,
+        ambiguous: !voice.f0 || voice.f0Confidence < 0.6
       },
       quality: ctx.quality,
       warnings: contentWarnings(ctx),
@@ -1388,6 +1691,7 @@
         gateDb: Math.round(gated.gateDb * 10) / 10,
         duration: duration,
         sampleRate: sampleRate,
+        channels: channels.length,
         analyzedAt: new Date().toISOString()
       }
     };
@@ -1596,7 +1900,13 @@
       fitTilt: fitTilt,
       deviationCentre: deviationCentre,
       isHarmonic: isHarmonic,
-      detectContainer: detectContainer
+      detectContainer: detectContainer,
+      widthClassOf: widthClassOf,
+      classifyBehavior: classifyBehavior,
+      eqShapeFor: eqShapeFor,
+      computeConfidence: computeConfidence,
+      confidenceTier: confidenceTier,
+      temporalProfile: temporalProfile
     }
   };
 
