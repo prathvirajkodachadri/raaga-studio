@@ -368,7 +368,8 @@
       </label>
       <button class="btn primary" id="loadDemo">ಲೋಡ್ ಉದಾಹರಣೆಗಳು</button>
       <button class="btn" id="clear">ಅಳಿಸು</button>
-      <span class="hint">Kannada text → live ಮಾತ್ರೆ-ಲಘು-ಗುರು marking</span>
+      <button class="btn primary" id="copyAll" type="button">Copy All — 2 lines + ಮಾತ್ರೆ</button>
+      <span class="hint">Kannada text → live ಮಾತ್ರೆ-ಲಘು-ಗುರು marking — 2-line copy (laghu/guru on top, words below)</span>
     </div>
 
     <div class="cols">
@@ -377,10 +378,15 @@
         <textarea id="input" spellcheck="false" placeholder="ಕನ್ನಡದಲ್ಲಿ ಬರೆಯಿರಿ…"></textarea>
       </div>
       <div class="panel output">
-        <span class="hint">ಗುರುತು ಮಾಡಿದ ಫಲಿತಾಂಶ</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <span class="hint">ಗುರುತು ಮಾಡಿದ ಫಲಿತಾಂಶ — laghu/guru on top of akshara</span>
+          <span class="hint" style="font-size:10px;">Select → Copy now keeps horizontal</span>
+        </div>
         <div id="result"></div>
       </div>
     </div>
+
+    <div id="prosody-flash" class="prosody-flash" role="status" aria-live="polite"></div>
 
     <h2 class="sec">ನಿಯಮಗಳು (ಮಾತ್ರೆ-ಲಘು-ಗುರು)</h2>
     <div id="rules"></div>
