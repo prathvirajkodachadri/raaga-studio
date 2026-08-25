@@ -98,3 +98,6 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 Everything except **Suno API integration (19)** works fully in-browser with no
 backend — consistent with the current zero-dependency design. Feature 19 would
 require a small server/proxy layer to hold the Suno API key.
+
+## Tempo Lab follow-up
+**Key & BPM Finder (4)** is now ✅ built as Tempo Lab: local BPM, beat-grid, drift, energy and key analysis feeds Suno and Song Studio. Possible next steps are per-stem tempo analysis, MIDI beat export, and tap-sync while playing.

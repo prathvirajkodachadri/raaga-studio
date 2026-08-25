@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
   <link rel="stylesheet" href="css/raga-reference.css">
   <link rel="stylesheet" href="css/practical-eq.css">
+  <link rel="stylesheet" href="css/tempo-lab.css">
   <link rel="stylesheet" href="css/mix-tools.css">
   <link rel="stylesheet" href="css/lyrics-lab.css">
 </head>
@@ -34,6 +35,7 @@
       <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♪</span><span class="tab-label desktop">Raga Reference</span><span class="tab-label mobile">Raga</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
+      <button type="button" class="tab" data-tab="tempo" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">◷</span><span class="tab-label desktop">Tempo Lab</span><span class="tab-label mobile">Tempo</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
       <button type="button" class="tab" data-tab="lyrics" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಕ</span><span class="tab-label desktop">Lyrics Lab</span><span class="tab-label mobile">Lyrics</span></button>
       <button type="button" class="tab" data-tab="quick-access" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⚡</span><span class="tab-label desktop">Quick Access</span><span class="tab-label mobile">Quick</span></button>
@@ -722,6 +724,15 @@
     </div>
   </section>
 
+  <!-- ═══════════════ TEMPO LAB TAB ═══════════════ -->
+  <section class="wrap" id="tab-tempo" hidden>
+    <h2 class="sec">ತಾಳ · Tempo Lab</h2><p class="mc-intro">Measure BPM, beat positions, tempo drift, energy and key from audio on this device. Files never leave your browser.</p>
+    <input id="tl-file" type="file" accept="audio/*" hidden><div id="tl-drop" class="tl-drop" role="button" tabindex="0">Drop an audio file here, or click to browse<br><small>WAV · MP3 · FLAC · AIFF · OGG</small></div><p id="tl-status" class="hint"></p>
+    <div id="tl-summary" class="tl-grid"></div><p id="tl-warnings" class="tl-warn"></p>
+    <div class="tl-actions"><button id="tl-half" class="btn" type="button">÷2 tempo</button><button id="tl-double" class="btn" type="button">×2 tempo</button><button id="tl-tap" class="btn tl-tap" type="button">Tap along</button><span id="tl-tap-result"></span><button id="tl-suno" class="btn" type="button">Use in Suno Builder</button><button id="tl-export" class="btn" type="button" disabled>Export JSON</button><button id="tl-csv" class="btn" type="button">Export beats CSV</button></div>
+    <div class="tl-card"><h3>Waveform &amp; beat grid</h3><canvas id="tl-wave" class="tl-canvas"></canvas></div><div class="tl-card"><h3>Tempo drift</h3><canvas id="tl-tempo" class="tl-canvas"></canvas></div><div class="tl-card"><h3>Energy</h3><canvas id="tl-energy" class="tl-canvas"></canvas></div>
+  </section>
+
   <!-- ═══════════════ SONG STUDIO TAB ═══════════════ -->
   <section class="wrap" id="tab-songs" hidden>
     <h2 class="sec">Song Studio — Project Registry &amp; Workflow</h2>
@@ -1314,6 +1325,8 @@
   <script src="js/pro-eq.js"></script>
   <script src="js/practical-eq.js"></script>
   <script src="js/practical-eq-app.js"></script>
+  <script src="js/tempo-lab.js"></script>
+  <script src="js/tempo-lab-app.js"></script>
   <script src="js/lyrics-prompt.js"></script>
   <script src="js/lyrics-lab.js"></script>
   <script src="js/mix-tools.js"></script>

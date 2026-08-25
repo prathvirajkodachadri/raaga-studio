@@ -158,7 +158,11 @@ comparison** (uses the last mix from the Mix Check tab), JSON or print-to-PDF ex
 **Scoring:** weighted average (Loudness 25%, DR 20%, Clipping 20%, Frequency 10%,
 Stereo 10%, Silence 10%, Metadata 5%) → grade A–F.
 
-### 7. Song Studio (project registry & workflow)
+
+### 7. ತಾಳ · Tempo Lab
+Drop a track to measure BPM, beat timestamps, tempo drift, RMS energy and a Western key estimate entirely in-browser. Tempo Lab exposes alternative half/double tempo candidates, an honest confidence label, tap verification, JSON/CSV beat export, and can prefill Suno BPM. Short, silent, free-tempo and changing recordings are flagged rather than given invented precision.
+
+### 8. Song Studio (project registry & workflow)
 One card per song tracking **Idea → Composing → Suno → Mixing → Mastering → Released**:
 
 - Song registry with BPM / key / genre / status and Suno links
@@ -168,7 +172,7 @@ One card per song tracking **Idea → Composing → Suno → Mixing → Masterin
 - Session notes + **version log** (Mix v1, Master v2… with the chain you used)
 - Export all songs / one song as JSON, re-import anywhere; stored in localStorage
 
-### 8. Lyrics Lab (songwriting prompt builder + rhyme guide)
+### 9. Lyrics Lab (songwriting prompt builder + rhyme guide)
 A focused prompt builder for Kannada, English and bilingual songwriting. Enter an idea, choose the
 mood, section, rhyme scheme and rhyme style, then copy the structured brief into a writing AI.
 Lyrics Lab does not generate canned lyrics or invented rhyme scores.
@@ -182,23 +186,27 @@ Lyrics Lab does not generate canned lyrics or invented rhyme scores.
 Every prompt follows **Meaning → Emotion → Natural language → Rhythm → Rhyme** and explicitly tells
 the writing AI not to force grammar, repeat an ending unnecessarily or invent numerical scores.
 
-### 9. Quick Access
+### 10. Quick Access
 A curated, searchable mixing-engineer toolbox with safe external links grouped by free/free-tier status.
 
 ## Structure
 
 ```
 raaga-studio/
-├── index.html                 # 10-tab UI, ending Song Studio · Lyrics Lab · Quick Access
+├── index.html                 # 11-tab UI, ending Song Studio · Lyrics Lab · Quick Access
 ├── css/
 │   ├── style.css              # shared dark studio theme
 │   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
+│   ├── tempo-lab.css          # Tempo Lab cards and responsive canvases
+│   ├── mix-tools.css          # Quick Access directory
 │   ├── vocal-eq-cheatsheet.css # cheat sheet layout
 │   ├── raga-reference.css     # raga & scale reference cards
 │   └── lyrics-lab.css         # responsive songwriting workspace
 ├── js/
 │   ├── practical-eq.js        # Practical EQ analysis engine (home) — STFT, f0, detectors
 │   ├── practical-eq-app.js    # Practical EQ UI controller + frequency graph
+│   ├── tempo-lab.js           # pure BPM/key/rhythm analysis engine
+│   ├── tempo-lab-app.js       # Tempo Lab browser controller
 │   ├── pro-eq.js              # Pro-Q style parametric EQ — biquad DSP + Web Audio
 │   ├── prosody.js             # Kannada prosody engine
 │   ├── app.js                 # prosody UI controller
@@ -208,6 +216,7 @@ raaga-studio/
 │   ├── suno-prompts.js        # Suno prompt builder + recipe library
 │   ├── mix-check.js           # mix-target assessment engine
 │   ├── mix-check-app.js       # mix check tab controller
+│   ├── mix-tools.js           # Quick Access directory data + controller
 │   ├── song-studio.js         # project registry, checklists, versions
 │   ├── lyrics-prompt.js       # pure songwriting-prompt builder and rhyme-scheme data
 │   ├── lyrics-lab.js          # Lyrics Lab prompt form, copy and local draft UI
@@ -230,7 +239,7 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #songs #lyrics #quick-access
+# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #tempo #songs #lyrics #quick-access
 ```
 
 > **Note:** Practical EQ, Mix Check and Master Check need the Web Audio API (modern
@@ -242,6 +251,7 @@ python3 -m http.server 8000
 node test/prosody_test.js
 node test/master_check_test.js
 node test/practical_eq_test.js
+node test/tempo_lab_test.js
 node test/lyrics_prompt_test.js
 node test/ui_smoke_test.js
 ```

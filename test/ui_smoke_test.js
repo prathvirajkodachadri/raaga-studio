@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'raga', 'mix', 'master', 'songs', 'lyrics', 'quick-access'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'raga', 'mix', 'master', 'tempo', 'songs', 'lyrics', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -142,10 +142,15 @@ load('song-studio.js');
 load('pro-eq.js');
 load('practical-eq.js');
 load('practical-eq-app.js');
+load('tempo-lab.js');
+load('tempo-lab-app.js');
 load('lyrics-prompt.js');
 load('lyrics-lab.js');
 load('mix-tools.js');
 load('nav.js');
+
+assert(typeof global.window.TEMPO_LAB.analyze === 'function', 'Tempo Lab engine is exposed');
+assert(typeof getEl('tl-drop').onclick === 'function', 'Tempo Lab drop zone controller initializes');
 
 // pro-eq parametric EQ (home tab)
 const EQ = global.window.PRO_EQ;
