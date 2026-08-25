@@ -375,7 +375,10 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 760px) {
+  .pq-hero { gap: 12px; }
   .pq-hero h2 { font-size: 22px; }
+  .pq-hero-flow { width: 100%; }
+  .pq-file-grid { grid-template-columns: 1fr 1fr; }
   .pq-priority-list li {
     grid-template-columns: auto 1fr auto;
     grid-template-areas:

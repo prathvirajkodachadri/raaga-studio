@@ -182,8 +182,22 @@
 @media (max-width: 900px) {
   .rg-ref-grid { grid-template-columns: 1fr; }
 }
+@media (max-width: 760px) {
+  .rg-filter { min-height: 40px; }
+  .rg-actions .btn { min-height: 44px; }
+  .rg-flash { bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
 @media (max-width: 560px) {
   .rg-grid { grid-template-columns: 1fr; }
-  .rg-search { min-width: 100%; }
+  .rg-search { min-width: 100%; font-size: 16px; }
   .rg-scale-label { min-width: 72px; }
+  .rg-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .rg-filters::-webkit-scrollbar { display: none; }
+  .rg-filter { flex: 0 0 auto; }
 }

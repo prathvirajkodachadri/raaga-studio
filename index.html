@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1d1916">
   <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
   <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
@@ -25,9 +29,13 @@
     </div>
     <div class="brand">
       <h1>Raaga Studio <span class="brand-flow">· Compose → Mix → Master</span></h1>
-      <p class="tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
+      <p class="tag desktop-tag">ಕನ್ನಡ ಸಂಗೀತ · Suno → Cubase → Release — ಛಂದಸ್ಸು · prompt builder · mix &amp; master QA</p>
+      <p class="tag nav-current" id="nav-current">Practical EQ</p>
     </div>
-    <nav class="tabnav" role="tablist" aria-label="Studio tools">
+    <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="All studio tools" aria-expanded="false" aria-controls="nav-drawer">
+      <span class="nav-menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+    <nav class="tabnav" id="studio-tabnav" role="tablist" aria-label="Studio tools">
       <button type="button" class="tab active" data-tab="practical-eq" role="tab" aria-selected="true"><span class="tab-icon" aria-hidden="true">◎</span><span class="tab-label desktop">Practical EQ</span><span class="tab-label mobile">Analyze</span></button>
       <button type="button" class="tab" data-tab="vocal-eq" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
@@ -41,6 +49,32 @@
       <button type="button" class="tab" data-tab="quick-access" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⚡</span><span class="tab-label desktop">Quick Access</span><span class="tab-label mobile">Quick</span></button>
     </nav>
   </header>
+
+  <div class="nav-drawer" id="nav-drawer" hidden>
+    <button type="button" class="nav-drawer-backdrop" id="nav-drawer-backdrop" tabindex="-1" aria-label="Close tools menu"></button>
+    <div class="nav-drawer-sheet" role="dialog" aria-modal="true" aria-labelledby="nav-drawer-title">
+      <header class="nav-drawer-head">
+        <div>
+          <p class="nav-drawer-kicker">Raaga Studio</p>
+          <h2 id="nav-drawer-title">Studio tools</h2>
+        </div>
+        <button type="button" class="nav-drawer-close" id="nav-drawer-close" aria-label="Close">✕</button>
+      </header>
+      <div class="nav-drawer-grid">
+        <button type="button" class="nav-drawer-item" data-tab="practical-eq"><span class="nav-drawer-ico" aria-hidden="true">◎</span><span class="nav-drawer-copy"><b>Practical EQ</b><small>Vocal frequency diagnostic</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="vocal-eq"><span class="nav-drawer-ico" aria-hidden="true">≋</span><span class="nav-drawer-copy"><b>Vocal EQ</b><small>Mixing cheat sheet</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="prosody"><span class="nav-drawer-ico kn" aria-hidden="true">ಅ</span><span class="nav-drawer-copy"><b>ಛಂದಸ್ಸು</b><small>Kannada metre scanner</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="suno"><span class="nav-drawer-ico" aria-hidden="true">✦</span><span class="nav-drawer-copy"><b>Suno Prompt</b><small>Custom Mode builder</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="raga"><span class="nav-drawer-ico" aria-hidden="true">♪</span><span class="nav-drawer-copy"><b>Raga Reference</b><small>Scale &amp; mood library</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="mix"><span class="nav-drawer-ico" aria-hidden="true">≡</span><span class="nav-drawer-copy"><b>Mix Check</b><small>Ready for mastering?</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="master"><span class="nav-drawer-ico" aria-hidden="true">⌁</span><span class="nav-drawer-copy"><b>Master Check</b><small>Release QA &amp; loudness</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="tempo"><span class="nav-drawer-ico" aria-hidden="true">◷</span><span class="nav-drawer-copy"><b>Tempo Lab</b><small>BPM, beats &amp; key</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="songs"><span class="nav-drawer-ico" aria-hidden="true">♫</span><span class="nav-drawer-copy"><b>Song Studio</b><small>Project registry</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="lyrics"><span class="nav-drawer-ico kn" aria-hidden="true">ಕ</span><span class="nav-drawer-copy"><b>Lyrics Lab</b><small>Songwriting prompts</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="quick-access"><span class="nav-drawer-ico" aria-hidden="true">⚡</span><span class="nav-drawer-copy"><b>Quick Access</b><small>Mixing engineer toolbox</small></span></button>
+      </div>
+    </div>
+  </div>
 
   <main id="studio-tools">
   <!-- ═══════════════ PRACTICAL EQ (home) ═══════════════ -->
