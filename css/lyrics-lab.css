@@ -431,7 +431,7 @@ textarea.ll-prompt-output {
   .ll-scheme-table td:first-child,
   .ll-scheme-table td[data-label="Name"] { width: 100%; }
   .ll-scheme-table .ll-pattern { flex-wrap: wrap; }
-  .ll-flash { bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .ll-flash { bottom: calc(80px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 520px) {
   .ll-hero h2 { font-size: 35px; }

@@ -262,8 +262,22 @@
   border-radius: 10px;
 }
 
+@media (max-width: 760px) {
+  .mt-filter { min-height: 40px; padding: 8px 12px; }
+  .mt-fav { width: 40px; height: 40px; }
+}
+
 @media (max-width: 560px) {
   .mt-grid { grid-template-columns: 1fr; }
-  .mt-search { min-width: 100%; }
+  .mt-search { min-width: 100%; font-size: 16px; }
   .mt-hero { padding: 18px 16px; border-radius: 14px; }
+  .mt-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .mt-filters::-webkit-scrollbar { display: none; }
+  .mt-filter { flex: 0 0 auto; }
 }

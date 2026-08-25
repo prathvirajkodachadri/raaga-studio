@@ -1,1 +1,83 @@
-.tl-drop{border:2px dashed #54708d;border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:#121b26}.tl-drop:hover,.tl-drop.drag{border-color:#67c7d6}.tl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.tl-stat,.tl-card{background:#121b26;border:1px solid #26384b;border-radius:10px;padding:16px}.tl-big{font-size:2.3rem;color:#7ee2df;font-weight:bold}.tl-canvas{width:100%;height:180px;background:#0b1119;border-radius:8px}.tl-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.tl-warn{color:#ffd17a}.tl-tap{min-width:44px;min-height:44px}@media(max-width:600px){.tl-big{font-size:1.8rem}.tl-canvas{height:140px}}
+/* Tempo Lab — cards, drop zone, canvases */
+
+.tl-drop {
+  border: 2px dashed #54708d;
+  border-radius: 12px;
+  padding: 28px 18px;
+  text-align: center;
+  cursor: pointer;
+  background: #121b26;
+  color: var(--text);
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.tl-drop:hover,
+.tl-drop.drag { border-color: #67c7d6; }
+.tl-drop small { color: var(--muted); }
+
+.tl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.tl-stat,
+.tl-card {
+  background: #121b26;
+  border: 1px solid #26384b;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.tl-big {
+  font-size: 2.3rem;
+  color: #7ee2df;
+  font-weight: bold;
+  word-break: break-word;
+}
+
+.tl-canvas {
+  width: 100%;
+  height: 180px;
+  max-width: 100%;
+  background: #0b1119;
+  border-radius: 8px;
+  display: block;
+}
+
+.tl-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+.tl-warn { color: #ffd17a; }
+.tl-tap { min-width: 44px; min-height: 44px; }
+
+@media (max-width: 760px) {
+  .tl-drop { min-height: 140px; padding: 24px 14px; }
+  .tl-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tl-actions .btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .tl-tap { grid-column: 1 / -1; }
+  #tl-tap-result { grid-column: 1 / -1; font-size: 13px; }
+}
+
+@media (max-width: 600px) {
+  .tl-big { font-size: 1.8rem; }
+  .tl-canvas { height: 140px; }
+  .tl-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  .tl-grid { grid-template-columns: 1fr; }
+}
