@@ -330,7 +330,7 @@ getEl('mt-search').dispatchEvent({ type: 'input' });
 // ─── Suno Cheat Codes & Meta Tags reference ───────────────────────────────
 const SC = global.window.RaagaStudio.SUNO_CHEATS;
 const SC_KINDS = global.window.RaagaStudio.SUNO_CHEATS_KINDS;
-assert(Array.isArray(SC) && SC.length === 14, 'Suno Cheats ships 14 categories');
+assert(Array.isArray(SC) && SC.length === 23, 'Suno Cheats ships 23 categories');
 assert(SC.every(c => c.id && c.title && c.summary && Array.isArray(c.items) && c.items.length > 0),
   'every category has an id, title, summary and items');
 const validKinds = Object.keys(SC_KINDS);
@@ -338,10 +338,24 @@ assert(SC.every(c => c.items.every(i => i.code && i.what && validKinds.indexOf(i
   'every tag has code, explanation and a valid field kind');
 assert(SC.every(c => c.items.every(i => typeof i.code === 'string' && i.code.length < 300)),
   'tag codes are copy-ready short strings');
+const scIds = SC.map(c => c.id);
+['structure', 'vocals', 'vocal-expression', 'carnatic', 'percussion', 'electronic', 'solos', 'dynamics', 'endings', 'adlibs', 'experimental'].forEach(id => {
+  assert(scIds.indexOf(id) >= 0, 'lyrics-tag category present: ' + id);
+});
+const allCodes = SC.reduce((acc, c) => acc.concat(c.items.map(i => i.code)), []);
+assert(allCodes.indexOf('[Alapana]') >= 0, 'Carnatic tags include [Alapana]');
+assert(allCodes.indexOf('[Male Vocal]') >= 0, 'vocal type tags include [Male Vocal]');
+assert(allCodes.indexOf('(oh...)') >= 0, 'ad-lib notation includes (oh...)');
+assert(allCodes.indexOf('{build energy}') >= 0, 'experimental curly-brace notation is documented');
+assert(allCodes.indexOf('<chorus>') >= 0, 'experimental angle-bracket notation is documented');
+assert(typeof global.window.RaagaStudio.SUNO_CHEATS_NOTATION === 'object', 'notation map is exposed');
 assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') >= 0, 'structure tags render (e.g. [Chorus])');
 assert(getEl('sc-categories').innerHTML.indexOf('Copy all') >= 0, 'category copy-all buttons render');
+assert(getEl('sc-categories').innerHTML.indexOf('Insert') >= 0, 'insert-into-pad buttons render');
 assert(getEl('sc-toc').innerHTML.indexOf('Song structure tags') >= 0, 'table of contents renders');
+assert(getEl('sc-toc').innerHTML.indexOf('Lyrics tags') >= 0, 'TOC is grouped by field');
 assert(getEl('sc-templates').innerHTML.indexOf('Kannada bhavageete ballad') >= 0, 'starter templates render');
+assert(getEl('sc-pad-meta').textContent.indexOf('Empty') >= 0, 'lyrics pad initialises empty');
 
 // field filter narrows to one kind (delegated clicks aren't stubbed deeply, so verify the data)
 assert(SC.filter(c => c.id === 'structure')[0].items[0].kind === 'lyrics',
@@ -354,6 +368,10 @@ getEl('sc-search').value = 'mridangam';
 getEl('sc-search').dispatchEvent({ type: 'input' });
 assert(getEl('sc-categories').innerHTML.indexOf('mridangam') >= 0, 'search surfaces the instrument tag');
 assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') < 0, 'search hides unrelated categories');
+getEl('sc-search').value = 'alapana';
+getEl('sc-search').dispatchEvent({ type: 'input' });
+assert(getEl('sc-categories').innerHTML.indexOf('[Alapana]') >= 0, 'search surfaces Carnatic [Alapana]');
+assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') < 0, 'alapana search hides pop structure tags');
 getEl('sc-search').value = 'breathy';
 getEl('sc-search').dispatchEvent({ type: 'input' });
 assert(getEl('sc-categories').innerHTML.indexOf('data-i="4"') >= 0,

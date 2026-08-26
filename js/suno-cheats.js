@@ -33,6 +33,28 @@
     }
   };
 
+  var NOTATION = {
+    bracket: { label: '[ ]', name: 'Square brackets', hint: 'Best for structural and performance metadata.' },
+    paren: { label: '( )', name: 'Parentheses', hint: 'Vocalised / ad-lib material.' },
+    brace: { label: '{ }', name: 'Curly braces', hint: 'Experimental instruction notation.' },
+    angle: { label: '< >', name: 'Angle brackets', hint: 'Experimental / less reliable notation.' },
+    plain: { label: 'plain', name: 'Plain text', hint: 'Style, exclude or formatting language with no special brackets.' }
+  };
+
+  var TOC_GROUPS = [
+    { id: 'lyrics', label: 'Lyrics tags' },
+    { id: 'style', label: 'Style of Music' },
+    { id: 'exclude', label: 'Exclude & formatting' }
+  ];
+
+  var PAD_SKELETONS = {
+    pop: '[Intro]\n(instrumental)\n\n[Verse 1]\n\n\n[Pre-Chorus]\n(rising)\n\n[Chorus]\n\n\n[Verse 2]\n\n\n[Chorus]\n\n\n[Bridge]\n\n\n[Chorus]\n\n\n[Outro]\n(fade out)',
+    carnatic: '[Raga Intro]\n[Tanpura Drone]\n\n[Alapana]\n(free tempo)\n\n[Verse 1]\n[Gamaka]\n\n\n[Chorus]\n\n\n[Swara Passage]\nsa ri ga ma pa\n\n[Tani Avartanam]\n(mridangam)\n\n[Outro]\n(tanpura fades)',
+    edm: '[Intro]\n[Synth Intro]\n\n[Verse 1]\n\n\n[Build]\n[Riser]\n\n[Drop]\n(instrumental)\n\n[Breakdown]\n\n\n[Build]\n\n[Drop]\n\n[Outro]\n[Fade Out]'
+  };
+
+  var LS_PAD = 'raaga.sunoCheatsPad';
+
   // ─── Reference data ───────────────────────────────────────────────────────
   // kind: lyrics | style | exclude | meta   (see KIND above)
   // code: the exact text to type (or a short rule name for meta items)
@@ -42,6 +64,7 @@
   var CATEGORIES = [
     {
       id: 'techniques',
+      group: 'style',
       icon: '\u270e',
       title: 'Suno prompting technique',
       summary: 'How to assemble Style of Music: layering, length, order and iteration. These are methods, not tags.',
@@ -106,26 +129,38 @@
     },
     {
       id: 'structure',
+      group: 'lyrics',
       icon: '\u2317',
       title: 'Song structure tags',
       summary: 'Bracket markers that split the Lyrics field into sections \u2014 the most reliable tags in Suno. Put each on its own line, before the words.',
-      items: [
+            items: [
         {
           code: '[Intro]',
           kind: 'lyrics',
           what: 'Opens the song, often instrumentally \u2014 leave the next line blank or write (instrumental).'
         },
         {
-          code: '[Verse 1] / [Verse 2]',
+          code: '[Verse]',
           kind: 'lyrics',
-          what: 'Storytelling sections. Numbering tells the model these are separate verses, not one long block.',
-          ex: '[Verse 2]\nYour second verse here'
+          what: 'A storytelling section when you do not need verse numbers.'
+        },
+        {
+          code: '[Verse 1]',
+          kind: 'lyrics',
+          what: 'First verse. Numbering tells the model these are separate verses, not one long block.',
+          ex: '[Verse 1]\\nYour first verse here'
+        },
+        {
+          code: '[Verse 2]',
+          kind: 'lyrics',
+          what: 'Second verse \u2014 new words, usually the same melody as verse 1.',
+          ex: '[Verse 2]\\nYour second verse here'
         },
         {
           code: '[Pre-Chorus]',
           kind: 'lyrics',
           what: 'A short lift before the chorus \u2014 builds tension and raises energy.',
-          ex: '[Pre-Chorus]\n(rising)'
+          ex: '[Pre-Chorus]\\n(rising)'
         },
         {
           code: '[Chorus]',
@@ -138,45 +173,9 @@
           what: 'An extension after the chorus \u2014 la-la tail or a second hook, common in pop.'
         },
         {
-          code: '[Hook]',
-          kind: 'lyrics',
-          what: 'A short, catchy repeated phrase \u2014 hip-hop\u2019s version of a chorus.'
-        },
-        {
-          code: '[Refrain]',
-          kind: 'lyrics',
-          what: 'A repeated line or couplet inside a verse \u2014 smaller than a full chorus.'
-        },
-        {
           code: '[Bridge]',
           kind: 'lyrics',
           what: 'One-off contrasting section, usually near the end \u2014 new melody or key.'
-        },
-        {
-          code: '[Interlude] / [Instrumental Interlude]',
-          kind: 'lyrics',
-          what: 'A transitional instrumental moment between two major sections.'
-        },
-        {
-          code: '[Instrumental] / [Instrumental Break]',
-          kind: 'lyrics',
-          what: 'No vocals for this section \u2014 useful for solos, tags and breathing room.'
-        },
-        {
-          code: '[Break]',
-          kind: 'lyrics',
-          what: 'A short gap; the arrangement often strips back for a beat or two.'
-        },
-        {
-          code: '[Build] / [Build-Up]',
-          kind: 'lyrics',
-          what: 'Rising tension before a drop (electronic genres).'
-        },
-        {
-          code: '[Drop]',
-          kind: 'lyrics',
-          what: 'The high-energy dance section \u2014 leave its lyrics empty so nothing gets sung over it.',
-          ex: '[Drop]\n(instrumental)'
         },
         {
           code: '[Breakdown]',
@@ -184,15 +183,40 @@
           what: 'A quiet or sparse section before energy returns.'
         },
         {
-          code: '[Solo] / [Guitar Solo]',
+          code: '[Build]',
           kind: 'lyrics',
-          what: 'An instrumental solo moment \u2014 naming the instrument helps it show up.',
-          ex: '[Sax Solo]\n(instrumental)'
+          what: 'Rising tension before a drop or chorus (electronic and pop).'
+        },
+        {
+          code: '[Drop]',
+          kind: 'lyrics',
+          what: 'The high-energy dance section \u2014 leave its lyrics empty so nothing gets sung over it.',
+          ex: '[Drop]\\n(instrumental)'
+        },
+        {
+          code: '[Interlude]',
+          kind: 'lyrics',
+          what: 'A transitional moment between two major sections, often instrumental.'
+        },
+        {
+          code: '[Instrumental]',
+          kind: 'lyrics',
+          what: 'No vocals for this section \u2014 useful for solos, tags and breathing room.'
         },
         {
           code: '[Outro]',
           kind: 'lyrics',
           what: 'Winds the song down; leave it blank for a purely instrumental ending.'
+        },
+        {
+          code: '[Refrain]',
+          kind: 'lyrics',
+          what: 'A repeated line or couplet inside a verse \u2014 smaller than a full chorus.'
+        },
+        {
+          code: '[Hook]',
+          kind: 'lyrics',
+          what: 'A short, catchy repeated phrase \u2014 hip-hop\u2019s version of a chorus.'
         },
         {
           code: '[End]',
@@ -204,38 +228,45 @@
     },
     {
       id: 'vocals',
+      group: 'lyrics',
       icon: '\u266b',
-      title: 'Vocal & performance tags',
-      summary: 'Who sings, how they sing, and what happens between the lines \u2014 bracket markers for the Lyrics field.',
-      items: [
+      title: 'Vocal type tags',
+      summary: 'Who is singing. Put the tag on its own line, usually just under the section tag and above the words.',
+            items: [
         {
-          code: '[Female Vocals] / [Male Vocals]',
+          code: '[Male Vocal]',
           kind: 'lyrics',
-          what: 'Sets the featured voice \u2014 often the fastest fix when the default singer is wrong.',
-          ex: '[Verse 1]\n[Female Vocals]\nYour lines\u2026'
+          what: 'Feature a male lead. Often the fastest fix when the default singer is wrong.',
+          ex: '[Verse 1]\\n[Male Vocal]\\nYour lines\u2026'
         },
         {
-          code: '[Duet] / [Male & Female Vocals]',
+          code: '[Female Vocal]',
+          kind: 'lyrics',
+          what: 'Feature a female lead. Place under the section tag, above the words.',
+          ex: '[Verse 1]\\n[Female Vocal]\\nYour lines\u2026'
+        },
+        {
+          code: '[Duet]',
           kind: 'lyrics',
           what: 'Splits the parts between two voices.'
         },
         {
-          code: '[Choir] / [Group Vocals]',
+          code: '[Choir]',
           kind: 'lyrics',
           what: 'Multiple voices, ensemble feel \u2014 good for devotional or anthemic moments.'
         },
         {
-          code: '[Falsetto]',
+          code: '[Backing Vocals]',
           kind: 'lyrics',
-          what: 'High, airy head-voice singing.'
+          what: 'Stacked voices behind the lead \u2014 oohs, answers, doubles.'
         },
         {
-          code: '[Belting]',
+          code: '[Lead Vocal]',
           kind: 'lyrics',
-          what: 'Powerful, full-chest singing for a big chorus.'
+          what: 'Bring the featured singer forward after a choir, duet or instrumental.'
         },
         {
-          code: '[Whisper] / [Whispered]',
+          code: '[Whispered Vocals]',
           kind: 'lyrics',
           what: 'Quiet, intimate delivery close to the microphone.'
         },
@@ -245,13 +276,24 @@
           what: 'Talking instead of singing \u2014 intros, dramatic moments, spoken bridges.'
         },
         {
-          code: '[Rapping]',
+          code: '[Rap]',
           kind: 'lyrics',
           what: 'Rhythmic spoken delivery \u2014 works under a verse tag.',
-          ex: '[Verse 1]\n[Rapping]\nYour bars\u2026'
+          ex: '[Verse 1]\\n[Rap]\\nYour bars\u2026'
         },
         {
-          code: '[Harmonies] / [Layered Vocals]',
+          code: '[Chant]',
+          kind: 'lyrics',
+          what: 'Repeated, rhythmic group vocal \u2014 mantras, protests, football-crowd hooks.'
+        },
+        {
+          code: '[Call and Response]',
+          kind: 'lyrics',
+          what: 'A lead line answered by vocals or instruments \u2014 folk, gospel, bhakti.',
+          ex: '[Chorus]\\n[Call and Response]'
+        },
+        {
+          code: '[Harmonies]',
           kind: 'lyrics',
           what: 'Doubled or stacked vocal lines behind the lead.'
         },
@@ -259,32 +301,214 @@
           code: '[Ad-lib]',
           kind: 'lyrics',
           what: 'Short background interjections (\u201cyeah\u201d, \u201chey\u201d, \u201coh\u201d) behind the main line.',
-          ex: '[Ad-lib]\n(yeah, come on)'
-        },
-        {
-          code: '[Screaming] / [Growl]',
-          kind: 'lyrics',
-          what: 'Distorted, aggressive delivery for rock or metal moments.'
-        },
-        {
-          code: '[Operatic]',
-          kind: 'lyrics',
-          what: 'Classically trained, full-vibrato singing.'
-        },
-        {
-          code: '[Scatting]',
-          kind: 'lyrics',
-          what: 'Improvised wordless syllables in a jazz style.'
-        },
-        {
-          code: '[Humming]',
-          kind: 'lyrics',
-          what: 'Wordless humming \u2014 pretty for intros, outros and quiet hooks.'
+          ex: '[Ad-lib]\\n(yeah, come on)'
         }
       ]
     },
     {
+      id: 'vocal-expression',
+      icon: '\u266A',
+      group: 'lyrics',
+      title: 'Vocal expression tags',
+      summary: 'How the singer delivers the line. Place on its own line under a section tag, or just above the words it should colour.',
+      items: [
+        { code: '[Emotional]', kind: 'lyrics', what: 'Pushes feeling forward \u2014 aching, open, less reserved.' },
+        { code: '[Powerful]', kind: 'lyrics', what: 'Big, projected delivery. Strong on choruses and finales.' },
+        { code: '[Soft]', kind: 'lyrics', what: 'Quiet, gentle singing \u2014 verses and intimate moments.' },
+        { code: '[Breathy]', kind: 'lyrics', what: 'Air mixed into the tone. Close-mic, late-night feel.', ex: '[Verse 1]\n[Breathy]\nYour quiet lines\u2026' },
+        { code: '[Intimate]', kind: 'lyrics', what: 'As if sung right next to the listener. Sparse arrangement helps.' },
+        { code: '[Dramatic]', kind: 'lyrics', what: 'Theatrical swell \u2014 useful before a big chorus or bridge.' },
+        { code: '[Aggressive]', kind: 'lyrics', what: 'Edgy, forward attack. Rock, rap and defiant hooks.' },
+        { code: '[Soulful]', kind: 'lyrics', what: 'Warm, gospel-tinged phrasing with space to bend notes.' },
+        { code: '[Melismatic]', kind: 'lyrics', what: 'Several notes on one syllable \u2014 raga runs, gospel, melisma.' },
+        { code: '[Falsetto]', kind: 'lyrics', what: 'High, airy head voice. Mark it on the lines that should lift.' },
+        { code: '[Sustained Note]', kind: 'lyrics', what: 'Hold a long tone. Pair with an open vowel in the lyric.' },
+        { code: '[Vocal Run]', kind: 'lyrics', what: 'A fast ornamental flourish between or on words.' },
+        { code: '[Belting]', kind: 'lyrics', what: 'Full-chest power for a peak chorus.' },
+        { code: '[Humming]', kind: 'lyrics', what: 'Wordless hum \u2014 intros, outros and quiet hooks.' },
+        { code: '[Scatting]', kind: 'lyrics', what: 'Improvised jazz syllables instead of words.' }
+      ]
+    },
+    {
+      id: 'carnatic',
+      icon: '\u266C',
+      group: 'lyrics',
+      title: 'Indian / Carnatic tags',
+      summary: 'Raga form, gamaka and Carnatic instruments as lyrics-field markers. Pair with a raga name in Style of Music for a stronger result.',
+      items: [
+        { code: '[Raga Intro]', kind: 'lyrics', what: 'Opens in raga colour before the song form begins.', ex: '[Raga Intro]\n(tanpura drone)' },
+        { code: '[Alapana]', kind: 'lyrics', what: 'Unmetered raga exposition \u2014 voice or instrument, no pulse yet.', ex: '[Alapana]\n(free tempo, tanpura)' },
+        { code: '[Tanpura Drone]', kind: 'lyrics', what: 'Sustained Sa\u2013Pa drone. The fastest classical cue in a lyrics field.' },
+        { code: '[Mridangam]', kind: 'lyrics', what: 'Carnatic barrel drum as a featured part or groove.' },
+        { code: '[Ghatam]', kind: 'lyrics', what: 'Clay-pot percussion \u2014 bright slap over mridangam.' },
+        { code: '[Kanjira]', kind: 'lyrics', what: 'Tambourine-like frame drum in a Carnatic tala section.' },
+        { code: '[Veena]', kind: 'lyrics', what: 'Plucked Carnatic veena \u2014 slow phrases, sliding gamakas.' },
+        { code: '[Flute Solo]', kind: 'lyrics', what: 'Bansuri or Carnatic flute as the featured voice.', ex: '[Flute Solo]\n(instrumental)' },
+        { code: '[Violin Solo]', kind: 'lyrics', what: 'Carnatic or film-style violin lead. Name it so it is less likely to become a pad.' },
+        { code: '[Swara Passage]', kind: 'lyrics', what: 'Solfa (sa ri ga ma) passage \u2014 write the swaras as the lyric lines.', ex: '[Swara Passage]\nsa ri ga ma pa da ni sa' },
+        { code: '[Tani Avartanam]', kind: 'lyrics', what: 'Percussion showcase, usually near the end of a Carnatic piece.', ex: '[Tani Avartanam]\n(mridangam)' },
+        { code: '[Korvai]', kind: 'lyrics', what: 'A calculated rhythmic cadence that lands on samam (the downbeat).' },
+        { code: '[Briga]', kind: 'lyrics', what: 'Fast, dense vocal or instrumental run in the raga.' },
+        { code: '[Gamaka]', kind: 'lyrics', what: 'Ornament the following lines with slides, shakes and oscillations.' },
+        { code: '[Kampita]', kind: 'lyrics', what: 'A specific oscillating gamaka \u2014 the note is shaken, not held still.' },
+        { code: '[Nokku]', kind: 'lyrics', what: 'A light stress/press ornament on a note \u2014 subtle, not a full shake.' }
+      ],
+      example: '[Raga Intro]\n[Tanpura Drone]\n\n[Alapana]\n(free tempo)\n\n[Verse 1]\n[Gamaka]\nYour first sahitya lines\u2026\n\n[Swara Passage]\nsa ri ga ma pa\n\n[Tani Avartanam]\n(mridangam, ghatam)\n\n[Outro]\n(tanpura fades)'
+    },
+    {
+      id: 'percussion',
+      icon: '\u2669',
+      group: 'lyrics',
+      title: 'Percussion tags',
+      summary: 'Featured drums and grooves. Use a section tag plus (instrumental) if you want no singing over the break.',
+      items: [
+        { code: '[Tabla Solo]', kind: 'lyrics', what: 'Featured tabla \u2014 bols, tihai, conversational phrases.', ex: '[Tabla Solo]\n(instrumental)' },
+        { code: '[Tabla Groove]', kind: 'lyrics', what: 'Tabla as the pocket, not a solo \u2014 keeps time under the vocal.' },
+        { code: '[Dhol]', kind: 'lyrics', what: 'Big festival barrel drum \u2014 celebration, bhangra, street energy.' },
+        { code: '[Dholak]', kind: 'lyrics', what: 'Folk two-headed drum \u2014 lighter than dhol, common in film and folk.' },
+        { code: '[Mridangam Solo]', kind: 'lyrics', what: 'Carnatic mridangam as the featured voice.' },
+        { code: '[Chenda]', kind: 'lyrics', what: 'Kerala temple/drum-ensemble colour \u2014 loud, processional, outdoor.' },
+        { code: '[Frame Drum]', kind: 'lyrics', what: 'Open, hand-played drum \u2014 meditative or tribal pulse.' },
+        { code: '[Hand Percussion]', kind: 'lyrics', what: 'Claps, kanjira, shakers, caj\u00f3n \u2014 human, close, un-programmed.' },
+        { code: '[Percussion Break]', kind: 'lyrics', what: 'Arrangement drops to drums only for a few bars.', ex: '[Percussion Break]\n(instrumental)' }
+      ]
+    },
+    {
+      id: 'electronic',
+      icon: '\u26A1',
+      group: 'lyrics',
+      title: 'Electronic / production tags',
+      summary: 'Texture and EDM-style events in the lyrics field. For mix colour (reverb, punch) prefer Style of Music as well.',
+      items: [
+        { code: '[Synth Intro]', kind: 'lyrics', what: 'Opens on synthesizers rather than acoustic instruments.' },
+        { code: '[Ambient Texture]', kind: 'lyrics', what: 'Soft evolving sound-bed \u2014 little rhythm, lots of space.' },
+        { code: '[Atmospheric Pad]', kind: 'lyrics', what: 'Held synth or string pad underneath the section.' },
+        { code: '[Bass Drop]', kind: 'lyrics', what: 'Low-end hit as the section arrives \u2014 EDM, trap, hybrid.' },
+        { code: '[Sub Bass]', kind: 'lyrics', what: 'Felt more than heard \u2014 mark a section that should rumble.' },
+        { code: '[Arpeggio]', kind: 'lyrics', what: 'Broken-chord synth or plucked pattern driving the section.' },
+        { code: '[Sidechain Pulse]', kind: 'lyrics', what: 'Pumping duck of pads/bass under the kick.' },
+        { code: '[Glitch]', kind: 'lyrics', what: 'Stutters, chops and digital artefacts as a feature.' },
+        { code: '[Granular Texture]', kind: 'lyrics', what: 'Shimmering, frozen, particle-like sound design.' },
+        { code: '[Riser]', kind: 'lyrics', what: 'Rising sweep into the next section or drop.' },
+        { code: '[Impact]', kind: 'lyrics', what: 'A single cinematic hit \u2014 trailer, drop, or chorus downbeat.' },
+        { code: '[Soundscape]', kind: 'lyrics', what: 'Environment first, music second \u2014 drones, field, atmosphere.' }
+      ]
+    },
+    {
+      id: 'solos',
+      icon: '\u266B',
+      group: 'lyrics',
+      title: 'Instrument solo tags',
+      summary: 'Name the instrument. Leave the next line blank or write (instrumental) so the model does not sing over it.',
+      items: [
+        { code: '[Guitar Solo]', kind: 'lyrics', what: 'Generic guitar lead. Prefer electric or acoustic when you know.', ex: '[Guitar Solo]\n(instrumental)' },
+        { code: '[Electric Guitar Solo]', kind: 'lyrics', what: 'Amplified lead \u2014 rock, fusion, film-song climax.' },
+        { code: '[Acoustic Guitar Solo]', kind: 'lyrics', what: 'Unplugged lead \u2014 folk, bhavageete, intimate bridges.' },
+        { code: '[Piano Solo]', kind: 'lyrics', what: 'Featured piano, often a quiet middle-eight or intro.' },
+        { code: '[Violin Solo]', kind: 'lyrics', what: 'Featured violin \u2014 Carnatic, film, or Western lyrical.' },
+        { code: '[Flute Solo]', kind: 'lyrics', what: 'Bansuri or Western flute as the lead voice.' },
+        { code: '[Saxophone Solo]', kind: 'lyrics', what: 'Jazz / 90s-ballad sax lead. Exclude saxophone if you do not want this by default.' },
+        { code: '[Sitar Solo]', kind: 'lyrics', what: 'Hindustani sitar as the featured instrument.' },
+        { code: '[Veena Solo]', kind: 'lyrics', what: 'Carnatic veena lead \u2014 slower, sliding, raga-true.' },
+        { code: '[Cello Solo]', kind: 'lyrics', what: 'Low, lyrical string voice \u2014 ballads and film cues.' }
+      ]
+    },
+    {
+      id: 'dynamics',
+      icon: '\u2195',
+      group: 'lyrics',
+      title: 'Dynamics / arrangement tags',
+      summary: 'How dense or loud the next section should feel. One tag per section is enough \u2014 stacking several often cancels out.',
+      items: [
+        { code: '[Minimal]', kind: 'lyrics', what: 'Very few elements. Makes a vocal or a single instrument loud.' },
+        { code: '[Sparse]', kind: 'lyrics', what: 'Air and space \u2014 similar to minimal, a little less empty.' },
+        { code: '[Full Arrangement]', kind: 'lyrics', what: 'Everything in: stacked vocals, drums, harmony, bass.' },
+        { code: '[Gradual Build]', kind: 'lyrics', what: 'Add parts over several bars rather than jumping to full.' },
+        { code: '[Crescendo]', kind: 'lyrics', what: 'Get louder / denser through the section.' },
+        { code: '[Decrescendo]', kind: 'lyrics', what: 'Get quieter \u2014 useful into a whispered verse or outro.' },
+        { code: '[Break]', kind: 'lyrics', what: 'A short hole in the arrangement \u2014 often one or two bars.' },
+        { code: '[Silence]', kind: 'lyrics', what: 'A true gap. Easy to overdo; one beat or bar is usually enough.' },
+        { code: '[Sudden Stop]', kind: 'lyrics', what: 'Hard cutoff, then the next section hits. Dramatic choruses.' },
+        { code: '[Half-Time]', kind: 'lyrics', what: 'Groove feels half as fast \u2014 trap, metal, heavy choruses.' },
+        { code: '[Double-Time]', kind: 'lyrics', what: 'Groove feels twice as fast \u2014 rap verses, hardcore lifts.' },
+        { code: '[Finale]', kind: 'lyrics', what: 'The last big statement \u2014 often with [Full Arrangement].' }
+      ]
+    },
+    {
+      id: 'endings',
+      icon: '\u23F9',
+      group: 'lyrics',
+      title: 'Ending tags',
+      summary: 'How the track stops. Pick one. [Outro] plus (fade out) is the most reliable fade; [End] is the most reliable hard stop.',
+      items: [
+        { code: '[Outro]', kind: 'lyrics', what: 'Winds the song down. Leave blank or write (instrumental) / (fade out).' },
+        { code: '[Fade Out]', kind: 'lyrics', what: 'Asks for a tail instead of a button ending.', ex: '[Outro]\n[Fade Out]' },
+        { code: '[Slow Fade]', kind: 'lyrics', what: 'A longer, gentler fade \u2014 ballads and ambient pieces.' },
+        { code: '[Final Chord]', kind: 'lyrics', what: 'Resolves on a held chord and stops.' },
+        { code: '[Final Note]', kind: 'lyrics', what: 'Resolves on a single held note \u2014 voice or instrument.' },
+        { code: '[A Cappella Ending]', kind: 'lyrics', what: 'Last lines are voices only, no band.', ex: '[Outro]\n[A Cappella Ending]' },
+        { code: '[Instrumental Ending]', kind: 'lyrics', what: 'No more singing after the last chorus.', ex: '[Outro]\n[Instrumental Ending]' },
+        { code: '[End]', kind: 'lyrics', what: 'Hard stop. Use when a fade would feel wrong.' }
+      ]
+    },
+    {
+      id: 'adlibs',
+      icon: '\u266A',
+      group: 'lyrics',
+      layout: 'chips',
+      title: 'Vocal / ad-lib notation ( )',
+      summary: 'Parentheses are for things you want treated as vocalised material \u2014 sung, spoken or heard \u2014 not as a section label. Keep them short.',
+      items: [
+        { code: '(oh...)', kind: 'lyrics', what: 'Soft falling ad-lib. Classic after a chorus line.' },
+        { code: '(oh oh)', kind: 'lyrics', what: 'Short stacked \u201coh\u201d hook.' },
+        { code: '(mmm...)', kind: 'lyrics', what: 'Closed-mouth hum. Intimate verses and outros.' },
+        { code: '(ha ha)', kind: 'lyrics', what: 'A laugh in the performance \u2014 playful, not a sitcom track.' },
+        { code: '(la la la)', kind: 'lyrics', what: 'Wordless hook or post-chorus tail.' },
+        { code: '(na na na)', kind: 'lyrics', what: 'Same idea as la-la, slightly more percussive.' },
+        { code: '(yeah)', kind: 'lyrics', what: 'Background affirmation behind a lead line.' },
+        { code: '(hey)', kind: 'lyrics', what: 'Call, clap-along, or crowd-style hit.' },
+        { code: '(ooh)', kind: 'lyrics', what: 'Open-vowel ad-lib, often high in the mix.' },
+        { code: '(ah...)', kind: 'lyrics', what: 'Open sigh or swell into the next line.' },
+        { code: '(whoa)', kind: 'lyrics', what: 'Lift or surprise \u2014 live-band energy.' },
+        { code: '(whispered)', kind: 'lyrics', what: 'Cue: sing the following line quietly.' },
+        { code: '(building)', kind: 'lyrics', what: 'Cue: raise energy through the next lines.' },
+        { code: '(fading)', kind: 'lyrics', what: 'Cue: drop energy or trail off.' },
+        { code: '(instrumental)', kind: 'lyrics', what: 'No singing in this section. The most useful parenthesis in the library.' },
+        { code: '(pause)', kind: 'lyrics', what: 'A breath or rest before the next line.' },
+        { code: '(echo)', kind: 'lyrics', what: 'Repeat / delay the last word as an effect.' },
+        { code: '(harmonies)', kind: 'lyrics', what: 'Stack backing voices on the following line.' },
+        { code: '(ad-lib)', kind: 'lyrics', what: 'Leave room for a background vocal riff.' },
+        { code: '(crowd)', kind: 'lyrics', what: 'Live audience colour on the hook.' },
+        { code: '(breath)', kind: 'lyrics', what: 'An audible breath \u2014 close-mic intimacy.' }
+      ]
+    },
+    {
+      id: 'experimental',
+      icon: '\u2699',
+      group: 'lyrics',
+      title: 'Experimental notation { } and < >',
+      summary: 'Community experiments. Curly braces try to give instructions; angle brackets try to mimic section tags. Both are less reliable than [ ] \u2014 they are often ignored or sung as text. Prefer square brackets.',
+      items: [
+        { code: '{build energy}', kind: 'lyrics', what: 'Instruction-style aside. Prefer [Build] or (building) first.' },
+        { code: '{whisper this line}', kind: 'lyrics', what: 'May colour the next line. [Whispered Vocals] or (whispered) is safer.' },
+        { code: '{instrumental only}', kind: 'lyrics', what: 'Prefer [Instrumental] plus (instrumental).' },
+        { code: '{more emotion}', kind: 'lyrics', what: 'Vague wish. [Emotional] or a mood word in Style of Music works better.' },
+        { code: '{softer delivery}', kind: 'lyrics', what: 'Prefer [Soft] on its own line.' },
+        { code: '{bigger final chorus}', kind: 'lyrics', what: 'Prefer [Finale] or [Full Arrangement] under the last [Chorus].' },
+        { code: '{slow fade}', kind: 'lyrics', what: 'Prefer [Slow Fade] or [Outro] plus (fading).' },
+        { code: '<intro>', kind: 'lyrics', what: 'Less reliable twin of [Intro]. Use square brackets unless experimenting.' },
+        { code: '<verse>', kind: 'lyrics', what: 'Less reliable twin of [Verse].' },
+        { code: '<chorus>', kind: 'lyrics', what: 'Less reliable twin of [Chorus].' },
+        { code: '<bridge>', kind: 'lyrics', what: 'Less reliable twin of [Bridge].' },
+        { code: '<outro>', kind: 'lyrics', what: 'Less reliable twin of [Outro].' },
+        { code: '<male vocal>', kind: 'lyrics', what: 'Less reliable twin of [Male Vocal].' },
+        { code: '<female vocal>', kind: 'lyrics', what: 'Less reliable twin of [Female Vocal].' },
+        { code: '<instrumental>', kind: 'lyrics', what: 'Less reliable twin of [Instrumental].' }
+      ]
+    },
+    {
       id: 'genre',
+      group: 'style',
       icon: '\u25c8',
       title: 'Genre & subgenre tags',
       summary: 'Where the song lives. One broad genre plus one or two subgenres usually beats a long list. Style text, not switches.',
@@ -380,6 +604,7 @@
     },
     {
       id: 'mood',
+      group: 'style',
       icon: '\u2661',
       title: 'Mood & emotion tags',
       summary: 'The feeling of the track. Pair one primary mood with one colour word \u2014 two moods is usually enough.',
@@ -480,6 +705,7 @@
     },
     {
       id: 'instruments',
+      group: 'style',
       icon: '\u266a',
       title: 'Instrumentation tags',
       summary: 'What is playing. Name the instrument plainly \u2014 these are steering words, not guarantees that a part will appear.',
@@ -574,6 +800,7 @@
     },
     {
       id: 'production',
+      group: 'style',
       icon: '\u2699',
       title: 'Production & mixing tags',
       summary: 'How it is recorded, mixed and coloured. These words shape texture and space \u2014 strongly, but not predictably.',
@@ -653,6 +880,7 @@
     },
     {
       id: 'tempo',
+      group: 'style',
       icon: '\u25f7',
       title: 'Tempo & rhythm tags',
       summary: 'Speed and groove. Exact BPM is a request, not a promise \u2014 Suno may swing a few BPM either way.',
@@ -744,6 +972,7 @@
     },
     {
       id: 'atmosphere',
+      group: 'style',
       icon: '\u263e',
       title: 'Atmosphere & ambience tags',
       summary: 'Scene-setting words that colour the arrangement \u2014 rain, crackle, space. They can be subtle or dominant; treat them as colour, not a promise.',
@@ -827,6 +1056,7 @@
     },
     {
       id: 'songwriting',
+      group: 'style',
       icon: '\u270d',
       title: 'Songwriting & arrangement tags',
       summary: 'How the song moves: hooks, contrasts, dynamics and structure ideas. Most are style text; treated as direction, not guaranteed arrangement.',
@@ -896,15 +1126,20 @@
     },
     {
       id: 'transitions',
+      group: 'lyrics',
       icon: '\u21c4',
       title: 'Transition & section tags',
       summary: 'Links between sections \u2014 fills, solos and swells. Bracketed transitions are community-tested; style-side wording is safer for complex moves.',
-      items: [
+            items: [
         {
-          code: '[Drum Fill]',
+          code: '[Transition]',
           kind: 'lyrics',
-          what: 'A drum flourish into the next section \u2014 also write (drum fill) under a section tag.',
-          ex: '[Drum Fill]\n(instrumental)'
+          what: 'A generic link between sections when you do not want to name the device.'
+        },
+        {
+          code: '[Build Up]',
+          kind: 'lyrics',
+          what: 'Rising tension into a drop or chorus. Twin of [Build].'
         },
         {
           code: '[Riser]',
@@ -912,15 +1147,46 @@
           what: 'A rising sweep of energy before a drop or chorus.'
         },
         {
-          code: '[Fade In] / [Fade Out]',
+          code: '[Drum Fill]',
           kind: 'lyrics',
-          what: 'Bookends the fade. For a fade-out, [Outro] + (fade out) is a common alternative.'
+          what: 'A drum flourish into the next section \u2014 also write (drum fill) under a section tag.',
+          ex: '[Drum Fill]\\n(instrumental)'
         },
         {
-          code: '[Guitar Solo] / [Sax Solo] / [Violin Solo]',
+          code: '[Percussion Fill]',
           kind: 'lyrics',
-          what: 'A named instrumental solo \u2014 the instrument word helps it materialise.',
-          ex: '[Guitar Solo]\n(16 bars, building)'
+          what: 'Hand percussion or tala flourish rather than a kit fill.'
+        },
+        {
+          code: '[Instrumental Break]',
+          kind: 'lyrics',
+          what: 'Band continues, singer drops out. Useful between chorus and verse.'
+        },
+        {
+          code: '[Breakdown]',
+          kind: 'lyrics',
+          what: 'A quiet or sparse section before energy returns.'
+        },
+        {
+          code: '[Reprise]',
+          kind: 'lyrics',
+          what: 'Return of an earlier theme, usually near the end.'
+        },
+        {
+          code: '[Key Change]',
+          kind: 'lyrics',
+          what: 'Asks for a lift, usually into the last chorus. Keep it simple; results vary.',
+          ex: '[Key Change]\\n[Chorus]'
+        },
+        {
+          code: '[Tempo Change]',
+          kind: 'lyrics',
+          what: 'Asks the groove to speed up or slow down. Name the direction in the next cue, e.g. (faster).'
+        },
+        {
+          code: '[Fade In]',
+          kind: 'lyrics',
+          what: 'The section arrives from silence. Common on [Intro].'
         },
         {
           code: '[Spoken Interlude]',
@@ -951,6 +1217,7 @@
     },
     {
       id: 'character',
+      group: 'style',
       icon: '\u25ce',
       title: 'Vocal-character tags',
       summary: 'Words for the voice itself \u2014 timbre and weight. All style text: they steer the singer\u2019s sound, they don\u2019t dial it in.',
@@ -1031,6 +1298,7 @@
     },
     {
       id: 'negative',
+      group: 'exclude',
       icon: '\u2298',
       title: 'Negative & exclusion instructions',
       summary: 'Say what you don\u2019t want. Short word lists work best in Advanced Options \u2192 Exclude; \u201cno \u2026 / avoid \u2026 / without \u2026\u201d phrases work in style text. Exclusions steer \u2014 they never guarantee.',
@@ -1121,6 +1389,7 @@
     },
     {
       id: 'metadata',
+      group: 'exclude',
       icon: '\u00b6',
       title: 'Metadata & formatting conventions',
       summary: 'Where each piece of the prompt lives, and how to format it so tags are read as tags \u2014 not sung as words.',
@@ -1163,6 +1432,23 @@
           kind: 'meta',
           what: 'Community consensus: repetition markers are often ignored or sung. Duplicate the line instead.',
           ex: 'na-na na-na (x2) \u2192 write the line twice'
+        },
+        {
+          code: 'Square brackets [ ] for structure',
+          kind: 'meta',
+          what: 'Best notation for structural, vocal, instrumental, performance and transition metadata. One tag per line.',
+          ex: '[Verse 1]\n[Female Vocal]\nYour lines\u2026'
+        },
+        {
+          code: 'Parentheses ( ) for ad-libs',
+          kind: 'meta',
+          what: 'Use parentheses for material you want treated as vocalised \u2014 (oh...), (mmm...), (ha ha), (la la la) \u2014 not as a section label.',
+          ex: '[Chorus]\nYour hook\n(oh...)'
+        },
+        {
+          code: '{ } and < > are experimental',
+          kind: 'meta',
+          what: 'Curly braces try to give instructions; angle brackets try to mimic tags. Both are less reliable than [ ] and are often ignored or sung as text.'
         },
         {
           code: 'Short parenthetical cues',
@@ -1226,12 +1512,13 @@
   window.RaagaStudio = window.RaagaStudio || {};
   window.RaagaStudio.SUNO_CHEATS = CATEGORIES;
   window.RaagaStudio.SUNO_CHEATS_KINDS = KIND;
+  window.RaagaStudio.SUNO_CHEATS_NOTATION = NOTATION;
   window.RaagaStudio.SUNO_CHEAT_TEMPLATES = TEMPLATES;
 
   // ─── Page metadata (hash-routed SPA: one URL, one dynamic title) ─────────
   var PAGE_META = {
     title: 'Suno Cheat Codes & Meta Tags \u00b7 Raaga Studio',
-    description: 'Searchable Suno prompt reference: song structure tags, vocal and genre tags, mood, instrumentation, production, tempo, atmosphere, negative instructions and formatting conventions for Suno Custom Mode.',
+    description: 'Searchable Suno prompt reference with a click-to-insert lyrics pad: [ ] structure, vocal, Carnatic, percussion, electronic, solo, dynamics and ending tags; ( ) ad-libs; experimental { } and < > notation; plus Style of Music and Exclude wording.',
     keywords: 'Suno cheat codes, Suno meta tags, Suno prompt tags, Suno style of music, Suno lyrics section tags, AI music prompts, Suno exclude, Suno custom mode, music generation tags'
   };
   var SITE_META = {
@@ -1242,9 +1529,31 @@
 
   // ─── State / helpers ──────────────────────────────────────────────────────
   var filter = 'all';
+  var notationFilter = 'all';
   var query = '';
 
   function $(id) { return document.getElementById(id); }
+
+  function inferNotation(code) {
+    var s = String(code || '').trim();
+    var ch = s.charAt(0);
+    if (ch === '[') return 'bracket';
+    if (ch === '(') return 'paren';
+    if (ch === '{') return 'brace';
+    if (ch === '<') return 'angle';
+    return 'plain';
+  }
+
+  function itemNotation(it) {
+    return it.notation || inferNotation(it.code);
+  }
+
+  function catGroup(c) {
+    if (c.group) return c.group;
+    if (c.items && c.items.length && c.items[0].kind === 'lyrics') return 'lyrics';
+    if (c.id === 'negative' || c.id === 'metadata') return 'exclude';
+    return 'style';
+  }
 
   function escapeHtml(s) {
     return String(s == null ? '' : s)
@@ -1261,12 +1570,13 @@
 
   function matchesItem(it) {
     if (filter !== 'all' && it.kind !== filter) return false;
+    if (notationFilter !== 'all' && itemNotation(it) !== notationFilter) return false;
     if (query && itemHaystack(it).indexOf(query) < 0) return false;
     return true;
   }
 
   function visibleItems(c) {
-    if (!query && filter === 'all') return c.items;
+    if (!query && filter === 'all' && notationFilter === 'all') return c.items;
     return c.items.filter(matchesItem);
   }
 
@@ -1297,14 +1607,26 @@
       : '';
     return '<div class="sc-item">' +
       '<div class="sc-item-head">' +
-        '<code class="sc-code" tabindex="0">' + escapeHtml(it.code) + '</code>' +
+        '<code class="sc-code" tabindex="0" data-insert="' + escapeAttr(it.code) + '" title="Click to insert into the lyrics pad">' + escapeHtml(it.code) + '</code>' +
         kindBadge(it.kind) +
-        '<button type="button" class="btn sm sc-copy" data-c="' + catIndex + '" data-i="' + itemIndex + '" ' +
-          'aria-label="Copy ' + escapeAttr(it.code) + '">Copy</button>' +
+        '<span class="sc-item-actions">' +
+          '<button type="button" class="btn sm sc-insert" data-insert="' + escapeAttr(it.code) + '" ' +
+            'aria-label="Insert ' + escapeAttr(it.code) + ' into lyrics pad">Insert</button>' +
+          '<button type="button" class="btn sm sc-copy" data-c="' + catIndex + '" data-i="' + itemIndex + '" ' +
+            'aria-label="Copy ' + escapeAttr(it.code) + '">Copy</button>' +
+        '</span>' +
       '</div>' +
       '<p class="sc-item-what">' + escapeHtml(it.what) + '</p>' +
       ex +
     '</div>';
+  }
+
+  function chipHtml(it, catIndex, itemIndex) {
+    return '<span class="sc-chip" data-insert="' + escapeAttr(it.code) + '" title="' + escapeAttr(it.what) + '">' +
+      '<code>' + escapeHtml(it.code) + '</code>' +
+      '<button type="button" class="sc-chip-copy sc-copy" data-c="' + catIndex + '" data-i="' + itemIndex + '" ' +
+        'aria-label="Copy ' + escapeAttr(it.code) + '">Copy</button>' +
+    '</span>';
   }
 
   function categoryHtml(c, catIndex) {
@@ -1313,7 +1635,7 @@
     c.items.forEach(function (it, i) {
       if (!matchesItem(it)) return;
       shown++;
-      itemsHtml += itemHtml(it, catIndex, i); // original index, so copy buttons stay correct
+      itemsHtml += (c.layout === 'chips' ? chipHtml(it, catIndex, i) : itemHtml(it, catIndex, i));
     });
     if (!shown) return '';
 
@@ -1338,7 +1660,7 @@
         '</div>' +
         '<button type="button" class="btn sm sc-cat-copy-all" data-copy-cat="' + catIndex + '">Copy all</button>' +
       '</header>' +
-      '<div class="sc-items">' + itemsHtml + '</div>' +
+      '<' + (c.layout === 'chips' ? 'div class="sc-chips"' : 'div class="sc-items"') + '>' + itemsHtml + '</div>' +
       example +
     '</section>';
   }
@@ -1370,10 +1692,22 @@
   function renderToc(list) {
     var toc = $('sc-toc');
     if (!toc) return;
-    toc.innerHTML = list.length
-      ? '<span class="sc-toc-label" id="sc-toc-label">Jump to a category</span>' +
-        list.map(catLink).join('')
-      : '';
+    if (!list.length) { toc.innerHTML = ''; return; }
+    var html = '<span class="sc-toc-label" id="sc-toc-label">Jump to a category</span>';
+    TOC_GROUPS.forEach(function (g) {
+      var inGroup = list.filter(function (c) { return catGroup(c) === g.id; });
+      if (!inGroup.length) return;
+      html += '<span class="sc-toc-group">';
+      html += '<span class="sc-toc-group-label">' + escapeHtml(g.label) + '</span>';
+      html += inGroup.map(catLink).join('');
+      html += '</span>';
+    });
+    // Any category without a recognised group still appears.
+    var leftover = list.filter(function (c) {
+      return !TOC_GROUPS.some(function (g) { return catGroup(c) === g.id; });
+    });
+    if (leftover.length) html += leftover.map(catLink).join('');
+    toc.innerHTML = html;
     toc.querySelectorAll('.sc-toc-link').forEach(function (b) {
       b.addEventListener('click', function () {
         var target = $('sc-' + b.getAttribute('data-target'));
@@ -1413,7 +1747,8 @@
   function bindCopies(root) {
     if (!root || !root.querySelectorAll) return;
     root.querySelectorAll('.sc-copy').forEach(function (b) {
-      b.addEventListener('click', function () {
+      b.addEventListener('click', function (ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
         var c = CATEGORIES[Number(b.getAttribute('data-c'))];
         var it = c && c.items[Number(b.getAttribute('data-i'))];
         if (it) copyText(it.code, '\u201c' + it.code + '\u201d copied.');
@@ -1431,6 +1766,13 @@
       b.addEventListener('click', function () {
         var c = CATEGORIES[Number(b.getAttribute('data-copy-example'))];
         if (c && c.example) copyText(c.example, c.title + ' example copied.');
+      });
+    });
+    root.querySelectorAll('[data-insert]').forEach(function (b) {
+      b.addEventListener('click', function (ev) {
+        if (ev && ev.target && ev.target.closest && ev.target.closest('.sc-copy')) return;
+        var value = b.getAttribute('data-insert');
+        if (value) insertIntoPad(value);
       });
     });
   }
@@ -1461,6 +1803,94 @@
           '\u201c' + t.title + '\u201d fields copied.');
       });
     });
+  }
+
+  // ─── Lyrics pad ──────────────────────────────────────────────────────────
+  function padEl() { return $('sc-pad-text'); }
+
+  function updatePadMeta() {
+    var el = padEl();
+    var meta = $('sc-pad-meta');
+    if (!el || !meta) return;
+    var raw = String(el.value || '');
+    var lines = raw ? raw.split('\n').length : 0;
+    var chars = raw.length;
+    meta.textContent = raw.trim() ? (lines + ' line' + (lines === 1 ? '' : 's') + ' \u00b7 ' + chars + ' chars') : 'Empty';
+  }
+
+  function savePad() {
+    var el = padEl();
+    if (!el) return;
+    try { localStorage.setItem(LS_PAD, el.value); } catch (e) {}
+    updatePadMeta();
+  }
+
+  function loadPad() {
+    var el = padEl();
+    if (!el) return;
+    try {
+      var saved = localStorage.getItem(LS_PAD);
+      if (saved) el.value = saved;
+    } catch (e) {}
+    updatePadMeta();
+  }
+
+  function insertIntoPad(value) {
+    var el = padEl();
+    if (!el) {
+      copyText(value, '\u201c' + value + '\u201d copied.');
+      return;
+    }
+    var current = el.value || '';
+    var start = typeof el.selectionStart === 'number' ? el.selectionStart : current.length;
+    var end = typeof el.selectionEnd === 'number' ? el.selectionEnd : start;
+    var before = current.slice(0, start);
+    var after = current.slice(end);
+    var prefix = '';
+    if (before && !/\n$/.test(before)) prefix = '\n';
+    var next = before + prefix + value + '\n' + after.replace(/^\n/, '');
+    el.value = next;
+    var caret = (before + prefix + value + '\n').length;
+    if (typeof el.setSelectionRange === 'function') {
+      try { el.setSelectionRange(caret, caret); } catch (e) {}
+    }
+    if (typeof el.focus === 'function') {
+      try { el.focus(); } catch (e2) {}
+    }
+    savePad();
+    flash('\u201c' + value + '\u201d inserted.');
+  }
+
+  function sendPadToSuno() {
+    var el = padEl();
+    var lyrics = el ? String(el.value || '').trim() : '';
+    if (!lyrics) { flash('Write or insert some lyrics first.'); return; }
+    if (window.SUNO_PROMPTS && typeof window.SUNO_PROMPTS.getState === 'function' &&
+        typeof window.SUNO_PROMPTS.loadState === 'function') {
+      var state = window.SUNO_PROMPTS.getState();
+      state.lyrics = lyrics;
+      window.SUNO_PROMPTS.loadState(state);
+    } else {
+      var target = $('sp-lyrics');
+      if (target) target.value = lyrics;
+    }
+    if (window.RaagaStudio && window.RaagaStudio.switchTo) {
+      window.RaagaStudio.switchTo('suno', true);
+    }
+    flash('Lyrics sent to the Suno Prompt tab.');
+  }
+
+  function setNotationFilter(value) {
+    notationFilter = value || 'all';
+    var wrap = $('sc-notation-filters');
+    if (wrap && wrap.querySelectorAll) {
+      wrap.querySelectorAll('[data-notation]').forEach(function (b) {
+        var on = b.getAttribute('data-notation') === notationFilter;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    render();
   }
 
   // ─── Clipboard + toast ───────────────────────────────────────────────────
@@ -1532,6 +1962,70 @@
         render();
       });
     }
+
+    var notationFilters = $('sc-notation-filters');
+    if (notationFilters) {
+      notationFilters.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-notation]');
+        if (!btn) return;
+        setNotationFilter(btn.getAttribute('data-notation'));
+      });
+    }
+
+    document.querySelectorAll('[data-notation-jump]').forEach(function (card) {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function (e) {
+        if (e.target && e.target.closest && e.target.closest('[data-insert]')) return;
+        setNotationFilter(card.getAttribute('data-notation-jump'));
+        var toc = $('sc-toc');
+        if (toc && toc.scrollIntoView) {
+          try { toc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          catch (err) { toc.scrollIntoView(true); }
+        }
+      });
+    });
+
+    document.querySelectorAll('.sc-mini-tag[data-insert]').forEach(function (b) {
+      b.addEventListener('click', function (ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        insertIntoPad(b.getAttribute('data-insert'));
+      });
+    });
+
+    var pad = padEl();
+    if (pad) {
+      loadPad();
+      pad.addEventListener('input', savePad);
+    }
+    var padCopy = $('sc-pad-copy');
+    if (padCopy) padCopy.addEventListener('click', function () {
+      var el = padEl();
+      copyText(el ? el.value : '', 'Lyrics pad copied.');
+    });
+    var padSuno = $('sc-pad-suno');
+    if (padSuno) padSuno.addEventListener('click', sendPadToSuno);
+    var padClear = $('sc-pad-clear');
+    if (padClear) padClear.addEventListener('click', function () {
+      var el = padEl();
+      if (!el) return;
+      if (el.value && typeof confirm === 'function' && !confirm('Clear the lyrics pad?')) return;
+      el.value = '';
+      savePad();
+      flash('Lyrics pad cleared.');
+    });
+    document.querySelectorAll('[data-skeleton]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var key = b.getAttribute('data-skeleton');
+        var skel = PAD_SKELETONS[key];
+        var el = padEl();
+        if (!skel || !el) return;
+        if (el.value.trim() && typeof confirm === 'function' &&
+            !confirm('Replace the lyrics pad with the ' + key + ' skeleton?')) return;
+        el.value = skel;
+        savePad();
+        flash('Skeleton inserted — write lyrics under each tag.');
+      });
+    });
 
     // Cross-tab jump (same pattern as Raga Reference's "Use in Suno prompt").
     var jump = document.querySelector('[data-jump-tab]');

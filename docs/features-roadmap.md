@@ -19,9 +19,11 @@ Master in Cubase**. Everything below is mapped to that pipeline.
 - **ಛಂದಸ್ಸು** — Kannada prosody scanner (ಲಘು/ಗುರು/ಮಾತ್ರೆ) → *lyric writing*
 - **Suno Custom Mode Builder** (#1) — genre/mood/tempo/key-raga/vocals/language/
   instruments/production → separate Style, Lyrics and Exclude fields + full-state recipe library
-- **Suno Cheat Codes & Meta Tags** — searchable reference of 14 tag categories across the
-  Custom Mode fields (structure, vocals, genre, mood, instruments, production, tempo,
-  atmosphere, arrangement, transitions, vocal character, exclusions, formatting) with
+- **Suno Cheat Codes & Meta Tags** — searchable reference of 23 tag categories across the
+  Custom Mode fields (structure, vocal type/expression, Carnatic, percussion, electronic,
+  solos, dynamics, transitions, endings, ad-libs, experimental notation, genre, mood,
+  instruments, production, tempo, atmosphere, arrangement, vocal character, exclusions,
+  formatting) with a notation guide (`[ ]` `( )` `{ }` `< >`), click-to-insert lyrics pad,
   copy buttons, field labels, an honesty legend and 3 starter templates
 - **Raga & Scale Reference** (#5) — searchable library of 16 ragas with ārohana/
   avarohana, Western-note mapping (Sa = C), mood/time/rasa, composition tips and a

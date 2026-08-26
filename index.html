@@ -633,12 +633,18 @@
       <p class="sc-kicker">Raaga Studio · prompt reference</p>
       <h2>Suno Cheat Codes <span>&amp; Meta Tags</span></h2>
       <p class="mc-intro">
-        A practical vocabulary for Suno Custom Mode — section tags for the
-        <strong>Lyrics</strong> field, descriptive words for
-        <strong>Style of Music</strong>, negative wording for
-        <strong>Exclude</strong>, and formatting conventions. Search it, filter it by
-        field, and copy any tag with one click.
+        Click a tag to drop it into the <strong>lyrics pad</strong>, or copy it
+        in one tap. Square brackets <code>[ ]</code> are the reliable default for
+        structure, vocals, instruments and transitions. Parentheses
+        <code>( )</code> are for ad-libs. Curly braces and angle brackets are
+        experimental.
       </p>
+      <ol class="sc-howto" aria-label="How to use this page">
+        <li><b>1</b><span>Pick a notation</span></li>
+        <li><b>2</b><span>Click a tag to insert</span></li>
+        <li><b>3</b><span>Write lyrics under it</span></li>
+        <li><b>4</b><span>Copy or send to Suno</span></li>
+      </ol>
       <p class="sc-honesty">
         <strong>Read this first:</strong> Suno does not publish an official list of every
         recognised tag. Bracket markers such as <code>[Chorus]</code> are Suno's documented
@@ -648,10 +654,94 @@
       </p>
     </header>
 
+    <section class="sc-notation" aria-labelledby="sc-notation-title">
+      <header class="sc-notation-head">
+        <div>
+          <span class="sc-eyebrow">Write it the way Suno reads it</span>
+          <h3 id="sc-notation-title">Notation guide</h3>
+          <p>Four ways to mark a lyrics line. Use square brackets first. Everything else is community practice — useful, not guaranteed.</p>
+        </div>
+      </header>
+      <div class="sc-notation-grid">
+        <article class="sc-note-card sc-note-bracket" data-notation-jump="bracket">
+          <header>
+            <code class="sc-note-glyph">[ ]</code>
+            <span class="sc-reliab high">Best</span>
+          </header>
+          <h4>Square brackets</h4>
+          <p>Structural and performance metadata. Put each tag on its <strong>own line</strong>, then write lyrics underneath.</p>
+          <ul class="sc-note-uses">
+            <li><b>Structural</b> — sections of the song</li>
+            <li><b>Vocal / voice</b> — who is singing</li>
+            <li><b>Instrumental</b> — solos and featured parts</li>
+            <li><b>Performance</b> — how the line is delivered</li>
+            <li><b>Transition / production</b> — fills, risers, drops</li>
+          </ul>
+          <div class="sc-mini-tags" aria-label="Square-bracket examples">
+            <button type="button" class="sc-mini-tag" data-insert="[Intro]">[Intro]</button>
+            <button type="button" class="sc-mini-tag" data-insert="[Verse 1]">[Verse 1]</button>
+            <button type="button" class="sc-mini-tag" data-insert="[Chorus]">[Chorus]</button>
+            <button type="button" class="sc-mini-tag" data-insert="[Female Vocal]">[Female Vocal]</button>
+            <button type="button" class="sc-mini-tag" data-insert="[Alapana]">[Alapana]</button>
+            <button type="button" class="sc-mini-tag" data-insert="[Guitar Solo]">[Guitar Solo]</button>
+          </div>
+        </article>
+        <article class="sc-note-card sc-note-paren" data-notation-jump="paren">
+          <header>
+            <code class="sc-note-glyph">( )</code>
+            <span class="sc-reliab mid">Useful</span>
+          </header>
+          <h4>Parentheses</h4>
+          <p>Vocalised / ad-lib material — sounds you want <em>sung or heard</em>, not treated as a section label.</p>
+          <ul class="sc-note-uses">
+            <li><b>Ad-libs</b> — oh, mmm, ha ha, la la</li>
+            <li><b>Cues</b> — (whispered), (building), (fade out)</li>
+            <li><b>Wordless bars</b> — (instrumental)</li>
+          </ul>
+          <div class="sc-mini-tags" aria-label="Parenthesis examples">
+            <button type="button" class="sc-mini-tag" data-insert="(oh...)">(oh...)</button>
+            <button type="button" class="sc-mini-tag" data-insert="(mmm...)">(mmm...)</button>
+            <button type="button" class="sc-mini-tag" data-insert="(ha ha)">(ha ha)</button>
+            <button type="button" class="sc-mini-tag" data-insert="(la la la)">(la la la)</button>
+            <button type="button" class="sc-mini-tag" data-insert="(yeah)">(yeah)</button>
+            <button type="button" class="sc-mini-tag" data-insert="(instrumental)">(instrumental)</button>
+          </div>
+        </article>
+        <article class="sc-note-card sc-note-brace" data-notation-jump="brace">
+          <header>
+            <code class="sc-note-glyph">{ }</code>
+            <span class="sc-reliab low">Experimental</span>
+          </header>
+          <h4>Curly braces</h4>
+          <p>Instruction-style asides. Community-tested only — often ignored, sometimes sung as words. Prefer a bracket tag or style text first.</p>
+          <div class="sc-mini-tags" aria-label="Curly-brace examples">
+            <button type="button" class="sc-mini-tag" data-insert="{build energy}">{build energy}</button>
+            <button type="button" class="sc-mini-tag" data-insert="{whisper this line}">{whisper this line}</button>
+            <button type="button" class="sc-mini-tag" data-insert="{instrumental only}">{instrumental only}</button>
+            <button type="button" class="sc-mini-tag" data-insert="{bigger final chorus}">{bigger final chorus}</button>
+          </div>
+        </article>
+        <article class="sc-note-card sc-note-angle" data-notation-jump="angle">
+          <header>
+            <code class="sc-note-glyph">&lt; &gt;</code>
+            <span class="sc-reliab low">Less reliable</span>
+          </header>
+          <h4>Angle brackets</h4>
+          <p>The least consistent notation. Some models treat them like brackets; others sing them. Use <code>[Chorus]</code> instead unless you are experimenting.</p>
+          <div class="sc-mini-tags" aria-label="Angle-bracket examples">
+            <button type="button" class="sc-mini-tag" data-insert="&lt;verse&gt;">&lt;verse&gt;</button>
+            <button type="button" class="sc-mini-tag" data-insert="&lt;chorus&gt;">&lt;chorus&gt;</button>
+            <button type="button" class="sc-mini-tag" data-insert="&lt;male vocal&gt;">&lt;male vocal&gt;</button>
+            <button type="button" class="sc-mini-tag" data-insert="&lt;instrumental&gt;">&lt;instrumental&gt;</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <div class="sc-legend" role="group" aria-label="How to read the tag labels">
       <span class="sc-legend-label">Field labels</span>
       <span class="sc-kind sc-kind-lyrics">Lyrics tag</span>
-      <span>Bracket marker for the Lyrics field — Suno's documented section format.</span>
+      <span>Marker for the Lyrics field — Suno's documented section format.</span>
       <span class="sc-kind sc-kind-style">Style text</span>
       <span>Descriptive phrase for Style of Music — a steering word, not a switch.</span>
       <span class="sc-kind sc-kind-exclude">Exclude</span>
@@ -662,21 +752,60 @@
 
     <div class="sc-controls">
       <input type="search" id="sc-search" class="sc-search"
-             placeholder="Search tags — e.g. “breathy”, “verse”, “mridangam”, “no autotune”…"
+             placeholder="Search tags — e.g. “breathy”, “verse”, “mridangam”, “alapana”, “oh…”"
              aria-label="Search Suno cheat codes and meta tags">
-      <div class="sc-filters" id="sc-filters" role="group" aria-label="Filter cheat codes by field">
-        <button type="button" class="sc-filter on" data-filter="all" aria-pressed="true">All</button>
-        <button type="button" class="sc-filter" data-filter="lyrics" aria-pressed="false">Lyrics tags</button>
-        <button type="button" class="sc-filter" data-filter="style" aria-pressed="false">Style text</button>
-        <button type="button" class="sc-filter" data-filter="exclude" aria-pressed="false">Exclude</button>
-        <button type="button" class="sc-filter" data-filter="meta" aria-pressed="false">Formatting</button>
+      <div class="sc-filter-block">
+        <span class="sc-legend-label" id="sc-field-label">Field</span>
+        <div class="sc-filters" id="sc-filters" role="group" aria-labelledby="sc-field-label">
+          <button type="button" class="sc-filter on" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="sc-filter" data-filter="lyrics" aria-pressed="false">Lyrics tags</button>
+          <button type="button" class="sc-filter" data-filter="style" aria-pressed="false">Style text</button>
+          <button type="button" class="sc-filter" data-filter="exclude" aria-pressed="false">Exclude</button>
+          <button type="button" class="sc-filter" data-filter="meta" aria-pressed="false">Formatting</button>
+        </div>
+      </div>
+      <div class="sc-filter-block">
+        <span class="sc-legend-label" id="sc-notation-label">Notation</span>
+        <div class="sc-filters" id="sc-notation-filters" role="group" aria-labelledby="sc-notation-label">
+          <button type="button" class="sc-filter on" data-notation="all" aria-pressed="true">All</button>
+          <button type="button" class="sc-filter" data-notation="bracket" aria-pressed="false">[ ]</button>
+          <button type="button" class="sc-filter" data-notation="paren" aria-pressed="false">( )</button>
+          <button type="button" class="sc-filter" data-notation="brace" aria-pressed="false">{ }</button>
+          <button type="button" class="sc-filter" data-notation="angle" aria-pressed="false">&lt; &gt;</button>
+        </div>
       </div>
     </div>
 
-    <nav class="sc-toc" id="sc-toc" aria-label="Jump to a category"></nav>
-
-    <p class="sc-count" id="sc-count" aria-live="polite"></p>
-    <div id="sc-categories"></div>
+    <div class="sc-work">
+      <div class="sc-main">
+        <nav class="sc-toc" id="sc-toc" aria-label="Jump to a category"></nav>
+        <p class="sc-count" id="sc-count" aria-live="polite"></p>
+        <div id="sc-categories"></div>
+      </div>
+      <aside class="sc-pad" id="sc-pad" aria-labelledby="sc-pad-title">
+        <header class="sc-pad-head">
+          <div>
+            <span class="sc-eyebrow">Click a tag to insert</span>
+            <h3 id="sc-pad-title">Lyrics pad</h3>
+          </div>
+          <span class="sc-pad-meta" id="sc-pad-meta">Empty</span>
+        </header>
+        <p class="sc-pad-help">Build a lyrics field here. Tags go on their own line; write words underneath. Parentheses sit where you want the ad-lib heard.</p>
+        <div class="sc-pad-skeletons" role="group" aria-label="Start from a skeleton">
+          <button type="button" class="sc-filter" data-skeleton="pop">Pop form</button>
+          <button type="button" class="sc-filter" data-skeleton="carnatic">Carnatic</button>
+          <button type="button" class="sc-filter" data-skeleton="edm">Build / drop</button>
+        </div>
+        <label class="sc-pad-label" for="sc-pad-text">Lyrics draft</label>
+        <textarea id="sc-pad-text" class="sc-pad-text" spellcheck="true"
+          placeholder="[Intro]&#10;(instrumental)&#10;&#10;[Verse 1]&#10;Your first lines…&#10;&#10;[Chorus]&#10;Your hook…"></textarea>
+        <div class="sc-pad-actions">
+          <button type="button" class="btn primary" id="sc-pad-copy">Copy lyrics</button>
+          <button type="button" class="btn" id="sc-pad-suno">Send to Suno Prompt →</button>
+          <button type="button" class="btn" id="sc-pad-clear">Clear</button>
+        </div>
+      </aside>
+    </div>
 
     <div class="sc-templates" id="sc-templates" aria-label="Starter templates"></div>
 
