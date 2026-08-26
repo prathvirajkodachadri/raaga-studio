@@ -20,6 +20,7 @@
     'vocal-eq': 'Vocal EQ',
     'prosody': 'ಛಂದಸ್ಸು',
     'suno': 'Suno Prompt',
+    'suno-cheats': 'Suno Cheat Codes',
     'raga': 'Raga Reference',
     'mix': 'Mix Check',
     'master': 'Master Check',

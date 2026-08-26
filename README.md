@@ -3,7 +3,7 @@
 A single-page, zero-dependency studio for a Kannada music artist's full workflow:
 **compose in Suno.com → mix in Suno Studio / Cubase → master in Cubase → release**.
 
-Ten tools in one page, no build step, no npm install. Files never leave the browser.
+Twelve tools in one page, no build step, no npm install. Files never leave the browser.
 
 ## Tools
 
@@ -189,11 +189,30 @@ the writing AI not to force grammar, repeat an ending unnecessarily or invent nu
 ### 10. Quick Access
 A curated, searchable mixing-engineer toolbox with safe external links grouped by free/free-tier status.
 
+### 11. Suno Cheat Codes & Meta Tags
+A searchable, filterable **Suno prompt vocabulary** — 14 categories of practical tags across the
+Custom Mode fields, each with a short explanation, a copy button, and examples where useful:
+
+- **Prompting technique** (layering, order, control prompts, iteration)
+- **Song structure tags** (`[Intro]`, `[Verse 1]`, `[Chorus]`, `[Bridge]`, `[Drop]`…)
+- **Vocal & performance tags** and **vocal-character words**
+- **Genre & subgenre** (incl. Kannada folk, bhavageete, Carnatic fusion)
+- **Mood & emotion**, **instrumentation**, **production & mixing**
+- **Tempo & rhythm**, **atmosphere & ambience**
+- **Songwriting/arrangement**, **transition & section** tags
+- **Negative/exclusion instructions** for the Exclude field
+- **Metadata & formatting conventions** (field map, tag-on-own-line rules, repetition)
+
+Every tag carries a **field label** (Lyrics tag / Style text / Exclude / Formatting) so users know
+where it belongs, and the page is honest that most wording influences output probabilistically —
+nothing is presented as guaranteed. Three copy-ready starter templates (Kannada bhavageete,
+Carnatic fusion, modern pop with a drop) complete the page.
+
 ## Structure
 
 ```
 raaga-studio/
-├── index.html                 # 11-tab UI, ending Song Studio · Lyrics Lab · Quick Access
+├── index.html                 # 12-tab UI, including Suno Cheat Codes reference
 ├── css/
 │   ├── style.css              # shared dark studio theme
 │   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
@@ -201,7 +220,8 @@ raaga-studio/
 │   ├── mix-tools.css          # Quick Access directory
 │   ├── vocal-eq-cheatsheet.css # cheat sheet layout
 │   ├── raga-reference.css     # raga & scale reference cards
-│   └── lyrics-lab.css         # responsive songwriting workspace
+│   ├── lyrics-lab.css         # responsive songwriting workspace
+│   └── suno-cheats.css        # Suno Cheat Codes reference cards + search/filters
 ├── js/
 │   ├── practical-eq.js        # Practical EQ analysis engine (home) — STFT, f0, detectors
 │   ├── practical-eq-app.js    # Practical EQ UI controller + frequency graph
@@ -220,6 +240,7 @@ raaga-studio/
 │   ├── song-studio.js         # project registry, checklists, versions
 │   ├── lyrics-prompt.js       # pure songwriting-prompt builder and rhyme-scheme data
 │   ├── lyrics-lab.js          # Lyrics Lab prompt form, copy and local draft UI
+│   ├── suno-cheats.js         # Suno Cheat Codes reference data, search, filters, copy
 │   └── nav.js                 # shared tab navigation
 ├── sample_audio/              # optional test fixtures
 ├── docs/
@@ -239,7 +260,7 @@ Serve from any static server (no build step, no dependencies):
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
-# deep links: #practical-eq #vocal-eq #suno #raga #mix #master #tempo #songs #lyrics #quick-access
+# deep links: #practical-eq #vocal-eq #suno #suno-cheats #raga #mix #master #tempo #songs #lyrics #quick-access
 ```
 
 > **Note:** Practical EQ, Mix Check and Master Check need the Web Audio API (modern
