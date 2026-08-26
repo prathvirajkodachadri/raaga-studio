@@ -9,6 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="Free in-browser studio for Kannada music: Suno prompt builder, raga reference, vocal EQ cheat sheet, mix and master check, tempo lab and more.">
+  <meta name="keywords" content="Raaga Studio, Kannada music, Suno prompt builder, vocal EQ, mix check, master check, raga reference, tempo lab">
   <title>Raaga Studio · Compose → Mix → Master</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/vocal-eq-cheatsheet.css">
@@ -17,6 +19,7 @@
   <link rel="stylesheet" href="css/tempo-lab.css">
   <link rel="stylesheet" href="css/mix-tools.css">
   <link rel="stylesheet" href="css/lyrics-lab.css">
+  <link rel="stylesheet" href="css/suno-cheats.css">
 </head>
 <body>
 
@@ -40,6 +43,7 @@
       <button type="button" class="tab" data-tab="vocal-eq" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≋</span><span class="tab-label desktop">Vocal EQ</span><span class="tab-label mobile">EQ</span></button>
       <button type="button" class="tab" data-tab="prosody" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಅ</span><span class="tab-label">ಛಂದಸ್ಸು</span></button>
       <button type="button" class="tab" data-tab="suno" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">✦</span><span class="tab-label desktop">Suno Prompt</span><span class="tab-label mobile">Suno</span></button>
+      <button type="button" class="tab" data-tab="suno-cheats" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌗</span><span class="tab-label desktop">Suno Cheat Codes</span><span class="tab-label mobile">Tags</span></button>
       <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♪</span><span class="tab-label desktop">Raga Reference</span><span class="tab-label mobile">Raga</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
@@ -65,6 +69,7 @@
         <button type="button" class="nav-drawer-item" data-tab="vocal-eq"><span class="nav-drawer-ico" aria-hidden="true">≋</span><span class="nav-drawer-copy"><b>Vocal EQ</b><small>Mixing cheat sheet</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="prosody"><span class="nav-drawer-ico kn" aria-hidden="true">ಅ</span><span class="nav-drawer-copy"><b>ಛಂದಸ್ಸು</b><small>Kannada metre scanner</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="suno"><span class="nav-drawer-ico" aria-hidden="true">✦</span><span class="nav-drawer-copy"><b>Suno Prompt</b><small>Custom Mode builder</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="suno-cheats"><span class="nav-drawer-ico" aria-hidden="true">⌗</span><span class="nav-drawer-copy"><b>Suno Cheat Codes</b><small>Prompt tags &amp; metadata</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="raga"><span class="nav-drawer-ico" aria-hidden="true">♪</span><span class="nav-drawer-copy"><b>Raga Reference</b><small>Scale &amp; mood library</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="mix"><span class="nav-drawer-ico" aria-hidden="true">≡</span><span class="nav-drawer-copy"><b>Mix Check</b><small>Ready for mastering?</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="master"><span class="nav-drawer-ico" aria-hidden="true">⌁</span><span class="nav-drawer-copy"><b>Master Check</b><small>Release QA &amp; loudness</small></span></button>
@@ -620,6 +625,71 @@
     </div>
 
     <div id="sp-flash" class="pb-flash" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- ═══════════════ SUNO CHEAT CODES & META TAGS TAB ═══════════════ -->
+  <section class="wrap sc-page" id="tab-suno-cheats" hidden>
+    <header class="sc-hero">
+      <p class="sc-kicker">Raaga Studio · prompt reference</p>
+      <h2>Suno Cheat Codes <span>&amp; Meta Tags</span></h2>
+      <p class="mc-intro">
+        A practical vocabulary for Suno Custom Mode — section tags for the
+        <strong>Lyrics</strong> field, descriptive words for
+        <strong>Style of Music</strong>, negative wording for
+        <strong>Exclude</strong>, and formatting conventions. Search it, filter it by
+        field, and copy any tag with one click.
+      </p>
+      <p class="sc-honesty">
+        <strong>Read this first:</strong> Suno does not publish an official list of every
+        recognised tag. Bracket markers such as <code>[Chorus]</code> are Suno's documented
+        lyric-section format, but most words below are descriptive prompt language — they
+        influence output <em>probabilistically</em>, and no tag guarantees a result. Treat
+        everything here as a starting point, not a specification.
+      </p>
+    </header>
+
+    <div class="sc-legend" role="group" aria-label="How to read the tag labels">
+      <span class="sc-legend-label">Field labels</span>
+      <span class="sc-kind sc-kind-lyrics">Lyrics tag</span>
+      <span>Bracket marker for the Lyrics field — Suno's documented section format.</span>
+      <span class="sc-kind sc-kind-style">Style text</span>
+      <span>Descriptive phrase for Style of Music — a steering word, not a switch.</span>
+      <span class="sc-kind sc-kind-exclude">Exclude</span>
+      <span>Negative wording for Advanced Options → Exclude, or "no …" in style text.</span>
+      <span class="sc-kind sc-kind-meta">Formatting</span>
+      <span>Convention about how to write the fields — good practice, not a magic tag.</span>
+    </div>
+
+    <div class="sc-controls">
+      <input type="search" id="sc-search" class="sc-search"
+             placeholder="Search tags — e.g. “breathy”, “verse”, “mridangam”, “no autotune”…"
+             aria-label="Search Suno cheat codes and meta tags">
+      <div class="sc-filters" id="sc-filters" role="group" aria-label="Filter cheat codes by field">
+        <button type="button" class="sc-filter on" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="sc-filter" data-filter="lyrics" aria-pressed="false">Lyrics tags</button>
+        <button type="button" class="sc-filter" data-filter="style" aria-pressed="false">Style text</button>
+        <button type="button" class="sc-filter" data-filter="exclude" aria-pressed="false">Exclude</button>
+        <button type="button" class="sc-filter" data-filter="meta" aria-pressed="false">Formatting</button>
+      </div>
+    </div>
+
+    <nav class="sc-toc" id="sc-toc" aria-label="Jump to a category"></nav>
+
+    <p class="sc-count" id="sc-count" aria-live="polite"></p>
+    <div id="sc-categories"></div>
+
+    <div class="sc-templates" id="sc-templates" aria-label="Starter templates"></div>
+
+    <p class="sc-warning">
+      <strong>Honesty note:</strong> tag behaviour is probabilistic and changes between Suno
+      models and versions. Anything bracket-based beyond the common section markers is
+      community-tested practice, not a documented API. Generate two takes, keep one word
+      that changed something, and build a prompt that works for <em>you</em>. For a guided
+      field-by-field builder, open the
+      <button type="button" class="btn sm" data-jump-tab="suno">Suno Prompt tab →</button>
+    </p>
+
+    <div id="sc-flash" class="sc-flash" role="status" aria-live="polite"></div>
   </section>
 
   <!-- ═══════════════ RAGA REFERENCE TAB ═══════════════ -->
@@ -1364,6 +1434,7 @@
   <script src="js/lyrics-prompt.js"></script>
   <script src="js/lyrics-lab.js"></script>
   <script src="js/mix-tools.js"></script>
+  <script src="js/suno-cheats.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>

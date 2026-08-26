@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'raga', 'mix', 'master', 'tempo', 'songs', 'lyrics', 'quick-access'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'suno-cheats', 'raga', 'mix', 'master', 'tempo', 'songs', 'lyrics', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -147,6 +147,7 @@ load('tempo-lab-app.js');
 load('lyrics-prompt.js');
 load('lyrics-lab.js');
 load('mix-tools.js');
+load('suno-cheats.js');
 load('nav.js');
 
 assert(typeof global.window.TEMPO_LAB.analyze === 'function', 'Tempo Lab engine is exposed');
@@ -325,6 +326,44 @@ assert(getEl('mt-groups').innerHTML.indexOf('BandLab') >= 0, 'DAW search surface
 assert(getEl('mt-groups').innerHTML.indexOf('SoundTools') < 0, 'DAW search excludes non-DAW tools');
 getEl('mt-search').value = '';
 getEl('mt-search').dispatchEvent({ type: 'input' });
+
+// ─── Suno Cheat Codes & Meta Tags reference ───────────────────────────────
+const SC = global.window.RaagaStudio.SUNO_CHEATS;
+const SC_KINDS = global.window.RaagaStudio.SUNO_CHEATS_KINDS;
+assert(Array.isArray(SC) && SC.length === 14, 'Suno Cheats ships 14 categories');
+assert(SC.every(c => c.id && c.title && c.summary && Array.isArray(c.items) && c.items.length > 0),
+  'every category has an id, title, summary and items');
+const validKinds = Object.keys(SC_KINDS);
+assert(SC.every(c => c.items.every(i => i.code && i.what && validKinds.indexOf(i.kind) >= 0)),
+  'every tag has code, explanation and a valid field kind');
+assert(SC.every(c => c.items.every(i => typeof i.code === 'string' && i.code.length < 300)),
+  'tag codes are copy-ready short strings');
+assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') >= 0, 'structure tags render (e.g. [Chorus])');
+assert(getEl('sc-categories').innerHTML.indexOf('Copy all') >= 0, 'category copy-all buttons render');
+assert(getEl('sc-toc').innerHTML.indexOf('Song structure tags') >= 0, 'table of contents renders');
+assert(getEl('sc-templates').innerHTML.indexOf('Kannada bhavageete ballad') >= 0, 'starter templates render');
+
+// field filter narrows to one kind (delegated clicks aren't stubbed deeply, so verify the data)
+assert(SC.filter(c => c.id === 'structure')[0].items[0].kind === 'lyrics',
+  'structure category uses lyrics tags');
+assert(SC.filter(c => c.id === 'negative')[0].items[0].kind === 'exclude',
+  'negative category uses exclude wording');
+
+// search narrows the rendered list
+getEl('sc-search').value = 'mridangam';
+getEl('sc-search').dispatchEvent({ type: 'input' });
+assert(getEl('sc-categories').innerHTML.indexOf('mridangam') >= 0, 'search surfaces the instrument tag');
+assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') < 0, 'search hides unrelated categories');
+getEl('sc-search').value = 'breathy';
+getEl('sc-search').dispatchEvent({ type: 'input' });
+assert(getEl('sc-categories').innerHTML.indexOf('data-i="4"') >= 0,
+  'filtered items keep their original data index (copy mapping stays correct)');
+getEl('sc-search').value = '';
+getEl('sc-search').dispatchEvent({ type: 'input' });
+assert(getEl('sc-categories').innerHTML.indexOf('[Chorus]') >= 0, 'clearing search restores all categories');
+
+// cross-tab jump button is wired through switchTo
+assert(typeof global.window.RaagaStudio.switchTo === 'function', 'Suno Cheats jump uses switchTo');
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
