@@ -190,23 +190,30 @@ the writing AI not to force grammar, repeat an ending unnecessarily or invent nu
 A curated, searchable mixing-engineer toolbox with safe external links grouped by free/free-tier status.
 
 ### 11. Suno Cheat Codes & Meta Tags
-A searchable, filterable **Suno prompt vocabulary** — 14 categories of practical tags across the
-Custom Mode fields, each with a short explanation, a copy button, and examples where useful:
+A searchable, filterable **Suno prompt vocabulary** with a click-to-insert **lyrics pad**.
+A notation guide at the top explains the four ways to mark a lyrics line:
 
-- **Prompting technique** (layering, order, control prompts, iteration)
-- **Song structure tags** (`[Intro]`, `[Verse 1]`, `[Chorus]`, `[Bridge]`, `[Drop]`…)
-- **Vocal & performance tags** and **vocal-character words**
-- **Genre & subgenre** (incl. Kannada folk, bhavageete, Carnatic fusion)
-- **Mood & emotion**, **instrumentation**, **production & mixing**
-- **Tempo & rhythm**, **atmosphere & ambience**
-- **Songwriting/arrangement**, **transition & section** tags
-- **Negative/exclusion instructions** for the Exclude field
-- **Metadata & formatting conventions** (field map, tag-on-own-line rules, repetition)
+- **`[ ]` square brackets** — best for structure, vocals, instruments, performance and transitions
+- **`( )` parentheses** — vocalised / ad-lib material (`(oh...)`, `(mmm...)`, `(la la la)`)
+- **`{ }` curly braces** — experimental instruction notation
+- **`< >` angle brackets** — experimental / less reliable notation
 
-Every tag carries a **field label** (Lyrics tag / Style text / Exclude / Formatting) so users know
-where it belongs, and the page is honest that most wording influences output probabilistically —
-nothing is presented as guaranteed. Three copy-ready starter templates (Kannada bhavageete,
-Carnatic fusion, modern pop with a drop) complete the page.
+23 categories of practical tags across Custom Mode fields, each with a short explanation,
+a one-click **Insert** into the pad, a **Copy** button, and examples where useful:
+
+- **Song structure**, **vocal type**, **vocal expression**
+- **Indian / Carnatic** (`[Alapana]`, `[Gamaka]`, `[Tani Avartanam]`…), **percussion**, **electronic / production**
+- **Instrument solos**, **dynamics / arrangement**, **transitions**, **endings**
+- **Ad-lib parentheses** and **experimental `{ }` / `< >` notation**
+- **Prompting technique**, **genre**, **mood**, **instrumentation**, **production**, **tempo**, **atmosphere**
+- **Songwriting/arrangement**, **vocal-character words**
+- **Negative/exclusion instructions** and **formatting conventions**
+
+Filter by field or by notation, jump via a grouped table of contents, start from a pop / Carnatic /
+build-drop skeleton, then copy the pad or send it to the Suno Prompt tab. Every tag carries a
+**field label** (Lyrics tag / Style text / Exclude / Formatting). The page is honest that most
+wording influences output probabilistically — nothing is presented as guaranteed. Three copy-ready
+starter templates (Kannada bhavageete, Carnatic fusion, modern pop with a drop) complete the page.
 
 ## Structure
 
