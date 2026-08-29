@@ -1,13 +1,256 @@
-/* Page-specific contrast fixes */
-.sc-hero, .mt-hero { background:linear-gradient(120deg,#ead9c8,#fffaf4 72%); border-color:#d8bda7; color:#292631; }
-.sc-hero h2, .mt-hero h2, .sc-hero .mc-intro, .mt-hero .mc-intro { color:#292631; }
-.sc-hero .sc-kicker, .mt-hero .mt-kicker { color:#a9671e; }
-.cb-page { --cb-ink:#292631; --cb-dim:#756d67; --cb-card:#fffaf4; --cb-card-2:#f0e7db; --cb-line:#d8cbbb; --cb-rail:#cda978; }
-.cb-hero { background:linear-gradient(120deg,#ead9c8,#fffaf4 75%); border-color:#d8bda7; box-shadow:0 16px 36px rgba(78,53,36,.1); }
-.cb-hero h2, .cb-hero .cb-subtitle, .cb-hero .cb-hero-copy { color:#292631; }
-.cb-page .cb-panel, .cb-page .cb-card, .cb-page .cb-section, .cb-page .cb-table-panel, .cb-page .cb-node, .cb-page .cb-example-card { background:#fffaf4; color:#292631; border-color:#d8cbbb; }
-.cb-page .cb-node { box-shadow:0 4px 12px rgba(78,53,36,.08); }
+/* ==========================================================================
+   ARTISTIC THEME — high-contrast light hero overrides + light DAW page
+   Fixes WCAG contrast for light backgrounds (#fffaf4 / #ead9c8) while
+   preserving brand look. Never dark-on-dark, never light-on-light.
+   ========================================================================== */
 
+/* --- Light heroes (Suno Cheats, Mix Tools, Cubase Routing) --- */
+.sc-hero, .mt-hero, .cb-hero {
+  background: linear-gradient(120deg, #ead9c8, #fffaf4 72%);
+  border-color: #d8bda7;
+  color: #292631;
+  /* scoped dark tokens for any var() inside hero */
+  --text: #292631;
+  --text-primary: #292631;
+  --text-secondary: #3d3630;
+  --text-muted: #5a534d;
+  --muted: #5a534d;
+  --gold: #8a5618;
+  --gold-strong: #8a5618;
+  --ok: #2e7d32;
+  --fail: #c92f5a;
+  --border: #d8cbbb;
+  --border-color: #d8cbbb;
+}
+.sc-hero h2, .mt-hero h2, .cb-hero h2,
+.sc-hero .mc-intro, .mt-hero .mc-intro,
+.cb-hero .cb-subtitle, .cb-hero .cb-hero-copy,
+.cb-hero .cb-eyebrow, .cb-hero .cb-kicker {
+  color: #292631;
+}
+.sc-hero h2 span, .mt-hero h2 span { color: #8a4a1e; }
+.cb-hero h2 span { color: #8a4a1e; }
+
+.sc-hero .sc-kicker, .mt-hero .mt-kicker,
+.cb-hero .cb-kicker, .cb-hero .cb-eyebrow {
+  color: #8a5618;
+  font-weight: 800;
+}
+.sc-hero .sc-howto li,
+.mt-hero .mc-intro,
+.cb-hero .cb-hero-copy {
+  color: #5a534d;
+}
+.sc-hero .sc-howto b {
+  color: #fffaf4;
+  background: #8a5618;
+  border-color: #8a5618;
+}
+
+/* --- Cubase Routing page — full light DAW theme with high contrast --- */
+.cb-page {
+  /* base ink */
+  --cb-ink: #292631;
+  --cb-dim: #5a534d;
+  --cb-card: #fffaf4;
+  --cb-card-2: #f0e7db;
+  --cb-line: #b9a99a;
+  --cb-rail: #cda978;
+  /* type colors — dark variants for light bg */
+  --cb-blue: #2a5a8a;
+  --cb-green: #2e7d32;
+  --cb-gold: #8a5618;
+  --cb-purple: #5a3d8a;
+  --cb-teal: #2a7a74;
+  --cb-fx: #c92f5a;
+  --cb-mix: #8a4a1e;
+  --cb-master: #292631;
+  /* map shared tokens to dark for light cards */
+  --text: #292631;
+  --text-primary: #292631;
+  --text-secondary: #3d3630;
+  --text-muted: #5a534d;
+  --muted: #5a534d;
+  --gold: #8a5618;
+  --gold-strong: #8a5618;
+  --ok: #2e7d32;
+  --success-color: #2e7d32;
+  --fail: #c92f5a;
+  --danger-color: #c92f5a;
+  --border: #d8cbbb;
+  --border-color: #d8cbbb;
+  --border-strong: #b9a99a;
+  --panel: #fffaf4;
+  --panel2: #f0e7db;
+  --bg: #fffaf4;
+  --bg-primary: #fffaf4;
+  --bg-secondary: #f0e7db;
+}
+
+.cb-page .cb-panel,
+.cb-page .cb-card,
+.cb-page .cb-section,
+.cb-page .cb-table-panel,
+.cb-page .cb-node,
+.cb-page .cb-example-card {
+  background: #fffaf4;
+  color: #292631;
+  border-color: #d8cbbb;
+}
+.cb-page .cb-node {
+  background: #fffaf4;
+  color: #292631;
+  box-shadow: 0 4px 12px rgba(78,53,36,.08);
+  border-color: #d8cbbb;
+}
+/* type-specific nodes keep dark type color but light bg */
+.cb-page .cb-vocal { color: #2a5a8a; border-color: #8aa8c8; background: #f4f7fb; }
+.cb-page .cb-drum,
+.cb-page .cb-percussion,
+.cb-page .cb-music { color: #2e7d32; border-color: #8abf8e; background: #f1f8f1; }
+.cb-page .cb-bass { color: #8a5618; border-color: #c9a86a; background: #fdf6eb; }
+.cb-page .cb-melodic,
+.cb-page .cb-keys,
+.cb-page .cb-strings { color: #5a3d8a; border-color: #a89ac8; background: #f5f1fb; }
+.cb-page .cb-atmos { color: #2a7a74; border-color: #8ac8c3; background: #eef8f7; }
+.cb-page .cb-fx,
+.cb-page .cb-parallel { color: #c92f5a; border-color: #e8a0b8; background: #fdf0f3; }
+.cb-page .cb-mix { color: #8a4a1e; border-color: #d0a070; background: #fdf3e8; }
+.cb-page .cb-master { color: #292631; border-color: #b9a99a; background: #fffaf4; }
+
+.cb-page .cb-chip {
+  background: #f0e7db;
+  color: #3d3630;
+  border-color: #d8cbbb;
+}
+.cb-page .cb-arrow,
+.cb-page .cb-cable {
+  color: #8a7a6e;
+}
+.cb-page .cb-console-row,
+.cb-page .cb-console-mix-chain,
+.cb-page .cb-source-bank,
+.cb-page .cb-master-shell,
+.cb-page .cb-hierarchy-note .cb-mini-flow,
+.cb-page .cb-vocal-summary,
+.cb-page .cb-note,
+.cb-page .cb-key-explain,
+.cb-page .cb-chain-step {
+  background: #fffaf4;
+  border-color: #d8cbbb;
+  color: #292631;
+}
+.cb-page .cb-note,
+.cb-page .cb-definition,
+.cb-page .cb-master-note,
+.cb-page .cb-panel p,
+.cb-page .cb-card p {
+  color: #5a534d;
+}
+.cb-page .cb-definition b,
+.cb-page .cb-master-note b,
+.cb-page .cb-note strong {
+  color: #292631;
+}
+.cb-page .cb-fx-pill {
+  color: #7a1038;
+  background: #ffe4ec;
+  border-color: #e8a0b8;
+}
+.cb-page .cb-send-label {
+  color: #7a1038;
+  background: #ffe4ec;
+  border-color: #e8a0b8;
+}
+.cb-page .cb-compare-table th {
+  color: #5a534d;
+  background: #f0e7db;
+}
+.cb-page .cb-compare-table td {
+  color: #292631;
+}
+.cb-page .cb-no-route {
+  color: #7a1038;
+  background: #ffe4ec;
+  border-color: #e8a0b8;
+}
+.cb-page .cb-mastering-merge-mark {
+  color: #5a534d;
+  border-color: #d8bda7;
+  background: #f0e7db;
+}
+
+.cb-page .cb-subnav {
+  background: #f0e7db;
+  border-color: #d8cbbb;
+  box-shadow: 0 8px 20px rgba(78,53,36,.08);
+}
+.cb-page .cb-subnav a {
+  background: #fffaf4;
+  color: #5a534d;
+  border-color: #d8cbbb;
+}
+.cb-page .cb-subnav a:hover,
+.cb-page .cb-subnav a:focus-visible {
+  color: #292631;
+  border-color: #8a5618;
+  background: #fdf6eb;
+}
+.cb-page .cb-subnav a.active {
+  color: #1a0a0e;
+  background: #e4577f;
+  border-color: #e4577f;
+  font-weight: 800;
+}
+.cb-page .btn.primary {
+  background: var(--accent, #e4577f);
+  color: #1a0a0e;
+  border-color: var(--accent, #e4577f);
+}
+.cb-page .btn {
+  background: #fffaf4;
+  color: #292631;
+  border-color: #b9a99a;
+}
+.cb-page .btn:hover {
+  border-color: #8a5618;
+  color: #292631;
+}
+
+/* Ensure code blocks inside light page still have high contrast */
+.cb-page .cb-mini-flow code {
+  color: #5a534d;
+}
+.cb-page .cb-toolbar .hint,
+.cb-page .cb-section-head p {
+  color: #5a534d;
+}
+.cb-page .cb-section-head h3 {
+  color: #292631;
+}
+
+/* --- Suno Cheats & Mix Tools — ensure any light-filtered controls keep dark text --- */
+.sc-page .sc-hero .sc-search,
+.mt-page .mt-hero .mt-search {
+  background: #fffaf4;
+  color: #292631;
+  border-color: #d8cbbb;
+}
+.sc-page .sc-hero .sc-search::placeholder,
+.mt-page .mt-hero .mt-search::placeholder {
+  color: #5a534d;
+  opacity: 0.85;
+}
+
+/* --- Toast on light pages should still be readable (dark text on accent) --- */
+.cb-page .sc-flash,
+.sc-hero .sc-flash,
+.mt-hero .sc-flash {
+  background: var(--accent-strong, #c92f5a);
+  color: #fffaf4;
+}
+
+/* --- Responsive kept from original --- */
 @media(max-width:760px) {
   .cb-hero { grid-template-columns:1fr; gap:14px; padding:22px 18px; }
   .cb-hero-actions { min-width:0; width:100%; flex-direction:row; flex-wrap:wrap; }

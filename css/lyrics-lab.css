@@ -97,9 +97,10 @@
 .ll-segmented button small { margin-left: 3px; color: inherit; font-size: 9px; opacity: .75; }
 .ll-segmented button:hover { color: var(--text); }
 .ll-segmented button.on {
-  color: #fff;
+  color: var(--accent-contrast, #1a0a0e);
   background: var(--accent);
   box-shadow: 0 4px 14px rgba(228,87,127,.22);
+  font-weight: 800;
 }
 textarea.ll-idea,
 textarea.ll-key-phrases,

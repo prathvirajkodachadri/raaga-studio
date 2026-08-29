@@ -653,9 +653,9 @@
   transform: translateX(-50%) translateY(10px);
   max-width: calc(100vw - 28px);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast, #1a0a0e);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 750;
   padding: 9px 16px;
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);

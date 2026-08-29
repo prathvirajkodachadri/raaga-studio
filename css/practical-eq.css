@@ -202,9 +202,9 @@
 .pq-priority-list li::before {
   content: counter(pq);
   width: 22px; height: 22px; border-radius: 6px;
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--accent-contrast, #1a0a0e);
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
+  font-size: 12px; font-weight: 800;
 }
 .pq-priority-list li:hover { border-color: var(--accent); }
 .pq-pri-name { font-weight: 650; }
@@ -222,7 +222,7 @@
 .pq-sev-low { color: var(--muted); }
 .pq-sev-medium { color: var(--gold); border-color: var(--gold); }
 .pq-sev-high { color: var(--accent); border-color: var(--accent); }
-.pq-sev-critical { color: #fff; background: var(--fail); border-color: var(--fail); }
+.pq-sev-critical { color: var(--accent-contrast, #1a0a0e); background: var(--fail); border-color: var(--fail); font-weight: 800; }
 .pq-sev-boost { color: var(--ok); border-color: var(--ok); }
 
 /* ---------- result sections ---------- */
