@@ -242,6 +242,48 @@
   opacity: 0.85;
 }
 
+/* --- Lyrics Lab — darken text that used to assume a dark background --- */
+.ll-page {
+  --ll-blue: #24557d;
+  --ll-violet: #5a3d8a;
+}
+.ll-page .ll-example {
+  color: #2c4e6a;
+  background: #edf5fb;
+  border-color: #b9d3e4;
+}
+.ll-page .ll-example b,
+.ll-page .ll-example u {
+  color: #24557d;
+}
+.ll-page .ll-example u {
+  text-decoration-color: #24557d;
+}
+.ll-page .ll-recommended,
+.ll-page .ll-natural-rule strong {
+  color: #8a2546;
+}
+.ll-page .ll-recommended {
+  background: #f7dfe7;
+}
+.ll-page .ll-guide-warning p[lang="kn"],
+.ll-page .ll-natural-rule p[lang="kn"] {
+  color: #5c5144;
+}
+
+/* --- Cubase Routing — remaining status chips should use dark ink on light cards --- */
+.cb-page .cb-ai-preserve span {
+  color: #1f4f77;
+  background: #edf5fc;
+  border-color: #b9d3e8;
+}
+
+/* --- Suno Cheats — keep hover labels readable on light surfaces --- */
+.sc-page .sc-toc-link:hover,
+.sc-page .sc-toc-link:focus-visible {
+  color: #8a2546;
+}
+
 /* --- Toast on light pages should still be readable (dark text on accent) --- */
 .cb-page .sc-flash,
 .sc-hero .sc-flash,
