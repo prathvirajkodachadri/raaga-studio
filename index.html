@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/mix-tools.css">
   <link rel="stylesheet" href="css/lyrics-lab.css">
   <link rel="stylesheet" href="css/suno-cheats.css">
+  <link rel="stylesheet" href="css/cubase-routing.css">
 </head>
 <body>
 
@@ -47,6 +48,7 @@
       <button type="button" class="tab" data-tab="raga" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♪</span><span class="tab-label desktop">Raga Reference</span><span class="tab-label mobile">Raga</span></button>
       <button type="button" class="tab" data-tab="mix" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">≡</span><span class="tab-label desktop">Mix Check</span><span class="tab-label mobile">Mix</span></button>
       <button type="button" class="tab" data-tab="master" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">⌁</span><span class="tab-label desktop">Master Check</span><span class="tab-label mobile">Master</span></button>
+      <button type="button" class="tab" data-tab="cubase-routing" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">🎚️</span><span class="tab-label desktop">Cubase 12 Routing</span><span class="tab-label mobile">Routing</span></button>
       <button type="button" class="tab" data-tab="tempo" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">◷</span><span class="tab-label desktop">Tempo Lab</span><span class="tab-label mobile">Tempo</span></button>
       <button type="button" class="tab" data-tab="songs" role="tab" aria-selected="false"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Song Studio</span><span class="tab-label mobile">Songs</span></button>
       <button type="button" class="tab" data-tab="lyrics" role="tab" aria-selected="false"><span class="tab-icon kn" aria-hidden="true">ಕ</span><span class="tab-label desktop">Lyrics Lab</span><span class="tab-label mobile">Lyrics</span></button>
@@ -73,6 +75,7 @@
         <button type="button" class="nav-drawer-item" data-tab="raga"><span class="nav-drawer-ico" aria-hidden="true">♪</span><span class="nav-drawer-copy"><b>Raga Reference</b><small>Scale &amp; mood library</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="mix"><span class="nav-drawer-ico" aria-hidden="true">≡</span><span class="nav-drawer-copy"><b>Mix Check</b><small>Ready for mastering?</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="master"><span class="nav-drawer-ico" aria-hidden="true">⌁</span><span class="nav-drawer-copy"><b>Master Check</b><small>Release QA &amp; loudness</small></span></button>
+        <button type="button" class="nav-drawer-item" data-tab="cubase-routing"><span class="nav-drawer-ico" aria-hidden="true">🎚️</span><span class="nav-drawer-copy"><b>Cubase 12 Mixing &amp; Routing</b><small>Professional bus architecture</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="tempo"><span class="nav-drawer-ico" aria-hidden="true">◷</span><span class="nav-drawer-copy"><b>Tempo Lab</b><small>BPM, beats &amp; key</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="songs"><span class="nav-drawer-ico" aria-hidden="true">♫</span><span class="nav-drawer-copy"><b>Song Studio</b><small>Project registry</small></span></button>
         <button type="button" class="nav-drawer-item" data-tab="lyrics"><span class="nav-drawer-ico kn" aria-hidden="true">ಕ</span><span class="nav-drawer-copy"><b>Lyrics Lab</b><small>Songwriting prompts</small></span></button>
@@ -1507,6 +1510,658 @@
     <div id="ll-flash" class="ll-flash" role="status" aria-live="polite"></div>
   </section>
 
+
+  <!-- ═══════════════ CUBASE 12 MIXING & ROUTING TAB ═══════════════ -->
+  <section class="wrap cb-page" id="tab-cubase-routing" hidden>
+    <header class="cb-hero">
+      <div>
+        <p class="cb-eyebrow">Raaga Studio · Cubase template architecture</p>
+        <h2>Cubase 12 <span>Mixing &amp; Routing</span> Blueprint</h2>
+        <p class="cb-subtitle">Professional signal-flow architecture for vocal, Carnatic, live-instrument, mixing and mastering workflows</p>
+        <p class="cb-hero-copy">
+          Build the mix from individual sources into dedicated buses, then combine vocals and music at the Mix Bus.
+          Shared FX and parallel processing return separately to the mix.
+        </p>
+      </div>
+      <div class="cb-hero-actions" aria-label="Blueprint view controls">
+        <button type="button" class="btn primary" id="cb-full-flow" aria-pressed="false">Show Full Signal Flow</button>
+        <button type="button" class="btn" id="cb-compact-toggle" aria-pressed="false">Compact View</button>
+        <div class="cb-mini-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </header>
+
+    <nav class="cb-subnav" id="cb-subnav" aria-label="Cubase routing sections">
+      <a href="#cb-overview" class="active">Overview</a>
+      <a href="#cb-vocals">Vocal Routing</a>
+      <a href="#cb-drums">Drum Routing</a>
+      <a href="#cb-percussion">Percussion</a>
+      <a href="#cb-bass">Bass</a>
+      <a href="#cb-melodic">Melodic Instruments</a>
+      <a href="#cb-keys">Keys</a>
+      <a href="#cb-strings">Strings</a>
+      <a href="#cb-atmosphere">Atmosphere</a>
+      <a href="#cb-music-bus">Music Bus</a>
+      <a href="#cb-fx-sends">FX Sends</a>
+      <a href="#cb-parallel">Parallel Processing</a>
+      <a href="#cb-mix-bus">Mix Bus</a>
+      <a href="#cb-mastering">Mastering</a>
+      <a href="#cb-processing-examples">Processing Examples</a>
+    </nav>
+
+    <div class="cb-compact-map cb-card" aria-label="Compact Cubase routing map">
+      <div class="cb-compact-grid">
+        <div class="cb-compact-path">
+          <h4>Vocals stay parallel</h4>
+          <button type="button" class="cb-node cb-vocal" data-route="vocals all-vocals mixbus">VOCAL TRACKS</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="vocals all-vocals"></span>
+          <button type="button" class="cb-node cb-vocal" data-route="vocals all-vocals mixbus">ALL VOCALS BUS</button>
+        </div>
+        <div class="cb-compact-path">
+          <h4>Music sums separately</h4>
+          <button type="button" class="cb-node cb-music" data-route="musicbus mixbus">INSTRUMENT FAMILIES</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="musicbus mixbus"></span>
+          <button type="button" class="cb-node cb-music" data-route="musicbus mixbus">MUSIC BUS</button>
+        </div>
+        <div class="cb-compact-path">
+          <h4>Final output</h4>
+          <button type="button" class="cb-node cb-mix" data-route="all-vocals musicbus mixbus masterout">MIX BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="mixbus masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="mixbus masterout">MASTER → STEREO OUT</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="cb-section" id="cb-overview" aria-labelledby="cb-overview-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">A. Overview</p>
+          <h3 id="cb-overview-title">Interactive master signal-flow diagram</h3>
+          <p>Click or hover any track or bus to highlight its upstream and downstream path. The two top-level sources remain separate until the Mix Bus.</p>
+        </div>
+        <span class="cb-section-badge">Console-style map</span>
+      </div>
+
+      <div class="cb-toolbar">
+        <span class="hint">Core hierarchy: Individual Track → Subgroup / Section Bus → Family Bus → Top-Level Bus → Mix Bus → Master → Stereo Out.</span>
+      </div>
+
+      <div class="cb-card cb-hierarchy-card cb-detail-copy">
+        <div class="cb-hierarchy-line" aria-label="Exact core signal-flow hierarchy">
+          <button type="button" class="cb-node" data-route="track subgroup family top-level mixbus masterout">INDIVIDUAL TRACK</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="track subgroup"></span>
+          <button type="button" class="cb-node" data-route="track subgroup family top-level mixbus masterout">SUBGROUP / SECTION BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="subgroup family"></span>
+          <button type="button" class="cb-node" data-route="track subgroup family top-level mixbus masterout">FAMILY BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="family top-level"></span>
+          <button type="button" class="cb-node" data-route="track subgroup family top-level mixbus masterout">TOP-LEVEL BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="top-level mixbus"></span>
+          <button type="button" class="cb-node cb-mix" data-route="track subgroup family top-level mixbus masterout">MIX BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="mixbus masterout">MASTER</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="masterout">STEREO OUT</button>
+        </div>
+        <div class="cb-hierarchy-note">
+          <div class="cb-mini-flow">
+            <b>Vocal route</b>
+            <code>VOCAL TRACK
+→ VOCAL SUBGROUP
+→ VOCAL FAMILY BUS
+→ ALL VOCALS BUS
+→ MIX BUS</code>
+          </div>
+          <div class="cb-mini-flow">
+            <b>Instrument route</b>
+            <code>INSTRUMENT TRACK
+→ INSTRUMENT SUBGROUP
+→ INSTRUMENT FAMILY BUS
+→ MUSIC BUS
+→ MIX BUS</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="cb-master-shell cb-card" id="cb-master-diagram" aria-label="Master routing diagram">
+        <button type="button" class="btn cb-full-close" id="cb-full-close">Exit Full Screen</button>
+        <div class="cb-console-map">
+          <div class="cb-console-inputs">
+            <div class="cb-console-row cb-vocals-row" aria-label="All vocals bus to mix bus">
+              <button type="button" class="cb-node cb-vocal" data-route="vocals all-vocals mixbus masterout">ALL VOCALS BUS</button>
+              <span class="cb-cable cb-connector" data-route="vocals all-vocals mixbus" aria-hidden="true"></span>
+            </div>
+
+            <div class="cb-console-row cb-music-row" aria-label="Music family buses to music bus to mix bus">
+              <div class="cb-music-collector">
+                <div class="cb-branch-stack" aria-label="Music Bus source family buses">
+                  <button type="button" class="cb-node cb-drum" data-route="drums drum-bus musicbus mixbus masterout">DRUM BUS</button>
+                  <button type="button" class="cb-node cb-percussion" data-route="percussion percussion-bus musicbus mixbus masterout">PERCUSSION BUS</button>
+                  <button type="button" class="cb-node cb-bass" data-route="bass bass-bus musicbus mixbus masterout">BASS BUS</button>
+                  <button type="button" class="cb-node cb-melodic" data-route="melodic melodic-bus musicbus mixbus masterout">MELODIC BUS</button>
+                  <button type="button" class="cb-node cb-keys" data-route="keys keys-bus musicbus mixbus masterout">KEYS BUS</button>
+                  <button type="button" class="cb-node cb-strings" data-route="strings strings-bus musicbus mixbus masterout">STRINGS BUS</button>
+                  <button type="button" class="cb-node cb-atmos" data-route="atmos atmos-bus musicbus mixbus masterout">ATMOS BUS</button>
+                </div>
+                <span class="cb-arrow cb-connector" data-dir="right" data-route="drums percussion bass melodic keys strings atmos musicbus mixbus" aria-hidden="true"></span>
+                <button type="button" class="cb-node cb-music" data-route="drums percussion bass melodic keys strings atmos musicbus mixbus masterout">MUSIC BUS</button>
+              </div>
+              <span class="cb-cable cb-connector" data-route="musicbus mixbus masterout" aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <div class="cb-console-mix-chain" aria-label="Mix bus to master to stereo out">
+            <button type="button" class="cb-node cb-mix" data-route="all-vocals vocals musicbus drums percussion bass melodic keys strings atmos fx parallel mixbus masterout">MIX BUS</button>
+            <span class="cb-arrow cb-connector" data-dir="down" data-route="all-vocals musicbus drums percussion bass melodic keys strings atmos mixbus masterout" aria-hidden="true"></span>
+            <button type="button" class="cb-node cb-master" data-route="all-vocals musicbus drums percussion bass melodic keys strings atmos mixbus masterout">MASTER</button>
+            <span class="cb-arrow cb-connector" data-dir="down" data-route="all-vocals musicbus drums percussion bass melodic keys strings atmos masterout" aria-hidden="true"></span>
+            <button type="button" class="cb-node cb-master" data-route="all-vocals musicbus drums percussion bass melodic keys strings atmos masterout">STEREO OUT</button>
+          </div>
+        </div>
+        <div class="cb-master-note">
+          <span class="cb-no-route">Never route vocals through the Music Bus</span>
+          <b>Correct:</b>
+          <span>ALL VOCALS BUS ────────┐</span>
+          <span>├──→ MIX BUS</span>
+          <span>MUSIC BUS ─────────────┘</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-vocals" aria-labelledby="cb-vocals-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">B. Vocal Routing</p>
+          <h3 id="cb-vocals-title">Lead, doubles, harmonies and chorus buses</h3>
+          <p>Vocal tracks sum into vocal subgroups, then the All Vocals Bus feeds the Mix Bus directly. It does not pass through the Music Bus.</p>
+        </div>
+        <span class="cb-section-badge">Blue = vocals</span>
+      </div>
+
+      <div class="cb-vocal-layout">
+        <div class="cb-card cb-lead-flow" aria-label="Lead vocal routing">
+          <div class="cb-source-bank">
+            <header><span>LEAD VOCAL</span><span>individual tracks</span></header>
+            <div class="cb-chip-grid">
+              <button type="button" class="cb-chip cb-vocal" data-route="lead-vocal vocals all-vocals mixbus">Lead Vocal 01</button>
+              <button type="button" class="cb-chip cb-vocal" data-route="lead-vocal vocals all-vocals mixbus">Lead Vocal 02</button>
+              <button type="button" class="cb-chip cb-vocal" data-route="lead-vocal vocals all-vocals mixbus">Lead Ad-lib</button>
+              <button type="button" class="cb-chip cb-vocal" data-route="lead-vocal vocals all-vocals mixbus fx">Lead FX</button>
+            </div>
+          </div>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="lead-vocal vocals all-vocals"></span>
+          <button type="button" class="cb-node cb-vocal" data-route="lead-vocal vocals all-vocals mixbus">LEAD VOCAL BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="lead-vocal all-vocals mixbus"></span>
+          <button type="button" class="cb-node cb-vocal" data-route="lead-vocal backing-vocal vocals all-vocals mixbus">ALL VOCALS BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="lead-vocal all-vocals mixbus"></span>
+          <button type="button" class="cb-node cb-mix" data-route="lead-vocal all-vocals mixbus masterout">MIX BUS</button>
+        </div>
+
+        <div class="cb-vocal-grid">
+          <article class="cb-card cb-vocal-card" aria-label="Double vocal routing">
+            <h4>Double vocals</h4>
+            <div class="cb-source-bank">
+              <header><span>DOUBLE L / R</span><span>stereo support</span></header>
+              <div class="cb-chip-grid">
+                <button type="button" class="cb-chip cb-vocal" data-route="double-vocal backing-vocal vocals all-vocals">DOUBLE L</button>
+                <button type="button" class="cb-chip cb-vocal" data-route="double-vocal backing-vocal vocals all-vocals">DOUBLE R</button>
+              </div>
+            </div>
+            <div class="cb-mini-chain">
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="double-vocal backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="double-vocal backing-vocal vocals all-vocals">DOUBLE BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="double-vocal backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="double-vocal backing-vocal vocals all-vocals">BACKING VOCAL BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="double-vocal backing-vocal all-vocals"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="double-vocal backing-vocal all-vocals mixbus">ALL VOCALS BUS</button>
+            </div>
+          </article>
+
+          <article class="cb-card cb-vocal-card" aria-label="Harmony vocal routing">
+            <h4>Harmony vocals</h4>
+            <div class="cb-source-bank">
+              <header><span>HARMONY HIGH / LOW</span><span>arranged layers</span></header>
+              <div class="cb-chip-grid">
+                <button type="button" class="cb-chip cb-vocal" data-route="harmony backing-vocal vocals all-vocals">HARMONY HIGH</button>
+                <button type="button" class="cb-chip cb-vocal" data-route="harmony backing-vocal vocals all-vocals">HARMONY LOW</button>
+              </div>
+            </div>
+            <div class="cb-mini-chain">
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="harmony backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="harmony backing-vocal vocals all-vocals">HARMONY BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="harmony backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="harmony backing-vocal vocals all-vocals">BACKING VOCAL BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="harmony backing-vocal all-vocals"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="harmony backing-vocal all-vocals mixbus">ALL VOCALS BUS</button>
+            </div>
+          </article>
+
+          <article class="cb-card cb-vocal-card" aria-label="Chorus vocal routing">
+            <h4>Chorus vocals</h4>
+            <div class="cb-source-bank">
+              <header><span>CHORUS L / R</span><span>wide chorus stack</span></header>
+              <div class="cb-chip-grid">
+                <button type="button" class="cb-chip cb-vocal" data-route="chorus backing-vocal vocals all-vocals">CHORUS L</button>
+                <button type="button" class="cb-chip cb-vocal" data-route="chorus backing-vocal vocals all-vocals">CHORUS R</button>
+              </div>
+            </div>
+            <div class="cb-mini-chain">
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="chorus backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="chorus backing-vocal vocals all-vocals">CHORUS BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="chorus backing-vocal"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="chorus backing-vocal vocals all-vocals">BACKING VOCAL BUS</button>
+              <span class="cb-arrow cb-connector" data-dir="down" data-route="chorus backing-vocal all-vocals"></span>
+              <button type="button" class="cb-node cb-vocal" data-route="chorus backing-vocal all-vocals mixbus">ALL VOCALS BUS</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="cb-card cb-vocal-summary" aria-label="Vocal buses to All Vocals Bus and Mix Bus">
+          <div class="cb-summary-stack">
+            <button type="button" class="cb-node cb-vocal" data-route="lead-vocal vocals all-vocals mixbus">Lead Vocal Bus</button>
+            <button type="button" class="cb-node cb-vocal" data-route="backing-vocal vocals all-vocals mixbus">Backing Vocal Bus</button>
+            <button type="button" class="cb-node cb-vocal" data-route="harmony backing-vocal vocals all-vocals mixbus">Harmony Bus</button>
+            <button type="button" class="cb-node cb-vocal" data-route="chorus backing-vocal vocals all-vocals mixbus">Chorus Bus</button>
+          </div>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="lead-vocal backing-vocal double-vocal harmony chorus vocals all-vocals"></span>
+          <button type="button" class="cb-node cb-vocal" data-route="lead-vocal backing-vocal double-vocal harmony chorus vocals all-vocals mixbus">ALL VOCALS BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="lead-vocal backing-vocal double-vocal harmony chorus all-vocals mixbus"></span>
+          <button type="button" class="cb-node cb-mix" data-route="lead-vocal backing-vocal double-vocal harmony chorus all-vocals mixbus masterout">MIX BUS</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-drums" aria-labelledby="cb-drums-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">C. Drum Routing</p>
+          <h3 id="cb-drums-title">Kit control before the Music Bus</h3>
+          <p>Kick, snare and kit ambience first hit a drum subgroup, then the Drum Bus becomes one controlled family inside the Music Bus.</p>
+        </div>
+        <span class="cb-section-badge">Green = drums</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Drum routing flow">
+        <div class="cb-source-bank">
+          <header><span>Drum tracks</span><span>individual sources</span></header>
+          <div class="cb-chip-grid">
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Kick</button>
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Snare</button>
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Hi-Hat</button>
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Toms</button>
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Cymbals</button>
+            <button type="button" class="cb-chip cb-drum" data-route="drums drum-bus musicbus mixbus">Room</button>
+          </div>
+        </div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="drums drum-bus"></span>
+        <button type="button" class="cb-node cb-drum" data-route="drums drum-bus musicbus mixbus">DRUM SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="drum-bus musicbus"></span>
+        <button type="button" class="cb-node cb-drum" data-route="drums drum-bus musicbus mixbus">DRUM BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="drums musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="drums musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-percussion" aria-labelledby="cb-percussion-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">D. Carnatic percussion routing</p>
+          <h3 id="cb-percussion-title">Independent control for Indian classical percussion</h3>
+          <p>Mridangam, tabla, ghatam, kanjira and morsing are treated as a dedicated percussion architecture before entering the Music Bus.</p>
+        </div>
+        <span class="cb-section-badge">Carnatic priority</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Carnatic percussion routing flow">
+        <div class="cb-source-bank">
+          <header><span>Carnatic percussion</span><span>articulation control</span></header>
+          <div class="cb-chip-grid">
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Mridangam</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Tabla</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Ghatam</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Kanjira</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Morsing</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Shaker</button>
+            <button type="button" class="cb-chip cb-percussion" data-route="percussion percussion-bus musicbus mixbus">Other Percussion</button>
+          </div>
+        </div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="percussion percussion-bus"></span>
+        <button type="button" class="cb-node cb-percussion" data-route="percussion percussion-bus musicbus mixbus">CARNATIC PERCUSSION SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="percussion-bus musicbus"></span>
+        <button type="button" class="cb-node cb-percussion" data-route="percussion percussion-bus musicbus mixbus">PERCUSSION BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="percussion musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="percussion musicbus mixbus masterout">MIX BUS</button>
+      </div>
+      <p class="cb-note">Carnatic percussion should remain independently controllable before entering the Music Bus because transient shape, low-mid energy and articulation can vary significantly between instruments.</p>
+    </section>
+
+    <section class="cb-section" id="cb-bass" aria-labelledby="cb-bass-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">E. Bass Routing</p>
+          <h3 id="cb-bass-title">Low-end sources into one Bass Bus</h3>
+          <p>Bass, synth bass and sub reinforcement sum into a focused Bass Bus before joining all non-vocal musical content.</p>
+        </div>
+        <span class="cb-section-badge">Gold = bass</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Bass routing flow">
+        <div class="cb-source-bank"><header><span>Bass tracks</span><span>low-end layers</span></header><div class="cb-chip-grid">
+          <button type="button" class="cb-chip cb-bass" data-route="bass bass-bus musicbus mixbus">Bass</button>
+          <button type="button" class="cb-chip cb-bass" data-route="bass bass-bus musicbus mixbus">Synth Bass</button>
+          <button type="button" class="cb-chip cb-bass" data-route="bass bass-bus musicbus mixbus">Sub Bass</button>
+        </div></div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="bass bass-bus"></span>
+        <button type="button" class="cb-node cb-bass" data-route="bass bass-bus musicbus mixbus">BASS SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="bass-bus musicbus"></span>
+        <button type="button" class="cb-node cb-bass" data-route="bass bass-bus musicbus mixbus">BASS BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="bass musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="bass musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-melodic" aria-labelledby="cb-melodic-title">
+      <div class="cb-section-head">
+        <div>
+          <p class="cb-kicker">F. Melodic / Live Instrument Routing</p>
+          <h3 id="cb-melodic-title">Carnatic and live melodic instruments</h3>
+          <p>Live instruments are collected into a melodic family bus so tone, dynamics and ambience can be shaped together.</p>
+        </div>
+        <span class="cb-section-badge">Purple = melodic</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Melodic live instrument routing flow">
+        <div class="cb-source-bank"><header><span>Live melodic tracks</span><span>Carnatic + modern</span></header><div class="cb-chip-grid">
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Veena</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Violin</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Flute</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Nadaswaram</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Mandolin</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Guitar</button>
+          <button type="button" class="cb-chip cb-melodic" data-route="melodic melodic-bus musicbus mixbus">Other Live Instruments</button>
+        </div></div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="melodic melodic-bus"></span>
+        <button type="button" class="cb-node cb-melodic" data-route="melodic melodic-bus musicbus mixbus">MELODIC / LIVE SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="melodic-bus musicbus"></span>
+        <button type="button" class="cb-node cb-melodic" data-route="melodic melodic-bus musicbus mixbus">MELODIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="melodic musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="melodic musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-keys" aria-labelledby="cb-keys-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">G. Keys / Synth Routing</p><h3 id="cb-keys-title">Piano, organ, synth and arp family</h3><p>Keyboard and programmed harmonic parts are grouped for shared tone shaping and automation.</p></div>
+        <span class="cb-section-badge">Purple = keys</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Keys synth routing flow">
+        <div class="cb-source-bank"><header><span>Keys tracks</span><span>programmed + played</span></header><div class="cb-chip-grid">
+          <button type="button" class="cb-chip cb-keys" data-route="keys keys-bus musicbus mixbus">Piano</button>
+          <button type="button" class="cb-chip cb-keys" data-route="keys keys-bus musicbus mixbus">Organ</button>
+          <button type="button" class="cb-chip cb-keys" data-route="keys keys-bus musicbus mixbus">Synth</button>
+          <button type="button" class="cb-chip cb-keys" data-route="keys keys-bus musicbus mixbus">Pluck</button>
+          <button type="button" class="cb-chip cb-keys" data-route="keys keys-bus musicbus mixbus">Arp</button>
+        </div></div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="keys keys-bus"></span>
+        <button type="button" class="cb-node cb-keys" data-route="keys keys-bus musicbus mixbus">KEYS SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="keys-bus musicbus"></span>
+        <button type="button" class="cb-node cb-keys" data-route="keys keys-bus musicbus mixbus">KEYS BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="keys musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="keys musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-strings" aria-labelledby="cb-strings-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">H. Strings Routing</p><h3 id="cb-strings-title">String section into Strings Bus</h3><p>Individual string desks or ensemble stems collect into a dedicated bus before the Music Bus.</p></div>
+        <span class="cb-section-badge">Purple = strings</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Strings routing flow">
+        <div class="cb-source-bank"><header><span>String tracks</span><span>section control</span></header><div class="cb-chip-grid">
+          <button type="button" class="cb-chip cb-strings" data-route="strings strings-bus musicbus mixbus">Violin I</button>
+          <button type="button" class="cb-chip cb-strings" data-route="strings strings-bus musicbus mixbus">Violin II</button>
+          <button type="button" class="cb-chip cb-strings" data-route="strings strings-bus musicbus mixbus">Viola</button>
+          <button type="button" class="cb-chip cb-strings" data-route="strings strings-bus musicbus mixbus">Cello</button>
+          <button type="button" class="cb-chip cb-strings" data-route="strings strings-bus musicbus mixbus">String Ensemble</button>
+        </div></div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="strings strings-bus"></span>
+        <button type="button" class="cb-node cb-strings" data-route="strings strings-bus musicbus mixbus">STRING SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="strings-bus musicbus"></span>
+        <button type="button" class="cb-node cb-strings" data-route="strings strings-bus musicbus mixbus">STRINGS BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="strings musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="strings musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-atmosphere" aria-labelledby="cb-atmosphere-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">I. Atmosphere Routing</p><h3 id="cb-atmosphere-title">Tanpura, shruti, drones, pads and textures</h3><p>Atmosphere layers are treated as their own family so the mix can breathe without masking vocals or melodic detail.</p></div>
+        <span class="cb-section-badge">Teal = atmosphere</span>
+      </div>
+      <div class="cb-card cb-family-flow" aria-label="Atmosphere routing flow">
+        <div class="cb-source-bank"><header><span>Atmos tracks</span><span>space + support</span></header><div class="cb-chip-grid">
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Tanpura</button>
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Shruti</button>
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Drone</button>
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Pad</button>
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Texture</button>
+          <button type="button" class="cb-chip cb-atmos" data-route="atmos atmos-bus musicbus mixbus">Atmosphere</button>
+        </div></div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="atmos atmos-bus"></span>
+        <button type="button" class="cb-node cb-atmos" data-route="atmos atmos-bus musicbus mixbus">ATMOS SUBGROUP</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="atmos-bus musicbus"></span>
+        <button type="button" class="cb-node cb-atmos" data-route="atmos atmos-bus musicbus mixbus">ATMOS BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="atmos musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="mixbus masterout"></span>
+        <button type="button" class="cb-node cb-mix" data-route="atmos musicbus mixbus masterout">MIX BUS</button>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-music-bus" aria-labelledby="cb-music-bus-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">J. Music Bus Architecture</p><h3 id="cb-music-bus-title">One master summing bus for all non-vocal content</h3><p>The Music Bus is the master summing/control bus for all non-vocal musical content.</p></div>
+        <span class="cb-section-badge">Music only</span>
+      </div>
+      <div class="cb-card cb-music-bus-map" aria-label="Music Bus architecture diagram">
+        <div class="cb-branch-stack">
+          <button type="button" class="cb-node cb-drum" data-route="drums drum-bus musicbus mixbus">DRUM BUS</button>
+          <button type="button" class="cb-node cb-percussion" data-route="percussion percussion-bus musicbus mixbus">PERCUSSION BUS</button>
+          <button type="button" class="cb-node cb-bass" data-route="bass bass-bus musicbus mixbus">BASS BUS</button>
+          <button type="button" class="cb-node cb-melodic" data-route="melodic melodic-bus musicbus mixbus">MELODIC BUS</button>
+          <button type="button" class="cb-node cb-keys" data-route="keys keys-bus musicbus mixbus">KEYS BUS</button>
+          <button type="button" class="cb-node cb-strings" data-route="strings strings-bus musicbus mixbus">STRINGS BUS</button>
+          <button type="button" class="cb-node cb-atmos" data-route="atmos atmos-bus musicbus mixbus">ATMOS BUS</button>
+        </div>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="drums percussion bass melodic keys strings atmos musicbus"></span>
+        <button type="button" class="cb-node cb-music" data-route="drums percussion bass melodic keys strings atmos musicbus mixbus">MUSIC BUS</button>
+        <span class="cb-arrow cb-connector" data-dir="right" data-route="musicbus mixbus"></span>
+        <button type="button" class="cb-node cb-mix" data-route="musicbus mixbus masterout">MIX BUS</button>
+      </div>
+      <p class="cb-definition"><b>Definition:</b> The Music Bus lets you automate, EQ, compress or saturate the whole instrumental bed without changing All Vocals Bus balance.</p>
+    </section>
+
+    <section class="cb-section" id="cb-fx-sends" aria-labelledby="cb-fx-sends-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">K. FX Send / Return Architecture</p><h3 id="cb-fx-sends-title">Shared parallel FX returns, not mandatory inserts</h3><p>Sources send to reusable FX Channels. Those returns sum into FX Master, then FX Master returns to the Mix Bus.</p></div>
+        <span class="cb-section-badge">Pink = FX</span>
+      </div>
+
+      <div class="cb-send-examples">
+        <article class="cb-card cb-send-card" aria-label="Lead vocal FX sends">
+          <h4>Lead vocal sends</h4>
+          <div class="cb-send-source-row">
+            <button type="button" class="cb-node cb-vocal" data-route="lead-vocal vocals all-vocals mixbus fx fx-master">LEAD VOCAL</button>
+            <div class="cb-send-fan">
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx lead-vocal"></span><button type="button" class="cb-node cb-fx" data-route="fx vocal-fx fx-master mixbus">VOCAL PLATE</button></div>
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx lead-vocal"></span><button type="button" class="cb-node cb-fx" data-route="fx vocal-fx fx-master mixbus">VOCAL HALL</button></div>
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx lead-vocal"></span><button type="button" class="cb-node cb-fx" data-route="fx vocal-fx fx-master mixbus">VOCAL DELAY</button></div>
+            </div>
+          </div>
+          <div class="cb-send-return"><button type="button" class="cb-node cb-fx" data-route="fx fx-master mixbus">FX MASTER</button><span class="cb-arrow cb-connector" data-dir="right" data-route="fx-master mixbus"></span><button type="button" class="cb-node cb-mix" data-route="fx-master mixbus masterout">MIX BUS</button></div>
+        </article>
+
+        <article class="cb-card cb-send-card" aria-label="Violin instrument FX sends">
+          <h4>Instrument sends</h4>
+          <div class="cb-send-source-row">
+            <button type="button" class="cb-node cb-melodic" data-route="violin melodic strings musicbus mixbus fx fx-master">VIOLIN</button>
+            <div class="cb-send-fan">
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx violin melodic"></span><button type="button" class="cb-node cb-fx" data-route="fx instrument-fx fx-master mixbus">STRING HALL</button></div>
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx violin melodic"></span><button type="button" class="cb-node cb-fx" data-route="fx instrument-fx fx-master mixbus">INSTRUMENT ROOM</button></div>
+            </div>
+          </div>
+          <div class="cb-send-return"><button type="button" class="cb-node cb-fx" data-route="fx fx-master mixbus">FX MASTER</button><span class="cb-arrow cb-connector" data-dir="right" data-route="fx-master mixbus"></span><button type="button" class="cb-node cb-mix" data-route="fx-master mixbus masterout">MIX BUS</button></div>
+        </article>
+
+        <article class="cb-card cb-send-card" aria-label="Percussion FX sends">
+          <h4>Percussion sends</h4>
+          <div class="cb-send-source-row">
+            <button type="button" class="cb-node cb-percussion" data-route="percussion percussion-bus musicbus mixbus fx fx-master">MRIDANGAM / TABLA / GHATAM</button>
+            <div class="cb-send-fan">
+              <div class="cb-send-row"><span class="cb-send-label">SEND</span><span class="cb-arrow cb-connector" data-dir="right" data-route="fx percussion"></span><button type="button" class="cb-node cb-fx" data-route="fx percussion-fx fx-master mixbus">PERCUSSION ROOM</button></div>
+            </div>
+          </div>
+          <div class="cb-send-return"><button type="button" class="cb-node cb-fx" data-route="fx fx-master mixbus">FX MASTER</button><span class="cb-arrow cb-connector" data-dir="right" data-route="fx-master mixbus"></span><button type="button" class="cb-node cb-mix" data-route="fx-master mixbus masterout">MIX BUS</button></div>
+        </article>
+      </div>
+
+      <div class="cb-fx-library" aria-label="Shared FX channel library">
+        <article class="cb-panel"><h4>Vocal FX</h4><div class="cb-fx-list"><span class="cb-fx-pill">Vocal Plate</span><span class="cb-fx-pill">Vocal Room</span><span class="cb-fx-pill">Vocal Hall</span><span class="cb-fx-pill">Vocal Chamber</span><span class="cb-fx-pill">Vocal Delay</span></div></article>
+        <article class="cb-panel"><h4>Instrument FX</h4><div class="cb-fx-list"><span class="cb-fx-pill">Instrument Room</span><span class="cb-fx-pill">Instrument Hall</span><span class="cb-fx-pill">Chamber</span><span class="cb-fx-pill">String Hall</span></div></article>
+        <article class="cb-panel"><h4>Percussion FX</h4><div class="cb-fx-list"><span class="cb-fx-pill">Drum Room</span><span class="cb-fx-pill">Percussion Room</span><span class="cb-fx-pill">Percussion Hall</span></div></article>
+        <article class="cb-panel"><h4>Delay FX</h4><div class="cb-fx-list"><span class="cb-fx-pill">Slap Delay</span><span class="cb-fx-pill">1/8 Delay</span><span class="cb-fx-pill">1/4 Delay</span><span class="cb-fx-pill">Dotted 1/8</span><span class="cb-fx-pill">Long Delay</span><span class="cb-fx-pill">Ping-Pong</span></div></article>
+      </div>
+      <p class="cb-note"><strong>Shared FX Channels:</strong> one reverb or delay can serve many tracks. Each send amount decides how much of that source enters the shared acoustic or creative space.</p>
+    </section>
+
+    <section class="cb-section" id="cb-parallel" aria-labelledby="cb-parallel-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">L. Parallel Processing Routing</p><h3 id="cb-parallel-title">Density and impact without replacing the dry route</h3><p>Parallel processing adds density, impact or character while preserving the original signal path.</p></div>
+        <span class="cb-section-badge">Parallel returns</span>
+      </div>
+      <div class="cb-parallel-grid">
+        <article class="cb-card cb-parallel-card"><button type="button" class="cb-node cb-vocal" data-focus="vocal-parallel" data-route="vocal-parallel parallel mixbus">LEAD / ALL VOCALS</button><span class="cb-send-label">SEND</span><div class="cb-parallel-path"><button type="button" class="cb-node cb-parallel" data-focus="vocal-parallel" data-route="vocal-parallel parallel mixbus">VOCAL PARALLEL BUS</button><span class="cb-arrow cb-connector" data-dir="right" data-route="vocal-parallel mixbus"></span><button type="button" class="cb-node cb-mix" data-route="vocal-parallel parallel mixbus masterout">MIX BUS</button></div></article>
+        <article class="cb-card cb-parallel-card"><button type="button" class="cb-node cb-drum" data-focus="drum-parallel" data-route="drum-parallel parallel mixbus">DRUM BUS</button><span class="cb-send-label">SEND</span><div class="cb-parallel-path"><button type="button" class="cb-node cb-parallel" data-focus="drum-parallel" data-route="drum-parallel parallel mixbus">DRUM PARALLEL BUS</button><span class="cb-arrow cb-connector" data-dir="right" data-route="drum-parallel mixbus"></span><button type="button" class="cb-node cb-mix" data-route="drum-parallel parallel mixbus masterout">MIX BUS</button></div></article>
+        <article class="cb-card cb-parallel-card"><button type="button" class="cb-node cb-percussion" data-focus="percussion-parallel" data-route="percussion-parallel parallel mixbus">PERCUSSION BUS</button><span class="cb-send-label">SEND</span><div class="cb-parallel-path"><button type="button" class="cb-node cb-parallel" data-focus="percussion-parallel" data-route="percussion-parallel parallel mixbus">PERCUSSION PARALLEL</button><span class="cb-arrow cb-connector" data-dir="right" data-route="percussion-parallel mixbus"></span><button type="button" class="cb-node cb-mix" data-route="percussion-parallel parallel mixbus masterout">MIX BUS</button></div></article>
+        <article class="cb-card cb-parallel-card"><button type="button" class="cb-node cb-music" data-focus="music-parallel" data-route="music-parallel parallel mixbus">MUSIC BUS</button><span class="cb-send-label">SEND</span><div class="cb-parallel-path"><button type="button" class="cb-node cb-parallel" data-focus="music-parallel" data-route="music-parallel parallel mixbus">MUSIC PARALLEL</button><span class="cb-arrow cb-connector" data-dir="right" data-route="music-parallel mixbus"></span><button type="button" class="cb-node cb-mix" data-route="music-parallel parallel mixbus masterout">MIX BUS</button></div></article>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-mix-bus" aria-labelledby="cb-mix-bus-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">M. Mix Bus</p><h3 id="cb-mix-bus-title">Where top-level sources finally meet</h3><p>Use the Mix Bus as the full-mix control point. All Vocals Bus, Music Bus, FX Master and parallel returns arrive here as separate sources.</p></div>
+        <span class="cb-section-badge">Orange = mix</span>
+      </div>
+      <div class="cb-mixbus-grid">
+        <article class="cb-card cb-mixbus-card"><button type="button" class="cb-node cb-vocal" data-route="all-vocals mixbus">ALL VOCALS BUS</button><span class="cb-arrow cb-connector" data-dir="down" data-route="all-vocals mixbus"></span><button type="button" class="cb-node cb-mix" data-route="all-vocals mixbus masterout">MIX BUS</button></article>
+        <article class="cb-card cb-mixbus-card"><button type="button" class="cb-node cb-music" data-route="musicbus mixbus">MUSIC BUS</button><span class="cb-arrow cb-connector" data-dir="down" data-route="musicbus mixbus"></span><button type="button" class="cb-node cb-mix" data-route="musicbus mixbus masterout">MIX BUS</button></article>
+        <article class="cb-card cb-mixbus-card"><button type="button" class="cb-node cb-fx" data-route="fx-master mixbus">FX MASTER</button><span class="cb-arrow cb-connector" data-dir="down" data-route="fx-master mixbus"></span><button type="button" class="cb-node cb-mix" data-route="fx-master mixbus masterout">MIX BUS</button></article>
+        <article class="cb-card cb-mixbus-card"><button type="button" class="cb-node cb-parallel" data-route="parallel mixbus">PARALLEL RETURNS</button><span class="cb-arrow cb-connector" data-dir="down" data-route="parallel mixbus"></span><button type="button" class="cb-node cb-mix" data-route="parallel mixbus masterout">MIX BUS</button></article>
+      </div>
+      <p class="cb-note"><strong>Top-level separation rule:</strong> ALL VOCALS BUS ──→ MIX BUS and MUSIC BUS ───────→ MIX BUS. Never imply that vocals feed the Music Bus.</p>
+    </section>
+
+    <section class="cb-section" id="cb-processing-examples" aria-labelledby="cb-processing-examples-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">N. Processing Examples</p><h3 id="cb-processing-examples-title">Insert processing, sends, bus processing and AI review</h3><p>Use these as starting points. The final choice is always made by ear, in context and with musical expression preserved.</p></div>
+        <span class="cb-section-badge">Expandable cards</span>
+      </div>
+
+      <div class="cb-table-panel cb-card">
+        <table class="cb-compare-table" aria-label="Individual inserts vs shared FX sends vs bus processing">
+          <thead><tr><th>Individual Track Inserts</th><th>Shared FX Sends</th><th>Bus Processing</th></tr></thead>
+          <tbody>
+            <tr><td>EQ</td><td>Reverb</td><td>Group EQ</td></tr>
+            <tr><td>Compression</td><td>Delay</td><td>Bus compression</td></tr>
+            <tr><td>Dynamic EQ</td><td>Room</td><td>Saturation</td></tr>
+            <tr><td>De-esser</td><td>Hall</td><td>Glue</td></tr>
+            <tr><td>Saturation</td><td>Chamber</td><td>Tone shaping</td></tr>
+            <tr><td>Peak control</td><td>Creative FX</td><td>Group control</td></tr>
+          </tbody>
+        </table>
+        <p class="cb-key-explain">An instrument can use both insert processing and send effects. Inserts shape the instrument itself; sends place it into the shared acoustic/creative space.</p>
+      </div>
+
+      <div class="cb-example-grid">
+        <details class="cb-example-card" open>
+          <summary><span>Lead Vocal</span><small>chain</small></summary>
+          <div class="body cb-chain-list"><div class="cb-chain-step">Pitch / Timing</div><div class="cb-chain-step">Cleanup</div><div class="cb-chain-step">Clip Gain</div><div class="cb-chain-step">EQ</div><div class="cb-chain-step">Compression</div><div class="cb-chain-step">De-esser</div><div class="cb-chain-step">Tone EQ</div><div class="cb-chain-step">Saturation</div><div class="cb-chain-step">Peak Control</div><div class="cb-chain-step">Lead Vocal Bus</div></div>
+        </details>
+        <details class="cb-example-card">
+          <summary><span>Mridangam</span><small>chain</small></summary>
+          <div class="body cb-chain-list"><div class="cb-chain-step">Cleanup EQ</div><div class="cb-chain-step">Dynamic EQ</div><div class="cb-chain-step">Transient Control</div><div class="cb-chain-step">Compression</div><div class="cb-chain-step">Saturation</div><div class="cb-chain-step">Peak Control</div><div class="cb-chain-step">Percussion Bus</div></div>
+        </details>
+        <details class="cb-example-card">
+          <summary><span>Violin</span><small>chain</small></summary>
+          <div class="body cb-chain-list"><div class="cb-chain-step">HPF / EQ</div><div class="cb-chain-step">Resonance Control</div><div class="cb-chain-step">Dynamic EQ</div><div class="cb-chain-step">Compression</div><div class="cb-chain-step">Saturation</div><div class="cb-chain-step">Strings / Melodic Bus</div></div>
+        </details>
+        <details class="cb-example-card">
+          <summary><span>Bass</span><small>chain</small></summary>
+          <div class="body cb-chain-list"><div class="cb-chain-step">Cleanup EQ</div><div class="cb-chain-step">Compression</div><div class="cb-chain-step">Dynamic EQ</div><div class="cb-chain-step">Saturation</div><div class="cb-chain-step">Peak Control</div><div class="cb-chain-step">Bass Bus</div></div>
+        </details>
+      </div>
+
+      <div class="cb-card" style="margin-top:12px;">
+        <h4>AI-assisted mixing workflow</h4>
+        <div class="cb-ai-flow" aria-label="AI-assisted mixing workflow">
+          <button type="button" class="cb-node cb-master" data-route="ai-review">ANALYZE</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="ai-review"></span>
+          <button type="button" class="cb-node cb-master" data-route="ai-review">AI SUGGESTION</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="ai-review"></span>
+          <button type="button" class="cb-node cb-master" data-route="ai-review">ENGINEER REVIEW</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="ai-review"></span>
+          <button type="button" class="cb-node cb-master" data-route="ai-review">MANUAL REFINEMENT</button>
+          <span class="cb-arrow cb-connector" data-dir="right" data-route="ai-review"></span>
+          <button type="button" class="cb-node cb-master" data-route="ai-review">FINAL PROCESSING</button>
+        </div>
+        <div class="cb-ai-note">
+          <p class="cb-key-explain">AI is an assistant, not the final decision-maker. Use analysis and suggested settings as a starting point, then make the final decision by ear and in musical context.</p>
+          <div class="cb-ai-preserve" aria-label="Carnatic vocal details to preserve"><span>Gamaka</span><span>Meend</span><span>Vibrato</span><span>Natural micro-dynamics</span><span>Articulation</span><span>Expression</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cb-section" id="cb-mastering" aria-labelledby="cb-mastering-title">
+      <div class="cb-section-head">
+        <div><p class="cb-kicker">O. Mastering Routing</p><h3 id="cb-mastering-title">From parallel top-level buses to Stereo Out</h3><p>The final architecture keeps vocal and music control separate until the Mix Bus, then applies mix-bus and mastering decisions deliberately.</p></div>
+        <span class="cb-section-badge">Master / output</span>
+      </div>
+      <div class="cb-card cb-mastering-diagram" aria-label="Mastering routing diagram">
+        <div class="cb-mastering-sources">
+          <button type="button" class="cb-node cb-vocal" data-route="all-vocals mixbus masterout">ALL VOCALS BUS</button>
+          <span class="cb-mastering-merge-mark cb-connector" data-route="all-vocals musicbus mixbus" aria-hidden="true">┐<br>├──→ MIX BUS<br>┘</span>
+          <button type="button" class="cb-node cb-music" data-route="musicbus mixbus masterout">MUSIC BUS</button>
+        </div>
+        <div class="cb-mastering-chain">
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="all-vocals musicbus mixbus"></span>
+          <button type="button" class="cb-node cb-mix" data-route="all-vocals musicbus mixbus masterout">MIX BUS</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="mixbus masterout"></span>
+          <button type="button" class="cb-node cb-mix" data-route="mixbus masterout">MIX BUS PROCESSING</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="mixbus masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="masterout">MASTER PROCESSING</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="masterout"></span>
+          <div class="cb-mastering-branches">
+            <div class="cb-mastering-branch"><button type="button" class="cb-node cb-master" data-route="masterout">EQ</button><span class="cb-mastering-branch-label">tone balance</span></div>
+            <div class="cb-mastering-branch"><button type="button" class="cb-node cb-master" data-route="masterout">Dynamics</button><span class="cb-mastering-branch-label">control / glue</span></div>
+            <div class="cb-mastering-branch"><button type="button" class="cb-node cb-master" data-route="masterout">Stereo</button><span class="cb-mastering-branch-label">width / mono safety</span></div>
+          </div>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="masterout">Clipping / Limiting</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="masterout">Loudness Meter</button>
+          <span class="cb-arrow cb-connector" data-dir="down" data-route="masterout"></span>
+          <button type="button" class="cb-node cb-master" data-route="masterout">STEREO OUT</button>
+        </div>
+      </div>
+    </section>
+  </section>
+
   <!-- ═══════════════ QUICK ACCESS TAB ═══════════════ -->
   <section class="wrap mt-page" id="tab-quick-access" hidden>
     <header class="mt-hero">
@@ -1564,6 +2219,7 @@
   <script src="js/lyrics-lab.js"></script>
   <script src="js/mix-tools.js"></script>
   <script src="js/suno-cheats.js"></script>
+  <script src="js/cubase-routing.js"></script>
   <script src="js/nav.js"></script>
 </body>
 </html>
