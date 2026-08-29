@@ -8,21 +8,21 @@
 }
 
 .veq-board {
-  --veq-bg: #070b0b;
-  --veq-card: #0d1315;
-  --veq-line: #344044;
-  --veq-soft-line: rgba(203, 222, 221, .16);
-  --veq-cream: #f2eee5;
-  --veq-yellow: #f5c943;
-  --veq-muted: #aeb8b7;
+  --veq-bg: #f7f1df;
+  --veq-card: #fdf9ee;
+  --veq-line: #ddd0b2;
+  --veq-soft-line: rgba(90, 70, 40, .18);
+  --veq-cream: #33291c;
+  --veq-yellow: #9a6b1a;
+  --veq-muted: #82755f;
   overflow: hidden;
   color: var(--veq-cream);
   background:
-    radial-gradient(circle at 7% 4%, rgba(255, 255, 255, .035), transparent 24%),
-    linear-gradient(180deg, #090e0e 0%, var(--veq-bg) 100%);
-  border: 1px solid #5d696b;
+    radial-gradient(circle at 7% 4%, rgba(255, 253, 246, .6), transparent 24%),
+    linear-gradient(180deg, #fbf6e8 0%, var(--veq-bg) 100%);
+  border: 1px solid #d8cbaa;
   border-radius: 18px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, .42), inset 0 0 80px rgba(0, 0, 0, .28);
+  box-shadow: 0 24px 70px rgba(96, 74, 42, .16), inset 0 0 80px rgba(120, 90, 40, .05);
 }
 
 .veq-board h2,
@@ -39,7 +39,7 @@
   min-height: 150px;
   padding: 22px 30px;
   border-bottom: 1px solid var(--veq-line);
-  background: linear-gradient(90deg, rgba(255, 255, 255, .025), transparent 65%);
+  background: linear-gradient(90deg, rgba(255, 253, 246, .55), transparent 65%);
 }
 
 .veq-title-wrap {
@@ -51,9 +51,9 @@
 
 .veq-mic {
   width: 60px;
-  color: #f8f6ef;
+  color: #4a3a26;
   flex: 0 0 auto;
-  filter: drop-shadow(0 0 13px rgba(255, 255, 255, .12));
+  filter: drop-shadow(0 0 13px rgba(120, 90, 40, .18));
 }
 
 .veq-kicker,
@@ -78,7 +78,7 @@
   line-height: .98;
   letter-spacing: 2px;
   text-transform: uppercase;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, .35);
+  text-shadow: 0 3px 0 rgba(120, 90, 40, .22);
 }
 
 .veq-title-wrap h2 span { color: var(--veq-yellow); }
@@ -88,14 +88,14 @@
   transform: rotate(-2deg);
   margin-left: 6px;
   padding: 8px 14px 6px;
-  color: #102438;
-  background: #f2eee5;
+  color: #f7f1df;
+  background: #3b3226;
   border-radius: 2px;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: .42em;
   font-style: normal;
   letter-spacing: 1.5px;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, .26);
+  box-shadow: 0 4px 0 rgba(96, 74, 42, .3);
 }
 
 .veq-subtitle {
@@ -122,7 +122,7 @@
 .veq-golden p {
   max-width: 30ch;
   margin-bottom: 0;
-  color: #dce2df;
+  color: #5c5040;
   font-size: 13px;
   line-height: 1.45;
 }
@@ -170,7 +170,7 @@
   padding: 5px 9px;
   border: 1px solid var(--veq-soft-line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, .025);
+  background: rgba(90, 70, 40, .05);
 }
 
 .veq-steps b { color: var(--veq-yellow); }
@@ -189,8 +189,8 @@
   background: var(--veq-card);
 }
 
-.veq-profile.male { --profile: #45aefd; }
-.veq-profile.female { --profile: #f15b9b; }
+.veq-profile.male { --profile: #1976d2; }
+.veq-profile.female { --profile: #d81b60; }
 
 .veq-profile-title {
   display: flex;
@@ -282,10 +282,10 @@
 
 .veq-table-shell {
   overflow-x: auto;
-  border: 1px solid #778285;
+  border: 1px solid #c9b998;
   border-radius: 11px;
   outline: none;
-  scrollbar-color: #576165 #101516;
+  scrollbar-color: #b3a483 #efe7d2;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
 }
@@ -308,15 +308,15 @@
 .veq-table td {
   height: 74px;
   padding: 8px 6px;
-  border-right: 1px solid rgba(221, 232, 230, .32);
-  border-bottom: 1px solid rgba(221, 232, 230, .32);
+  border-right: 1px solid rgba(90, 70, 40, .25);
+  border-bottom: 1px solid rgba(90, 70, 40, .25);
   background: rgba(var(--z, 255, 255, 255), .105);
   vertical-align: middle;
 }
 
 .veq-table thead th {
   height: 59px;
-  color: rgb(var(--z, 240, 240, 240));
+  color: rgb(var(--z, 55, 45, 32));
   background: rgba(var(--z, 255, 255, 255), .17);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
@@ -325,7 +325,7 @@
 .veq-table thead th small {
   display: block;
   margin-top: 1px;
-  color: #d4dddb;
+  color: #6b5f4c;
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
@@ -339,9 +339,9 @@
   left: 0;
   z-index: 2;
   width: 105px;
-  color: #edf1ee;
-  background: #0b1011;
-  box-shadow: 8px 0 12px rgba(0, 0, 0, .18);
+  color: #4a3a26;
+  background: #f4ecd7;
+  box-shadow: 8px 0 12px rgba(96, 74, 42, .16);
   font-size: 10px;
   letter-spacing: .5px;
   text-transform: uppercase;
@@ -350,7 +350,7 @@
 .veq-table thead .veq-row-label { z-index: 3; }
 
 .veq-action-row td {
-  color: #f4f0e8;
+  color: #4a3a26;
   font-weight: 650;
 }
 
@@ -361,14 +361,14 @@
   line-height: 1;
 }
 
-.veq-action-row .up { color: #56cb72; }
-.veq-action-row .down { color: #f04c43; }
+.veq-action-row .up { color: #2e7d32; }
+.veq-action-row .down { color: #c0392b; }
 .veq-action-row .both { color: var(--veq-yellow); }
 .veq-action-row .flat { color: var(--veq-yellow); }
 
 .veq-value-row td {
   height: 62px;
-  color: rgb(var(--z, 230, 230, 230));
+  color: rgb(var(--z, 55, 45, 32));
   background: rgba(var(--z, 255, 255, 255), .14);
   font-size: 10px;
   font-weight: 800;
@@ -403,7 +403,7 @@
   padding: 15px;
   border: 1px solid var(--veq-line);
   border-radius: 12px;
-  background: linear-gradient(145deg, rgba(17, 24, 26, .94), rgba(9, 14, 15, .94));
+  background: linear-gradient(145deg, rgba(255, 252, 242, .94), rgba(244, 236, 214, .94));
 }
 
 .veq-card-title {
@@ -429,9 +429,9 @@
 
 .veq-chart {
   overflow: hidden;
-  border: 1px solid rgba(209, 225, 224, .11);
+  border: 1px solid rgba(90, 70, 40, .15);
   border-radius: 9px;
-  background: #091011;
+  background: #fbf7ea;
 }
 
 .veq-chart svg {
@@ -442,12 +442,12 @@
 
 .veq-chart-grid path {
   fill: none;
-  stroke: rgba(212, 229, 228, .1);
+  stroke: rgba(90, 70, 40, .15);
   stroke-width: 1;
 }
 
 .veq-chart-axis text {
-  fill: #a4afae;
+  fill: #8a7a5f;
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
   font-size: 11px;
   text-anchor: middle;
@@ -464,7 +464,7 @@
 }
 
 .veq-points g circle {
-  fill: #101718;
+  fill: #3b3226;
   stroke: currentColor;
   stroke-width: 3;
 }
@@ -491,9 +491,9 @@
   min-width: 0;
   gap: 7px;
   padding: 6px 7px;
-  border: 1px solid rgba(215, 229, 228, .09);
+  border: 1px solid rgba(90, 70, 40, .14);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .02);
+  background: rgba(90, 70, 40, .04);
 }
 
 .veq-curve-legend li > b {
@@ -528,9 +528,9 @@
   text-overflow: ellipsis;
 }
 
-.p1 { color: #ee4940; }.p2 { color: #e4a339; }.p3 { color: #e76e3d; }
-.p4 { color: #dfbd3c; }.p5 { color: #56bd61; }.p6 { color: #36aeda; }
-.p7 { color: #3e9fd1; }.p8 { color: #855fb7; }.p9 { color: #ba5ac8; }
+.p1 { color: #d63a32; }.p2 { color: #c77f1c; }.p3 { color: #cc5a26; }
+.p4 { color: #a89a1e; }.p5 { color: #2e9a44; }.p6 { color: #1f8fc4; }
+.p7 { color: #2a7fb8; }.p8 { color: #6a4aa0; }.p9 { color: #9a44ae; }
 
 .veq-side-stack {
   display: flex;
@@ -553,7 +553,7 @@
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  color: #fff;
+  color: #4a3a26;
 }
 
 .veq-chain > div b {
@@ -565,42 +565,42 @@
   aspect-ratio: 1;
   border: 1px solid currentColor;
   border-radius: 8px;
-  background: color-mix(in srgb, currentColor 28%, #101416);
+  background: color-mix(in srgb, currentColor 20%, #fdf9ee);
   font-size: 22px;
   font-weight: 500;
   line-height: 1;
-  box-shadow: inset 0 0 16px rgba(255, 255, 255, .06);
+  box-shadow: inset 0 0 16px rgba(96, 74, 42, .06);
 }
 
 .veq-chain > div span {
-  color: #dfe5e3;
+  color: #5c5040;
   font-size: 8.5px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .veq-chain i {
-  color: #ecf1ed;
+  color: #4a3a26;
   font-size: 22px;
   font-style: normal;
 }
 
-.veq-chain .purple { color: #bd70dc; }.veq-chain .orange { color: #ef8d35; }
-.veq-chain .gold { color: #e4b62f; }.veq-chain .green { color: #48bc69; }
-.veq-chain .violet { color: #805cc5; }.veq-chain .blue { color: #5286d9; }
+.veq-chain .purple { color: #8a4fb5; }.veq-chain .orange { color: #c26a1a; }
+.veq-chain .gold { color: #a3821a; }.veq-chain .green { color: #2e8a4a; }
+.veq-chain .violet { color: #5f3d9e; }.veq-chain .blue { color: #2f66b8; }
 
 .veq-tips ul {
   display: grid;
   gap: 7px;
   margin: 0;
   padding-left: 20px;
-  color: #d3dcda;
+  color: #4f4536;
   font-size: 11px;
   line-height: 1.4;
 }
 
 .veq-tips li::marker { color: var(--veq-yellow); }
-.veq-tips b, .veq-cinema b { color: #fff; }
+.veq-tips b, .veq-cinema b { color: #33291c; }
 
 .veq-cinema p {
   margin: 0;
@@ -612,13 +612,13 @@
 .veq-remember {
   margin-top: auto;
   padding: 13px 16px;
-  border: 1px solid rgba(245, 201, 67, .38);
+  border: 1px solid rgba(163, 130, 26, .45);
   border-radius: 12px;
-  background: linear-gradient(110deg, rgba(245, 201, 67, .12), rgba(245, 201, 67, .02));
+  background: linear-gradient(110deg, rgba(226, 181, 46, .16), rgba(226, 181, 46, .04));
 }
 
 .veq-remember strong { margin-bottom: 3px; }
-.veq-remember p { margin: 0; color: #e7ece9; font-size: 11px; }
+.veq-remember p { margin: 0; color: #5c5040; font-size: 11px; }
 
 /* Optional legacy interactive EQ: useful, but deliberately out of the way. */
 .veq-advanced {
@@ -659,7 +659,7 @@
 @media (max-width: 800px) {
   #tab-vocal-eq.veq-page { padding-top: 12px; }
   .veq-hero { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
-  .veq-golden { padding: 13px 15px; border: 1px solid rgba(245, 201, 67, .26); border-radius: 10px; background: rgba(245, 201, 67, .05); }
+  .veq-golden { padding: 13px 15px; border: 1px solid rgba(163, 130, 26, .35); border-radius: 10px; background: rgba(226, 181, 46, .08); }
   .veq-golden p { max-width: none; }
   .veq-profile-grid { grid-template-columns: 1fr; }
   .veq-main-grid { padding-inline: 14px; }

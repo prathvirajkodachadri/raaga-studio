@@ -1,13 +1,13 @@
 /* ==========================================================================
    ARTISTIC THEME — high-contrast light hero overrides + light DAW page
-   Fixes WCAG contrast for light backgrounds (#fffaf4 / #ead9c8) while
+   Fixes WCAG contrast for light backgrounds (#fdf9ee / #ead9c8) while
    preserving brand look. Never dark-on-dark, never light-on-light.
    ========================================================================== */
 
 /* --- Light heroes (Suno Cheats, Mix Tools, Cubase Routing) --- */
 .sc-hero, .mt-hero, .cb-hero {
-  background: linear-gradient(120deg, #ead9c8, #fffaf4 72%);
-  border-color: #d8bda7;
+  background: linear-gradient(120deg, #eddfc2, #fdf9ee 72%);
+  border-color: #d5c6a8;
   color: #292631;
   /* scoped dark tokens for any var() inside hero */
   --text: #292631;
@@ -19,8 +19,8 @@
   --gold-strong: #8a5618;
   --ok: #2e7d32;
   --fail: #c92f5a;
-  --border: #d8cbbb;
-  --border-color: #d8cbbb;
+  --border: #d8c9a8;
+  --border-color: #d8c9a8;
 }
 .sc-hero h2, .mt-hero h2, .cb-hero h2,
 .sc-hero .mc-intro, .mt-hero .mc-intro,
@@ -42,7 +42,7 @@
   color: #5a534d;
 }
 .sc-hero .sc-howto b {
-  color: #fffaf4;
+  color: #ffffff;
   background: #8a5618;
   border-color: #8a5618;
 }
@@ -52,9 +52,9 @@
   /* base ink */
   --cb-ink: #292631;
   --cb-dim: #5a534d;
-  --cb-card: #fffaf4;
-  --cb-card-2: #f0e7db;
-  --cb-line: #b9a99a;
+  --cb-card: #fdf9ee;
+  --cb-card-2: #f2e9d3;
+  --cb-line: #bfae8e;
   --cb-rail: #cda978;
   /* type colors — dark variants for light bg */
   --cb-blue: #2a5a8a;
@@ -77,14 +77,14 @@
   --success-color: #2e7d32;
   --fail: #c92f5a;
   --danger-color: #c92f5a;
-  --border: #d8cbbb;
-  --border-color: #d8cbbb;
-  --border-strong: #b9a99a;
-  --panel: #fffaf4;
-  --panel2: #f0e7db;
-  --bg: #fffaf4;
-  --bg-primary: #fffaf4;
-  --bg-secondary: #f0e7db;
+  --border: #d8c9a8;
+  --border-color: #d8c9a8;
+  --border-strong: #bfae8e;
+  --panel: #fdf9ee;
+  --panel2: #f2e9d3;
+  --bg: #fdf9ee;
+  --bg-primary: #fdf9ee;
+  --bg-secondary: #f2e9d3;
 }
 
 .cb-page .cb-panel,
@@ -93,15 +93,15 @@
 .cb-page .cb-table-panel,
 .cb-page .cb-node,
 .cb-page .cb-example-card {
-  background: #fffaf4;
+  background: #fdf9ee;
   color: #292631;
-  border-color: #d8cbbb;
+  border-color: #d8c9a8;
 }
 .cb-page .cb-node {
-  background: #fffaf4;
+  background: #fdf9ee;
   color: #292631;
   box-shadow: 0 4px 12px rgba(78,53,36,.08);
-  border-color: #d8cbbb;
+  border-color: #d8c9a8;
 }
 /* type-specific nodes keep dark type color but light bg */
 .cb-page .cb-vocal { color: #2a5a8a; border-color: #8aa8c8; background: #f4f7fb; }
@@ -116,12 +116,12 @@
 .cb-page .cb-fx,
 .cb-page .cb-parallel { color: #c92f5a; border-color: #e8a0b8; background: #fdf0f3; }
 .cb-page .cb-mix { color: #8a4a1e; border-color: #d0a070; background: #fdf3e8; }
-.cb-page .cb-master { color: #292631; border-color: #b9a99a; background: #fffaf4; }
+.cb-page .cb-master { color: #292631; border-color: #bfae8e; background: #fdf9ee; }
 
 .cb-page .cb-chip {
-  background: #f0e7db;
+  background: #f2e9d3;
   color: #3d3630;
-  border-color: #d8cbbb;
+  border-color: #d8c9a8;
 }
 .cb-page .cb-arrow,
 .cb-page .cb-cable {
@@ -136,8 +136,8 @@
 .cb-page .cb-note,
 .cb-page .cb-key-explain,
 .cb-page .cb-chain-step {
-  background: #fffaf4;
-  border-color: #d8cbbb;
+  background: #fdf9ee;
+  border-color: #d8c9a8;
   color: #292631;
 }
 .cb-page .cb-note,
@@ -164,7 +164,7 @@
 }
 .cb-page .cb-compare-table th {
   color: #5a534d;
-  background: #f0e7db;
+  background: #f2e9d3;
 }
 .cb-page .cb-compare-table td {
   color: #292631;
@@ -176,19 +176,19 @@
 }
 .cb-page .cb-mastering-merge-mark {
   color: #5a534d;
-  border-color: #d8bda7;
-  background: #f0e7db;
+  border-color: #d5c6a8;
+  background: #f2e9d3;
 }
 
 .cb-page .cb-subnav {
-  background: #f0e7db;
-  border-color: #d8cbbb;
+  background: #f2e9d3;
+  border-color: #d8c9a8;
   box-shadow: 0 8px 20px rgba(78,53,36,.08);
 }
 .cb-page .cb-subnav a {
-  background: #fffaf4;
+  background: #fdf9ee;
   color: #5a534d;
-  border-color: #d8cbbb;
+  border-color: #d8c9a8;
 }
 .cb-page .cb-subnav a:hover,
 .cb-page .cb-subnav a:focus-visible {
@@ -197,20 +197,20 @@
   background: #fdf6eb;
 }
 .cb-page .cb-subnav a.active {
-  color: #1a0a0e;
-  background: #e4577f;
-  border-color: #e4577f;
+  color: #ffffff;
+  background: var(--accent, #d64570);
+  border-color: var(--accent, #d64570);
   font-weight: 800;
 }
 .cb-page .btn.primary {
-  background: var(--accent, #e4577f);
-  color: #1a0a0e;
-  border-color: var(--accent, #e4577f);
+  background: var(--accent, #d64570);
+  color: #ffffff;
+  border-color: var(--accent, #d64570);
 }
 .cb-page .btn {
-  background: #fffaf4;
+  background: #fdf9ee;
   color: #292631;
-  border-color: #b9a99a;
+  border-color: #bfae8e;
 }
 .cb-page .btn:hover {
   border-color: #8a5618;
@@ -232,9 +232,9 @@
 /* --- Suno Cheats & Mix Tools — ensure any light-filtered controls keep dark text --- */
 .sc-page .sc-hero .sc-search,
 .mt-page .mt-hero .mt-search {
-  background: #fffaf4;
+  background: #fdf9ee;
   color: #292631;
-  border-color: #d8cbbb;
+  border-color: #d8c9a8;
 }
 .sc-page .sc-hero .sc-search::placeholder,
 .mt-page .mt-hero .mt-search::placeholder {
@@ -247,7 +247,7 @@
 .sc-hero .sc-flash,
 .mt-hero .sc-flash {
   background: var(--accent-strong, #c92f5a);
-  color: #fffaf4;
+  color: #ffffff;
 }
 
 /* --- Responsive kept from original --- */

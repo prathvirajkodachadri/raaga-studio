@@ -221,7 +221,7 @@ starter templates (Kannada bhavageete, Carnatic fusion, modern pop with a drop) 
 raaga-studio/
 ├── index.html                 # 12-tab UI, including Suno Cheat Codes reference
 ├── css/
-│   ├── style.css              # shared dark studio theme
+│   ├── style.css              # shared cream studio theme
 │   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
 │   ├── tempo-lab.css          # Tempo Lab cards and responsive canvases
 │   ├── mix-tools.css          # Quick Access directory
