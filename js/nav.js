@@ -24,6 +24,7 @@
     'raga': 'Raga Reference',
     'mix': 'Mix Check',
     'master': 'Master Check',
+    'cubase-routing': 'Cubase 12 Mixing & Routing',
     'tempo': 'Tempo Lab',
     'songs': 'Song Studio',
     'lyrics': 'Lyrics Lab',

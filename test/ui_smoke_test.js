@@ -64,7 +64,7 @@ function getEl(id) {
   return els[id];
 }
 
-const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'suno-cheats', 'raga', 'mix', 'master', 'tempo', 'songs', 'lyrics', 'quick-access'];
+const TAB_IDS = ['practical-eq', 'vocal-eq', 'prosody', 'suno', 'suno-cheats', 'raga', 'mix', 'master', 'cubase-routing', 'tempo', 'songs', 'lyrics', 'quick-access'];
 
 global.window = {
   addEventListener() {},
@@ -148,6 +148,7 @@ load('lyrics-prompt.js');
 load('lyrics-lab.js');
 load('mix-tools.js');
 load('suno-cheats.js');
+load('cubase-routing.js');
 load('nav.js');
 
 assert(typeof global.window.TEMPO_LAB.analyze === 'function', 'Tempo Lab engine is exposed');
@@ -217,6 +218,15 @@ assert(masterTab.classList.contains('active'), 'master tab becomes active on cli
 assert(getEl('tab-master').hidden === false, 'master panel shown');
 assert(getEl('tab-prosody').hidden === true, 'prosody panel hidden');
 assert(getEl('tab-master').classList === undefined || true, 'panels hidden flag toggles');
+
+const cubaseTab = getEl('cubase-routing');
+cubaseTab.click();
+assert(cubaseTab.classList.contains('active'), 'Cubase Routing tab becomes active on click');
+assert(getEl('tab-cubase-routing').hidden === false, 'Cubase Routing panel shown');
+assert(getEl('nav-current').textContent.indexOf('Cubase 12') >= 0, 'current nav label updates for Cubase Routing');
+assert(typeof global.window.RaagaStudio.cubaseRouting.setCompact === 'function', 'Cubase Routing controller registered');
+getEl('cb-compact-toggle').click();
+assert(getEl('tab-cubase-routing').classList.contains('cb-compact'), 'Cubase compact view toggles on');
 
 // suno custom-mode builder defaults + pure prompt engine
 const SP = global.window.SUNO_PROMPTS;
