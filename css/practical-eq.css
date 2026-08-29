@@ -126,8 +126,8 @@
 .pq-grid line.pq-zero { stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 5 4; }
 .pq-axis text { fill: var(--muted); font-size: 11px; font-family: system-ui, sans-serif; }
 
-.pq-spec-area { fill: rgba(168, 159, 148, .13); stroke: none; }
-.pq-spec-line { fill: none; stroke: rgba(168, 159, 148, .65); stroke-width: 1.4; }
+.pq-spec-area { fill: rgba(110, 95, 75, .15); stroke: none; }
+.pq-spec-line { fill: none; stroke: rgba(110, 95, 75, .7); stroke-width: 1.4; }
 
 .pq-curve { fill: none; stroke: var(--gold); stroke-width: 2.4; stroke-linejoin: round; opacity: .95; }
 
@@ -157,7 +157,7 @@
   border: 1px solid var(--accent);
   border-radius: 10px;
   padding: 10px 12px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+  box-shadow: 0 10px 28px rgba(96, 74, 42, .25);
   pointer-events: none;
   z-index: 5;
 }
@@ -175,7 +175,7 @@
 .pq-lg::before {
   content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--muted);
 }
-.pq-lg-spec::before { background: rgba(168, 159, 148, .7); }
+.pq-lg-spec::before { background: rgba(110, 95, 75, .75); }
 .pq-lg-down::before { background: var(--accent); }
 .pq-lg-up::before { background: var(--ok); }
 .pq-lg-flat::before { background: var(--muted); }
@@ -202,7 +202,7 @@
 .pq-priority-list li::before {
   content: counter(pq);
   width: 22px; height: 22px; border-radius: 6px;
-  background: var(--accent); color: var(--accent-contrast, #1a0a0e);
+  background: var(--accent); color: var(--accent-contrast, #fff);
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 800;
 }
@@ -222,7 +222,7 @@
 .pq-sev-low { color: var(--muted); }
 .pq-sev-medium { color: var(--gold); border-color: var(--gold); }
 .pq-sev-high { color: var(--accent); border-color: var(--accent); }
-.pq-sev-critical { color: var(--accent-contrast, #1a0a0e); background: var(--fail); border-color: var(--fail); font-weight: 800; }
+.pq-sev-critical { color: var(--accent-contrast, #fff); background: var(--fail); border-color: var(--fail); font-weight: 800; }
 .pq-sev-boost { color: var(--ok); border-color: var(--ok); }
 
 /* ---------- result sections ---------- */

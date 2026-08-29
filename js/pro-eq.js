@@ -26,8 +26,8 @@
   var N_POINTS = 220;                 // curve resolution
   var PAD = { l: 12, r: 46, t: 10, b: 26 };
 
-  var BAND_COLORS = ['#e8c15a', '#4fc3f7', '#ab7df6', '#ff8a5c',
-                     '#5ad19a', '#ff6fa5', '#c9d24f', '#7f8cff'];
+  var BAND_COLORS = ['#c9971c', '#2a90c8', '#8a5cd6', '#e06a3c',
+                     '#1fa06a', '#e04f8a', '#96a01c', '#5a6ce0'];
 
   var TYPES = [
     { id: 'bell',      name: 'Bell' },
@@ -305,9 +305,9 @@
       s += '<g class="peq-node' + selCls + offCls + '" data-band="' + i + '">' +
            '<circle class="peq-hit" data-band="' + i + '" cx="' + x + '" cy="' + y + '" r="16"/>' +
            '<circle class="peq-dot" data-band="' + i + '" cx="' + x + '" cy="' + y + '" r="8.5" ' +
-             'fill="' + (i === state.sel ? col : '#171a20') + '" stroke="' + col + '"/>' +
+             'fill="' + (i === state.sel ? col : '#fffdf6') + '" stroke="' + col + '"/>' +
            '<text class="peq-num" data-band="' + i + '" x="' + x + '" y="' + (y + 3.4) + '" ' +
-             'fill="' + (i === state.sel ? '#10131a' : col) + '">' + (i + 1) + '</text>' +
+             'fill="' + (i === state.sel ? '#ffffff' : col) + '">' + (i + 1) + '</text>' +
            '</g>';
     });
     return s;
@@ -318,8 +318,8 @@
     var svg =
       '<svg class="peq-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-label="Parametric EQ response">' +
       '<defs><linearGradient id="peq-fill" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#f5d76e" stop-opacity="0.22"/>' +
-      '<stop offset="1" stop-color="#f5d76e" stop-opacity="0.03"/>' +
+      '<stop offset="0" stop-color="#d9a62a" stop-opacity="0.25"/>' +
+      '<stop offset="1" stop-color="#d9a62a" stop-opacity="0.05"/>' +
       '</linearGradient></defs>' +
       gridSvg() + curvesSvg() + dotsSvg() +
       '</svg>';
@@ -884,9 +884,9 @@
         }
         c.lineTo(padL + iw, chh - padB);
         c.closePath();
-        c.fillStyle = 'rgba(110, 180, 235, 0.14)';
+        c.fillStyle = 'rgba(42, 90, 138, 0.16)';
         c.fill();
-        c.strokeStyle = 'rgba(130, 195, 245, 0.35)';
+        c.strokeStyle = 'rgba(42, 90, 138, 0.45)';
         c.lineWidth = dpr;
         c.stroke();
       }

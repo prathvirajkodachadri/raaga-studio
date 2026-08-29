@@ -1,7 +1,7 @@
 /* ==========================================================================
    LYRICS LAB — songwriting prompt builder + bilingual rhyme guide
    ========================================================================== */
-.ll-page { --ll-blue: #7fb4e0; --ll-violet: #a97fd6; }
+.ll-page { --ll-blue: #2a6a9a; --ll-violet: #7a4fb5; }
 
 .ll-hero {
   display: flex;
@@ -97,7 +97,7 @@
 .ll-segmented button small { margin-left: 3px; color: inherit; font-size: 9px; opacity: .75; }
 .ll-segmented button:hover { color: var(--text); }
 .ll-segmented button.on {
-  color: var(--accent-contrast, #1a0a0e);
+  color: var(--accent-contrast, #fff);
   background: var(--accent);
   box-shadow: 0 4px 14px rgba(228,87,127,.22);
   font-weight: 800;
@@ -129,12 +129,12 @@ textarea.ll-key-phrases { min-height: 70px; font-size: 14px; line-height: 1.6; }
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 11px;
-  background: rgba(255,255,255,.018);
+  background: rgba(90,70,40,.035);
 }
 .ll-scheme-preview > div:last-child { min-width: 0; }
 .ll-scheme-preview strong { display: block; color: var(--text); font-size: 13px; }
 .ll-scheme-preview p { margin: 2px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
-.ll-scheme-preview p[lang="kn"] { font-family: var(--kn-font); color: #c7beb4; }
+.ll-scheme-preview p[lang="kn"] { font-family: var(--kn-font); color: #6b5f4c; }
 .ll-pattern { display: flex; gap: 5px; flex: 0 0 auto; }
 .ll-pattern span {
   display: inline-flex;
@@ -149,9 +149,9 @@ textarea.ll-key-phrases { min-height: 70px; font-size: 14px; line-height: 1.6; }
   font-size: 10px;
   font-weight: 900;
 }
-.ll-pattern .family-a { color: #ff9ab6; border-color: rgba(228,87,127,.42); background: rgba(228,87,127,.1); }
-.ll-pattern .family-b { color: #f1ca85; border-color: rgba(224,179,106,.42); background: rgba(224,179,106,.1); }
-.ll-pattern .family-c { color: #a9d2f2; border-color: rgba(127,180,224,.42); background: rgba(127,180,224,.1); }
+.ll-pattern .family-a { color: #a02549; border-color: rgba(178,42,80,.42); background: rgba(214,69,112,.1); }
+.ll-pattern .family-b { color: #8a6410; border-color: rgba(154,107,26,.42); background: rgba(224,179,106,.12); }
+.ll-pattern .family-c { color: #2a6a9a; border-color: rgba(42,106,154,.42); background: rgba(42,106,154,.1); }
 .ll-pattern .open { border-style: dashed; color: var(--muted); background: transparent; }
 
 .ll-advanced { margin-top: 14px; background: var(--panel2); }
@@ -213,7 +213,7 @@ textarea.ll-key-phrases { min-height: 70px; font-size: 14px; line-height: 1.6; }
   border: 1px solid rgba(228,87,127,.35);
   border-radius: 9px;
   background: rgba(228,87,127,.08);
-  color: #ffb0c5;
+  color: #a02549;
   font-size: 11px;
 }
 
@@ -261,7 +261,7 @@ textarea.ll-prompt-output {
 .ll-priority-rule span { color: var(--muted); font-size: 13.5px; }
 .ll-priority-rule span b { color: var(--text); }
 .ll-priority-rule i { color: var(--accent); font-style: normal; }
-.ll-priority-rule p { flex-basis: 100%; margin: 4px 0 0; color: #b9cdbb; font-family: var(--kn-font); font-size: 13.5px; line-height: 1.5; }
+.ll-priority-rule p { flex-basis: 100%; margin: 4px 0 0; color: #4f6b52; font-family: var(--kn-font); font-size: 13.5px; line-height: 1.5; }
 .ll-guide-section { margin: 10px 0; }
 .ll-guide-section > summary {
   display: flex;
@@ -304,10 +304,10 @@ textarea.ll-prompt-output {
 }
 .ll-rhyme-table tbody tr:last-child td { border-bottom: 0; }
 .ll-rhyme-table tbody tr { transition: background .12s; }
-.ll-rhyme-table tbody tr:hover { background: rgba(255,255,255,.025); }
-.ll-rhyme-table td > [lang="kn"] { display: block; margin-top: 4px; color: #c8beb3; font-family: var(--kn-font); font-size: 13px; line-height: 1.5; }
+.ll-rhyme-table tbody tr:hover { background: rgba(90,70,40,.05); }
+.ll-rhyme-table td > [lang="kn"] { display: block; margin-top: 4px; color: #5c5040; font-family: var(--kn-font); font-size: 13px; line-height: 1.5; }
 .ll-rhyme-table td b { color: var(--text); font-weight: 750; }
-.ll-rhyme-table td.ll-tip { color: #b4a99d; font-size: 12.5px; }
+.ll-rhyme-table td.ll-tip { color: #7d7060; font-size: 12.5px; }
 .ll-rhyme-table .ll-row-featured td {
   background: linear-gradient(135deg, rgba(228,87,127,.08), rgba(228,87,127,.02));
   border-bottom-color: rgba(228,87,127,.25);
@@ -376,7 +376,7 @@ textarea.ll-prompt-output {
   border-radius: 10px;
   background: var(--panel2);
   color: var(--text);
-  box-shadow: 0 8px 30px rgba(0,0,0,.4);
+  box-shadow: 0 8px 30px rgba(96,74,42,.28);
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, 15px);

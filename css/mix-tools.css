@@ -8,8 +8,8 @@
 .mt-hero {
   margin: 8px 0 18px;
   padding: 22px 26px;
-  background: linear-gradient(135deg, #261d1b, #1b1815 62%);
-  border: 1px solid #45312d;
+  background: linear-gradient(135deg, #f3e7cb, #fdf9ee 62%);
+  border: 1px solid #e0cfab;
   border-radius: 18px;
 }
 .mt-kicker {
@@ -231,7 +231,7 @@
   white-space: nowrap;
   transition: border-color 0.15s, color 0.15s;
 }
-.mt-card:hover .mt-open-btn { border-color: var(--accent); color: #ff9ab7; }
+.mt-card:hover .mt-open-btn { border-color: var(--accent); color: #a02549; }
 
 /* Empty state */
 .mt-empty { padding: 22px 18px; }

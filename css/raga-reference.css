@@ -83,7 +83,7 @@
 }
 .rg-badge-melakarta { color: var(--gold); border-color: rgba(224,179,106,.4); background: rgba(224,179,106,.1); }
 .rg-badge-janya { color: var(--ok); border-color: rgba(123,196,127,.4); background: rgba(123,196,127,.1); }
-.rg-badge-hindustani { color: #7fb4e0; border-color: rgba(127,180,224,.4); background: rgba(127,180,224,.1); }
+.rg-badge-hindustani { color: #2a6a9a; border-color: rgba(42,106,154,.4); background: rgba(42,106,154,.1); }
 
 /* Arohana / avarohana */
 .rg-scale {
@@ -139,7 +139,7 @@
 .rg-suno-text {
   display: block;
   background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 9px 11px; font-size: 12px; line-height: 1.5; color: #f0e3c8;
+  padding: 9px 11px; font-size: 12px; line-height: 1.5; color: #4a3d28;
   font-family: system-ui; word-break: break-word;
 }
 .rg-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -148,8 +148,8 @@
 /* Flash toast */
 .rg-flash {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(10px);
-  background: var(--accent); color: var(--accent-contrast, #1a0a0e); font-size: 13px; font-weight: 750;
-  padding: 9px 16px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  background: var(--accent); color: var(--accent-contrast, #fff); font-size: 13px; font-weight: 750;
+  padding: 9px 16px; border-radius: 999px; box-shadow: 0 8px 24px rgba(96,74,42,.28);
   opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60;
 }
 .rg-flash.show { opacity: 1; transform: translateX(-50%) translateY(0); }

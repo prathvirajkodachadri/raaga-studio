@@ -128,9 +128,9 @@
     var wordsLine = escapeHtml(originalLine);
     var matraLine = escapeHtml('ಒಟ್ಟು ' + line.matraTotal + ' ಮಾತ್ರೆ');
     return '<div style="margin:0 0 12px 0;font-family:\'Noto Sans Kannada\',sans-serif;">' +
-      '<div style="font-size:12px;color:#a89f94;">ಸಾಲು ' + (lineIdx + 1) + ' · ' + matraLine + '</div>' +
-      '<div style="font-size:14px;letter-spacing:1px;color:#e0b36a;font-weight:600;">' + symbolsLine + '</div>' +
-      '<div style="font-size:18px;line-height:1.6;color:#f3ede6;">' + wordsLine + '</div>' +
+      '<div style="font-size:12px;color:#82755f;">ಸಾಲು ' + (lineIdx + 1) + ' · ' + matraLine + '</div>' +
+      '<div style="font-size:14px;letter-spacing:1px;color:#9a6b1a;font-weight:600;">' + symbolsLine + '</div>' +
+      '<div style="font-size:18px;line-height:1.6;color:#3b3226;">' + wordsLine + '</div>' +
       '</div>';
   }
 
@@ -196,7 +196,7 @@
       document.body.appendChild(flashEl);
     }
     flashEl.textContent = msg;
-    flashEl.style.borderColor = isError ? '#e4577f' : '#e0b36a';
+    flashEl.style.borderColor = isError ? '#c73a63' : '#c9971c';
     flashEl.classList.add('show');
     clearTimeout(flashEl._t);
     flashEl._t = setTimeout(function () { flashEl.classList.remove('show'); }, 2600);
