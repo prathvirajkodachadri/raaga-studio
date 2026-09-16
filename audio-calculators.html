@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f7f1e1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="Raaga Studio audio calculators for delay, reverb, compression, EQ, loudness, headroom, level calibration and phase.">
+  <meta name="description" content="Raaga Studio professional audio calculators for delay, reverb, pre-delay, attack, release, sidechain, EQ, loudness and phase.">
   <title>Raaga Studio · Audio Calculators</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/audio-calculators.css">
@@ -14,29 +14,21 @@
 <body>
   <header class="topbar">
     <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 14c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/></svg></div>
-    <div class="brand">
-      <h1>Raaga Studio <span class="brand-flow">· Audio Calculators</span></h1>
-      <p class="tag desktop-tag">Mix engineering · tempo · dynamics · EQ · loudness · phase</p>
-      <p class="tag nav-current">Audio Calculators</p>
-    </div>
+    <div class="brand"><h1>Raaga Studio <span class="brand-flow">· Audio Calculators</span></h1><p class="tag desktop-tag">Mix engineering · tempo · dynamics · EQ · loudness · phase</p><p class="tag nav-current">Audio Calculators</p></div>
     <a class="nav-menu-btn" href="index.html" aria-label="Back to Raaga Studio" style="display:flex!important;text-decoration:none;color:inherit;align-items:center;justify-content:center;">←</a>
   </header>
   <main id="studio-tools">
     <section class="wrap ac-page">
-      <header class="ac-hero">
-        <div>
-          <p class="ac-kicker">Raaga Studio · Mix engineering toolbox</p>
-          <h2>Audio <span>Calculators</span></h2>
-          <p class="ac-sub">15 practical calculators with transparent formulas for tempo-synced effects, dynamics, EQ bandwidth, pitch, stereo timing, loudness, headroom, level calibration, wavelength and phase.</p>
-        </div>
-      </header>
-      <div class="ac-jumps" aria-label="Calculator shortcuts">
-        <button type="button" data-ac-jump="bpm-delay">Delay</button><button type="button" data-ac-jump="reverb">Reverb</button><button type="button" data-ac-jump="predelay">Pre-delay</button><button type="button" data-ac-jump="attack">Attack</button><button type="button" data-ac-jump="release">Release</button><button type="button" data-ac-jump="release-bpm">Release → BPM</button><button type="button" data-ac-jump="q-bandwidth">Q ↔ BW</button><button type="button" data-ac-jump="frequency-note">Frequency → Note</button><button type="button" data-ac-jump="haas">Haas</button><button type="button" data-ac-jump="pan-law">Pan Law</button><button type="button" data-ac-jump="crossover">Crossover</button><button type="button" data-ac-jump="lufs">LUFS</button><button type="button" data-ac-jump="true-peak">True Peak</button><button type="button" data-ac-jump="dbfs-dbu">dBFS ↔ dBu</button><button type="button" data-ac-jump="wavelength-phase">Wavelength / Phase</button>
-      </div>
+      <header class="ac-hero"><div><p class="ac-kicker">Raaga Studio · Mix engineering toolbox</p><h2>Audio <span>Calculators</span></h2><p class="ac-sub">Enter your BPM <strong>once</strong>. Delay, reverb pre-delay, attack, release, gate and modulation timings update together. Simple, fast and ready for real-world mixing.</p></div></header>
+      <section class="ac-tempo-panel" aria-label="Shared tempo controls">
+        <div class="ac-tempo-main"><div class="ac-tempo-label">SESSION BPM</div><div class="ac-tempo-input-wrap"><input id="ac-master-bpm" type="number" inputmode="decimal" min="20" max="300" step="0.1" value="120" aria-label="Session BPM"><span>BPM</span></div><button type="button" id="ac-tap-tempo" class="ac-tempo-btn">Tap</button><button type="button" id="ac-half-tempo" class="ac-tempo-btn">½</button><button type="button" id="ac-double-tempo" class="ac-tempo-btn">×2</button></div>
+        <div class="ac-tempo-presets" aria-label="BPM presets"><button type="button" data-bpm="70">70</button><button type="button" data-bpm="80">80</button><button type="button" data-bpm="90">90</button><button type="button" data-bpm="100">100</button><button type="button" data-bpm="110">110</button><button type="button" data-bpm="120">120</button><button type="button" data-bpm="128">128</button><button type="button" data-bpm="140">140</button><button type="button" data-bpm="160">160</button></div>
+        <div id="ac-tempo-summary" class="ac-tempo-summary"></div><p class="ac-tempo-help">One BPM controls every tempo-based calculator below. Tap 4+ times to estimate the session tempo.</p>
+      </section>
+      <div class="ac-jumps" aria-label="Calculator shortcuts"><button type="button" data-ac-jump="bpm-delay">Delay</button><button type="button" data-ac-jump="reverb">Reverb</button><button type="button" data-ac-jump="predelay">Pre-delay</button><button type="button" data-ac-jump="attack">Attack</button><button type="button" data-ac-jump="release">Release</button><button type="button" data-ac-jump="release-bpm">Release → BPM</button><button type="button" data-ac-jump="gate">Gate</button><button type="button" data-ac-jump="lfo">LFO / Mod</button><button type="button" data-ac-jump="q-bandwidth">Q ↔ BW</button><button type="button" data-ac-jump="frequency-note">Frequency → Note</button><button type="button" data-ac-jump="haas">Haas</button><button type="button" data-ac-jump="pan-law">Pan Law</button><button type="button" data-ac-jump="crossover">Crossover</button><button type="button" data-ac-jump="lufs">LUFS</button><button type="button" data-ac-jump="true-peak">True Peak</button><button type="button" data-ac-jump="dbfs-dbu">dBFS ↔ dBu</button><button type="button" data-ac-jump="wavelength-phase">Wavelength / Phase</button></div>
       <div class="ac-grid" id="ac-grid"></div>
     </section>
   </main>
-  <script src="js/audio-calculators.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', function(){ if(window.AudioCalculators) AudioCalculators.build(); });</script>
+  <script src="js/audio-calculators.js"></script><script>document.addEventListener('DOMContentLoaded', function(){ if(window.AudioCalculators) AudioCalculators.build(); });</script>
 </body>
 </html>
