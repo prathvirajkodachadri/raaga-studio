@@ -1,8 +1,7 @@
 /**
  * nav.js — shared tab navigation for Raaga Studio.
  * Handles all [data-tab] buttons, panel show/hide, URL hash, a mobile tools
- * drawer, and exposes RaagaStudio.switchTo(id) so other tools can jump tabs
- * (e.g. Song Studio → Mix Check).
+ * drawer, and exposes RaagaStudio.switchTo(id) so other tools can jump tabs.
  */
 'use strict';
 
@@ -31,6 +30,33 @@
     'quick-access': 'Quick Access'
   };
 
+  function addExternalCalculatorLinks() {
+    var href = 'audio-calculators.html';
+    var tabnav = document.getElementById('studio-tabnav');
+    if (tabnav && !tabnav.querySelector('a[data-tool="audio-calculators"]')) {
+      var a = document.createElement('a');
+      a.className = 'tab';
+      a.href = href;
+      a.setAttribute('data-tool', 'audio-calculators');
+      a.setAttribute('aria-label', 'Audio Calculators');
+      a.innerHTML = '<span class="tab-icon" aria-hidden="true">∑</span><span class="tab-label desktop">Audio Calculators</span><span class="tab-label mobile">Calc</span>';
+      var tempoTab = tabnav.querySelector('[data-tab="tempo"]');
+      if (tempoTab && tempoTab.parentNode) tempoTab.parentNode.insertBefore(a, tempoTab.nextSibling); else tabnav.appendChild(a);
+    }
+    var grid = drawer && drawer.querySelector('.nav-drawer-grid');
+    if (grid && !grid.querySelector('a[data-tool="audio-calculators"]')) {
+      var d = document.createElement('a');
+      d.className = 'nav-drawer-item';
+      d.href = href;
+      d.setAttribute('data-tool', 'audio-calculators');
+      d.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">∑</span><span class="nav-drawer-copy"><b>Audio Calculators</b><small>15 music production formulas</small></span>';
+      var tempoItem = grid.querySelector('[data-tab="tempo"]');
+      if (tempoItem && tempoItem.parentNode) tempoItem.parentNode.insertBefore(d, tempoItem.nextSibling); else grid.appendChild(d);
+    }
+  }
+
+  addExternalCalculatorLinks();
+
   tabs.forEach(function (btn) {
     panels[btn.getAttribute('data-tab')] = document.getElementById('tab-' + btn.getAttribute('data-tab'));
   });
@@ -38,15 +64,9 @@
   function setDrawer(open) {
     if (!drawer) return;
     drawer.hidden = !open;
-    if (drawer.classList && drawer.classList.toggle) {
-      drawer.classList.toggle('open', !!open);
-    }
-    if (menuBtn && menuBtn.setAttribute) {
-      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    }
-    if (document.body && document.body.classList) {
-      document.body.classList.toggle('nav-drawer-open', !!open);
-    }
+    if (drawer.classList && drawer.classList.toggle) drawer.classList.toggle('open', !!open);
+    if (menuBtn && menuBtn.setAttribute) menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (document.body && document.body.classList) document.body.classList.toggle('nav-drawer-open', !!open);
   }
 
   function scrollTabIntoView(id) {
@@ -54,11 +74,8 @@
     if (!nav || !nav.querySelector) return;
     var btn = nav.querySelector('[data-tab="' + id + '"]');
     if (!btn || typeof btn.scrollIntoView !== 'function') return;
-    try {
-      btn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
-    } catch (e) {
-      try { btn.scrollIntoView(false); } catch (e2) {}
-    }
+    try { btn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); }
+    catch (e) { try { btn.scrollIntoView(false); } catch (e2) {} }
   }
 
   function switchTo(id, scrollToTop) {
@@ -76,9 +93,7 @@
       panels[k].hidden = k !== id;
       panels[k].setAttribute('role', 'tabpanel');
     });
-    if (currentLabel) {
-      currentLabel.textContent = LABELS[id] || id;
-    }
+    if (currentLabel) currentLabel.textContent = LABELS[id] || id;
     try { history.replaceState(null, '', '#' + id); } catch (e) {}
     if (scrollToTop !== false && typeof window.scrollTo === 'function') {
       try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
@@ -89,37 +104,17 @@
   }
 
   tabs.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      switchTo(btn.getAttribute('data-tab'), true);
-    });
+    btn.addEventListener('click', function () { switchTo(btn.getAttribute('data-tab'), true); });
   });
-
-  if (menuBtn && menuBtn.addEventListener) {
-    menuBtn.addEventListener('click', function () {
-      var open = menuBtn.getAttribute('aria-expanded') === 'true';
-      setDrawer(!open);
-    });
-  }
-  if (drawerClose && drawerClose.addEventListener) {
-    drawerClose.addEventListener('click', function () { setDrawer(false); });
-  }
-  if (drawerBackdrop && drawerBackdrop.addEventListener) {
-    drawerBackdrop.addEventListener('click', function () { setDrawer(false); });
-  }
-  if (document.addEventListener) {
-    document.addEventListener('keydown', function (ev) {
-      if (ev && ev.key === 'Escape') setDrawer(false);
-    });
-  }
+  if (menuBtn && menuBtn.addEventListener) menuBtn.addEventListener('click', function () { setDrawer(menuBtn.getAttribute('aria-expanded') !== 'true'); });
+  if (drawerClose && drawerClose.addEventListener) drawerClose.addEventListener('click', function () { setDrawer(false); });
+  if (drawerBackdrop && drawerBackdrop.addEventListener) drawerBackdrop.addEventListener('click', function () { setDrawer(false); });
+  if (document.addEventListener) document.addEventListener('keydown', function (ev) { if (ev && ev.key === 'Escape') setDrawer(false); });
 
   var hash = (location.hash || '').replace('#', '');
-  if (hash && panels[hash]) {
-    switchTo(hash, false);
-  } else if (hash === 'master') {
-    switchTo('master', false);
-  } else if (currentLabel) {
-    currentLabel.textContent = LABELS['practical-eq'];
-  }
+  if (hash && panels[hash]) switchTo(hash, false);
+  else if (hash === 'master') switchTo('master', false);
+  else if (currentLabel) currentLabel.textContent = LABELS['practical-eq'];
 
   window.RaagaStudio = window.RaagaStudio || {};
   window.RaagaStudio.switchTo = switchTo;
