@@ -1,0 +1,47 @@
+name: Restore main site safely
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    if: ${{ !contains(github.event.head_commit.message, '[restore-index]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore original index and add navigation links
+        shell: bash
+        run: |
+          git checkout b4bdb33ae127ad0b24b8b1c8999a18c4b9f048a3 -- index.html
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          top = '''      <a class="tab" href="audio-calculators.html" data-tool="audio-calculators" aria-label="Audio Calculators"><span class="tab-icon" aria-hidden="true">∑</span><span class="tab-label desktop">Audio Calculators</span><span class="tab-label mobile">Calc</span></a>\n      <a class="tab" href="key-chords.html" data-tool="key-chords" aria-label="Key &amp; Chords"><span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Key &amp; Chords</span><span class="tab-label mobile">Keys</span></a>\n'''
+          marker = '    </nav>\n  </header>'
+          if 'data-tool="key-chords"' not in s:
+              s = s.replace(marker, top + marker, 1)
+          drawer = '''        <a class="nav-drawer-item" href="audio-calculators.html" data-tool="audio-calculators"><span class="nav-drawer-ico" aria-hidden="true">∑</span><span class="nav-drawer-copy"><b>Audio Calculators</b><small>Music production formulas</small></span></a>\n        <a class="nav-drawer-item" href="key-chords.html" data-tool="key-chords"><span class="nav-drawer-ico" aria-hidden="true">♫</span><span class="nav-drawer-copy"><b>Key &amp; Chords</b><small>Scales, diatonic harmony &amp; transpose</small></span></a>\n'''
+          drawer_marker = '      </div>\n    </div>\n  </div>\n\n  <main id="studio-tools">'
+          if 'href="key-chords.html" data-tool="key-chords"' not in s:
+              s = s.replace(drawer_marker, drawer + drawer_marker, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit restored site and remove temporary workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/restore-main-site.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/restore-main-site.yml
+          git commit -m "Restore main site and navigation [restore-index]"
+          git push
