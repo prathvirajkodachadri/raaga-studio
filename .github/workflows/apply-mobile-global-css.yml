@@ -25,151 +25,31 @@ jobs:
 
 /* RAAGA STUDIO GLOBAL MOBILE HEADER OVERRIDE */
 @media screen and (max-width: 760px) {
-  html, body {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0 !important;
-    overflow-x: hidden !important;
-  }
-
-  .topbar {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 1000 !important;
-    display: grid !important;
-    grid-template-columns: 36px minmax(0, 1fr) 42px !important;
-    grid-template-rows: auto auto !important;
-    grid-template-areas: "logo brand menu" "tabs tabs tabs" !important;
-    align-items: center !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    padding: 8px 12px 8px !important;
-    padding-top: max(8px, env(safe-area-inset-top)) !important;
-    gap: 8px 10px !important;
-    overflow: visible !important;
-  }
-
-  .topbar > .logo {
-    grid-area: logo !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 34px !important;
-    height: 34px !important;
-    min-width: 34px !important;
-    max-width: 34px !important;
-  }
-
-  .topbar > .brand {
-    grid-area: brand !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    overflow: visible !important;
-  }
-
-  .topbar > .brand h1 {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: auto !important;
-    max-width: none !important;
-    color: var(--text-primary) !important;
-    font-size: 17px !important;
-    font-weight: 750 !important;
-    line-height: 1.2 !important;
-    letter-spacing: .35px !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-  }
-
-  .topbar > .brand h1 .brand-flow,
-  .topbar > .brand .desktop-tag {
-    display: none !important;
-  }
-
-  .topbar > .brand .nav-current {
-    display: block !important;
-    visibility: visible !important;
-    margin: 2px 0 0 !important;
-    max-width: 100% !important;
-    color: var(--text-muted) !important;
-    font-size: 10px !important;
-    line-height: 1.15 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  .topbar > .nav-menu-btn {
-    grid-area: menu !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 42px !important;
-    height: 42px !important;
-    min-width: 42px !important;
-    max-width: 42px !important;
-  }
-
-  .topbar > .tabnav {
-    grid-area: tabs !important;
-    display: flex !important;
-    visibility: visible !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-  }
-
-  .topbar > .tabnav::-webkit-scrollbar { display: none !important; }
-
-  .topbar > .tabnav .tab {
-    flex: 0 0 auto !important;
-    min-width: max-content !important;
-    white-space: nowrap !important;
-  }
-
-  .topbar > .tabnav .tab-label.desktop { display: inline !important; }
-  .topbar > .tabnav .tab-label.mobile { display: none !important; }
-
-  main, .wrap, .panel, section, article, header, div {
-    min-width: 0 !important;
-  }
-
-  main, .wrap {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    max-width: 100% !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-  }
+  html, body { width:100%; max-width:100%; min-width:0 !important; overflow-x:hidden !important; }
+  .topbar { position:sticky !important; top:0 !important; z-index:1000 !important; display:grid !important; grid-template-columns:36px minmax(0,1fr) 42px !important; grid-template-rows:auto auto !important; grid-template-areas:"logo brand menu" "tabs tabs tabs" !important; align-items:center !important; width:100% !important; max-width:100% !important; min-width:0 !important; height:auto !important; padding:8px 12px !important; padding-top:max(8px,env(safe-area-inset-top)) !important; gap:8px 10px !important; overflow:visible !important; }
+  .topbar > .logo { grid-area:logo !important; display:flex !important; visibility:visible !important; opacity:1 !important; width:34px !important; height:34px !important; min-width:34px !important; max-width:34px !important; }
+  .topbar > .brand { grid-area:brand !important; display:block !important; visibility:visible !important; opacity:1 !important; width:auto !important; min-width:0 !important; max-width:none !important; overflow:visible !important; }
+  .topbar > .brand h1 { display:block !important; visibility:visible !important; opacity:1 !important; margin:0 !important; padding:0 !important; width:auto !important; max-width:none !important; color:var(--text-primary) !important; font-size:17px !important; font-weight:750 !important; line-height:1.2 !important; letter-spacing:.35px !important; white-space:nowrap !important; overflow:visible !important; text-overflow:clip !important; }
+  .topbar > .brand h1 .brand-flow, .topbar > .brand .desktop-tag { display:none !important; }
+  .topbar > .brand .nav-current { display:block !important; visibility:visible !important; margin:2px 0 0 !important; max-width:100% !important; color:var(--text-muted) !important; font-size:10px !important; line-height:1.15 !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+  .topbar > .nav-menu-btn { grid-area:menu !important; display:flex !important; visibility:visible !important; opacity:1 !important; width:42px !important; height:42px !important; min-width:42px !important; max-width:42px !important; }
+  .topbar > .tabnav { grid-area:tabs !important; display:flex !important; visibility:visible !important; width:100% !important; max-width:100% !important; min-width:0 !important; flex-wrap:nowrap !important; overflow-x:auto !important; overflow-y:hidden !important; -webkit-overflow-scrolling:touch !important; scrollbar-width:none !important; }
+  .topbar > .tabnav::-webkit-scrollbar { display:none !important; }
+  .topbar > .tabnav .tab { flex:0 0 auto !important; min-width:max-content !important; white-space:nowrap !important; }
+  .topbar > .tabnav .tab-label.desktop { display:inline !important; }
+  .topbar > .tabnav .tab-label.mobile { display:none !important; }
+  main, .wrap, .panel, section, article, header, div { min-width:0 !important; }
+  main, .wrap { width:100% !important; max-width:100% !important; overflow-x:hidden !important; }
+  h1,h2,h3,h4,h5,h6 { max-width:100% !important; white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; }
 }
 '''
               p.write_text(s + css, encoding='utf-8')
           PY
-      - name: Commit and remove workflow
+      - name: Commit mobile CSS and remove workflow
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add css/style.css .github/workflows/apply-mobile-global-css.yml
-          git diff --cached --quiet && exit 0
+          git add css/style.css
+          if git diff --cached --quiet; then exit 0; fi
           git commit -m "Fix global mobile header and heading visibility"
           git push
