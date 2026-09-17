@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f1e1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Raaga Studio interactive key, chord and transposition tool.">
+  <title>Raaga Studio · Key &amp; Chords</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/artistic-theme.css">
+  <link rel="stylesheet" href="css/key-chords.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 14c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/></svg></div>
+    <div class="brand"><h1>Raaga Studio <span class="brand-flow">· Key &amp; Chords</span></h1><p class="tag desktop-tag">Music theory · diatonic harmony · transposition</p><p class="tag nav-current">Key &amp; Chords</p></div>
+    <a class="nav-menu-btn" href="index.html" aria-label="Back to Raaga Studio" style="display:flex!important;text-decoration:none;color:inherit;align-items:center;justify-content:center;">←</a>
+  </header>
+
+  <main class="wrap kc-page">
+    <header class="kc-hero">
+      <p class="kc-kicker">Raaga Studio · Music theory toolbox</p>
+      <h2>Key, Chord <span>&amp; Transposition</span></h2>
+      <p>Choose a major key, explore its scale and diatonic harmony, then calculate exact pitch-class transpositions.</p>
+    </header>
+
+    <section class="kc-card kc-controls-card" aria-labelledby="key-title">
+      <div class="kc-section-head"><div><span class="kc-eyebrow">KEY</span><h3 id="key-title">Major key explorer</h3></div>
+        <label class="kc-control"><span>Selected key</span><select id="kc-key" aria-label="Selected major key"></select></label>
+      </div>
+      <div id="kc-scale" class="kc-scale" aria-label="Selected major scale"></div>
+      <div class="kc-chromatic" id="kc-chromatic" aria-label="Chromatic reference"></div>
+    </section>
+
+    <section class="kc-card" aria-labelledby="harmony-title">
+      <div class="kc-section-head"><div><span class="kc-eyebrow">HARMONY</span><h3 id="harmony-title">Diatonic chords</h3></div>
+        <div class="kc-toggle" role="group" aria-label="Chord view"><button type="button" class="active" data-view="triads" aria-pressed="true">Triads</button><button type="button" data-view="sevenths" aria-pressed="false">7th Chords</button></div>
+      </div>
+      <div class="kc-table-wrap"><table class="kc-table"><thead><tr><th>Degree</th><th>Chord</th><th>Quality</th><th>Root</th><th>3rd</th><th>5th</th><th class="kc-seventh-col">7th</th></tr></thead><tbody id="kc-chord-body"></tbody></table></div>
+      <p class="kc-mobile-hint">Swipe horizontally to view all chord tones.</p>
+    </section>
+
+    <section class="kc-detail-grid">
+      <article class="kc-card kc-detail" aria-live="polite"><div class="kc-eyebrow">DETAIL</div><h3 id="kc-detail-title">Select a chord</h3><div id="kc-detail-content" class="kc-detail-content"><p>Tap any chord above to inspect its notes, interval structure and chord formula.</p></div></article>
+      <article class="kc-card kc-note-detail" aria-live="polite"><div class="kc-eyebrow">SCALE NOTE</div><h3 id="kc-note-title">Select a scale note</h3><div id="kc-note-content"><p>Tap a scale note to see its scale degree and associated diatonic chords.</p></div></article>
+    </section>
+
+    <section class="kc-card" aria-labelledby="transpose-title">
+      <div class="kc-section-head"><div><span class="kc-eyebrow">TRANSPOSE</span><h3 id="transpose-title">Key transposition</h3></div><button id="kc-swap-keys" class="kc-btn" type="button">Swap ↕</button></div>
+      <div class="kc-transpose-grid">
+        <label class="kc-control"><span>Original Key</span><select id="kc-original-key"></select></label>
+        <div class="kc-arrow" aria-hidden="true">→</div>
+        <label class="kc-control"><span>Target Key</span><select id="kc-target-key"></select></label>
+      </div>
+      <div id="kc-key-result" class="kc-result"></div>
+    </section>
+
+    <section class="kc-card" aria-labelledby="chord-transpose-title">
+      <div class="kc-section-head"><div><span class="kc-eyebrow">CHORD TRANSPOSE</span><h3 id="chord-transpose-title">Original chord → target chord</h3></div></div>
+      <div class="kc-transpose-grid">
+        <label class="kc-control"><span>Original Chord</span><select id="kc-original-chord"></select></label>
+        <div class="kc-arrow" aria-hidden="true">→</div>
+        <label class="kc-control"><span>Target Chord</span><select id="kc-target-chord"></select></label>
+      </div>
+      <div id="kc-chord-result" class="kc-result"></div>
+    </section>
+  </main>
+  <script src="js/key-chords.js"></script>
+</body>
+</html>
