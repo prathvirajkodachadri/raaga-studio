@@ -29,21 +29,37 @@
   }
 
   function addExternalCalculatorLinks() {
-    var href = 'audio-calculators.html';
     var tabnav = document.getElementById('studio-tabnav');
-    if (tabnav && !tabnav.querySelector('a[data-tool="audio-calculators"]')) {
-      var a = document.createElement('a');
-      a.className = 'tab'; a.href = href; a.setAttribute('data-tool', 'audio-calculators'); a.setAttribute('aria-label', 'Audio Calculators');
-      a.innerHTML = '<span class="tab-icon" aria-hidden="true">∑</span><span class="tab-label desktop">Audio Calculators</span><span class="tab-label mobile">Calc</span>';
-      var tempoTab = tabnav.querySelector('[data-tab="tempo"]');
-      if (tempoTab && tempoTab.parentNode) tempoTab.parentNode.insertBefore(a, tempoTab.nextSibling); else tabnav.appendChild(a);
+    if (tabnav) {
+      if (!tabnav.querySelector('a[data-tool="audio-calculators"]')) {
+        var a = document.createElement('a');
+        a.className = 'tab'; a.href = 'audio-calculators.html'; a.setAttribute('data-tool', 'audio-calculators'); a.setAttribute('aria-label', 'Audio Calculators');
+        a.innerHTML = '<span class="tab-icon" aria-hidden="true">∑</span><span class="tab-label desktop">Audio Calculators</span><span class="tab-label mobile">Calc</span>';
+        var tempoTab = tabnav.querySelector('[data-tab="tempo"]');
+        if (tempoTab && tempoTab.parentNode) tempoTab.parentNode.insertBefore(a, tempoTab.nextSibling); else tabnav.appendChild(a);
+      }
+      if (!tabnav.querySelector('a[data-tool="key-chords"]')) {
+        var k = document.createElement('a');
+        k.className = 'tab'; k.href = 'key-chords.html'; k.setAttribute('data-tool', 'key-chords'); k.setAttribute('aria-label', 'Key & Chords');
+        k.innerHTML = '<span class="tab-icon" aria-hidden="true">♫</span><span class="tab-label desktop">Key &amp; Chords</span><span class="tab-label mobile">Keys</span>';
+        var acTab = tabnav.querySelector('a[data-tool="audio-calculators"]');
+        if (acTab && acTab.parentNode) acTab.parentNode.insertBefore(k, acTab.nextSibling); else tabnav.appendChild(k);
+      }
     }
     var grid = drawer && drawer.querySelector('.nav-drawer-grid');
-    if (grid && !grid.querySelector('a[data-tool="audio-calculators"]')) {
-      var d = document.createElement('a'); d.className = 'nav-drawer-item'; d.href = href; d.setAttribute('data-tool', 'audio-calculators');
-      d.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">∑</span><span class="nav-drawer-copy"><b>Audio Calculators</b><small>15 music production formulas</small></span>';
-      var tempoItem = grid.querySelector('[data-tab="tempo"]');
-      if (tempoItem && tempoItem.parentNode) tempoItem.parentNode.insertBefore(d, tempoItem.nextSibling); else grid.appendChild(d);
+    if (grid) {
+      if (!grid.querySelector('a[data-tool="audio-calculators"]')) {
+        var d = document.createElement('a'); d.className = 'nav-drawer-item'; d.href = 'audio-calculators.html'; d.setAttribute('data-tool', 'audio-calculators');
+        d.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">∑</span><span class="nav-drawer-copy"><b>Audio Calculators</b><small>15 music production formulas</small></span>';
+        var tempoItem = grid.querySelector('[data-tab="tempo"]');
+        if (tempoItem && tempoItem.parentNode) tempoItem.parentNode.insertBefore(d, tempoItem.nextSibling); else grid.appendChild(d);
+      }
+      if (!grid.querySelector('a[data-tool="key-chords"]')) {
+        var kd = document.createElement('a'); kd.className = 'nav-drawer-item'; kd.href = 'key-chords.html'; kd.setAttribute('data-tool', 'key-chords');
+        kd.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">♫</span><span class="nav-drawer-copy"><b>Key &amp; Chords</b><small>Scales, diatonic harmony &amp; transpose</small></span>';
+        var calcItem = grid.querySelector('a[data-tool="audio-calculators"]');
+        if (calcItem && calcItem.parentNode) calcItem.parentNode.insertBefore(kd, calcItem.nextSibling); else grid.appendChild(kd);
+      }
     }
   }
 
