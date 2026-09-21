@@ -85,7 +85,11 @@
   function buildHtmlForLine(line, originalLine) {
     var symbols = [];
     line.cells.forEach(function (c) {
-      if (c.symbol && c.symbol !== '·') symbols.push(c.symbol);
+      if (c.symbol && c.symbol !== '·') {
+        symbols.push(c.symbol);
+      } else if (c.symbol == null && c.text === '\t') {
+        symbols.push('|');
+      }
     });
     return '<div style="margin:0 0 12px 0;font-family:\'Noto Sans Kannada\',sans-serif;">' +
       '<div style="font-size:14px;letter-spacing:1px;color:#9a6b1a;font-weight:600;">' +
