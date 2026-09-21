@@ -61,14 +61,14 @@
     line.cells.forEach(function (c) {
       if (c.symbol && c.symbol !== '·') {
         annotated.push(c.symbol);
-      } else if (c.symbol == null && c.text === '\\t') {
+      } else if (c.symbol == null && c.text === '\t') {
         annotated.push('|');
       }
     });
 
     // Copy one complete poem as a single text block. Each poem line keeps
     // its own Laghu/Guru pattern, and a literal TAB is represented as |.
-    return annotated.join(' ') + '\\n' + originalLine + '\\n' +
+    return annotated.join(' ') + '\n' + originalLine + '\n' +
       'ಒಟ್ಟು ' + line.matraTotal + ' ಮಾತ್ರೆ';
   }
 
@@ -266,7 +266,7 @@
     var start = inputEl.selectionStart;
     var end = inputEl.selectionEnd;
     var value = inputEl.value;
-    inputEl.value = value.slice(0, start) + '\\t' + value.slice(end);
+    inputEl.value = value.slice(0, start) + '\t' + value.slice(end);
     inputEl.selectionStart = inputEl.selectionEnd = start + 1;
     render();
   });
