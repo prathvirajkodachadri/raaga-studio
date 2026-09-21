@@ -61,13 +61,13 @@
     line.cells.forEach(function (c) {
       if (c.symbol && c.symbol !== '·') {
         annotated.push(c.symbol);
-      } else if (c.symbol == null && c.text === '\t') {
+      } else if (c.symbol == null && c.text === ' ') {
         annotated.push('|');
       }
     });
 
     // Copy one complete poem as a single text block. Each poem line keeps
-    // its own Laghu/Guru pattern, and a literal TAB is represented as |.
+    // its own Laghu/Guru pattern, and a literal SPACE is represented as |.
     return annotated.join(' ') + '\n' + originalLine + '\n' +
       'ಒಟ್ಟು ' + line.matraTotal + ' ಮಾತ್ರೆ';
   }
@@ -87,7 +87,7 @@
     line.cells.forEach(function (c) {
       if (c.symbol && c.symbol !== '·') {
         symbols.push(c.symbol);
-      } else if (c.symbol == null && c.text === '\t') {
+      } else if (c.symbol == null && c.text === ' ') {
         symbols.push('|');
       }
     });
@@ -186,9 +186,9 @@
         var cell = line.cells[c];
 
         if (cell.symbol == null) {
-          // Show literal TABs as the requested | separator.
+          // Show every SPACE as the requested | separator.
           if (cell.text === ' ') {
-            html += '<span class="tab-separator" aria-label="separator">|</span>';
+            html += '<span class="space-separator" aria-label="separator">|</span>';
           } else {
             html += '<span class="sp" style="width:auto;margin-right:2px;">' +
               escapeHtml(cell.text) + '</span>';
@@ -216,7 +216,7 @@
 
         html += '<div class="metra-line">ಚಿಹ್ನೆ: <b>' + escapeHtml(symOnly || '—') +
           '</b> <span style="font-size:11px;color:var(--muted);">' +
-          '(Tab = | · Copy All copies the complete poem)' +
+          '(Space = | · Copy All copies the complete poem)' +
           '</span></div>';
       }
 
