@@ -56,11 +56,20 @@
 
   function formatCopyBlock(line, originalLine) {
     if (!(originalLine || '').trim()) return '';
-    var symbols = [];
+
+    var annotated = [];
     line.cells.forEach(function (c) {
-      if (c.symbol && c.symbol !== '·') symbols.push(c.symbol);
+      if (c.symbol && c.symbol !== '·') {
+        annotated.push(c.symbol);
+      } else if (c.symbol == null && c.text === '\\t') {
+        annotated.push('|');
+      }
     });
-    return symbols.join(' ') + '\n' + originalLine + '\n' + 'ಒಟ್ಟು ' + line.matraTotal + ' ಮಾತ್ರೆ';
+
+    // Copy one complete poem as a single text block. Each poem line keeps
+    // its own Laghu/Guru pattern, and a literal TAB is represented as |.
+    return annotated.join(' ') + '\\n' + originalLine + '\\n' +
+      'ಒಟ್ಟು ' + line.matraTotal + ' ಮಾತ್ರೆ';
   }
 
   function formatAllCopy() {
@@ -248,6 +257,19 @@
       }
     });
   }
+
+  // Keep TAB inside the poem editor so the Prosody output can show it as |.
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') return;
+    e.preventDefault();
+
+    var start = inputEl.selectionStart;
+    var end = inputEl.selectionEnd;
+    var value = inputEl.value;
+    inputEl.value = value.slice(0, start) + '\\t' + value.slice(end);
+    inputEl.selectionStart = inputEl.selectionEnd = start + 1;
+    render();
+  });
 
   inputEl.addEventListener('input', render);
   shatpadiEl.addEventListener('change', render);
