@@ -84,7 +84,32 @@
     }
   }
 
-  installMobileTitleFix(); addExternalCalculatorLinks();
+  installMobileTitleFix();
+  // Ensure the mobile drawer markup exists because nav.js supports it but index.html may not include it.
+  if (!document.getElementById('nav-drawer')) {
+    var d = document.createElement('aside');
+    d.id = 'nav-drawer'; d.className = 'nav-drawer'; d.hidden = true;
+    d.innerHTML = '<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>' +
+      '<div class="nav-drawer-sheet" role="dialog" aria-modal="true" aria-label="Raaga Studio tools">' +
+      '<div class="nav-drawer-head"><div><div class="nav-drawer-kicker">Studio tools</div><h2>Raaga Studio</h2></div>' +
+      '<button type="button" class="nav-drawer-close" id="nav-drawer-close" aria-label="Close">×</button></div>' +
+      '<div class="nav-drawer-grid"></div></div>';
+    document.body.appendChild(d);
+  }
+  drawer = document.getElementById('nav-drawer');
+  drawerClose = document.getElementById('nav-drawer-close');
+  drawerBackdrop = document.getElementById('nav-drawer-backdrop');
+  var drawerGrid = drawer ? drawer.querySelector('.nav-drawer-grid') : null;
+  if (drawerGrid && !drawerGrid.children.length) {
+    tabs.forEach(function(btn){
+      var item=document.createElement('button'); item.type='button'; item.className='nav-drawer-item';
+      item.setAttribute('data-tab',btn.getAttribute('data-tab'));
+      item.innerHTML='<span class="nav-drawer-ico">'+((btn.querySelector('.tab-icon')||{}).textContent||'•')+'</span><span class="nav-drawer-copy"><b>'+((LABELS[btn.getAttribute('data-tab')])||btn.getAttribute('data-tab'))+'</b><small>Open tool</small></span>';
+      item.addEventListener('click',function(){switchTo(btn.getAttribute('data-tab'),true)});
+      drawerGrid.appendChild(item);
+    });
+  }
+  addExternalCalculatorLinks();
   tabs.forEach(function (btn) { panels[btn.getAttribute('data-tab')] = document.getElementById('tab-' + btn.getAttribute('data-tab')); });
 
   function setDrawer(open) {
