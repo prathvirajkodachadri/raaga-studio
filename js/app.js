@@ -187,10 +187,8 @@
 
         if (cell.symbol == null) {
           // Show literal TABs as the requested | separator.
-          if (cell.text === '\t') {
+          if (cell.text === ' ') {
             html += '<span class="tab-separator" aria-label="separator">|</span>';
-          } else if (cell.text === ' ') {
-            html += '<span class="sp"></span>';
           } else {
             html += '<span class="sp" style="width:auto;margin-right:2px;">' +
               escapeHtml(cell.text) + '</span>';
