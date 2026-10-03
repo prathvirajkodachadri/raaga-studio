@@ -282,7 +282,12 @@ node test/practical_eq_test.js
 node test/tempo_lab_test.js
 node test/lyrics_prompt_test.js
 node test/ui_smoke_test.js
+node test/index_markup_test.js
 ```
+
+> `index_markup_test.js` is the safety net for the published site: the studio tools
+> keep their markup inline in `index.html`, so a gutted or truncated index would
+> render every tab blank while the Pages build still reports success.
 
 ## Prosody rules implemented
 
