@@ -191,5 +191,88 @@ check('generated names follow the convention', function () {
   });
 });
 
+/* ---- 6. importing your own library ---- */
+check('CSV import maps headers and skips blanks', function () {
+  var csv = 'SEQ,FAMILY,INSTRUMENT,ROLE,PLUGIN,PROFESSIONAL TRACK NAME\n' +
+    '1,DRONE,Tanpura,DRONE,Kontakt,DRONE_TANPURA_DRONE_KONTAKT_01\n' +
+    '2,TABLA,Mridangam,PERC,Kontakt,\n\n';
+  var out = TC.parseImport(csv, 'mine.csv');
+  eq(out.rows.length, 2);
+  eq(out.rows[0].FAMILY, 'DRONE');
+  eq(out.rows[0].PLUGIN, 'Kontakt');
+  eq(TC.makeTrackName(out.rows[1]), 'TABLA_MRIDANGAM_PERC_KONTAKT_01');
+});
+check('quoted CSV values survive import', function () {
+  var csv = 'FAMILY,INSTRUMENT,ROLE,PLUGIN\nFX,"Riser, Long",FX,"A""B"\n';
+  var out = TC.parseImport(csv, 'x.csv');
+  eq(out.rows[0].INSTRUMENT, 'Riser, Long');
+  eq(out.rows[0].PLUGIN, 'A"B');
+});
+check('TSV import (what a spreadsheet copy gives you)', function () {
+  var tsv = 'FAMILY\tINSTRUMENT\tROLE\tPLUGIN\nVOCALS\tMale Lead\tLEAD\tAuto-Tune\n';
+  eq(TC.parseImport(tsv, 'x.tsv').rows[0].INSTRUMENT, 'Male Lead');
+});
+check('header aliases are recognised', function () {
+  var csv = 'Group,Source,Type,VST\nFOLK,Dollu,PERC,Kontakt\n';
+  var out = TC.parseImport(csv, 'x.csv');
+  eq(out.rows[0].FAMILY, 'FOLK');
+  eq(out.rows[0].INSTRUMENT, 'Dollu');
+  eq(out.rows[0].ROLE, 'PERC');
+  eq(out.rows[0].PLUGIN, 'Kontakt');
+});
+check('a headerless list falls back to column order', function () {
+  var out = TC.parseImport('MELODY,Bansuri,LEAD,Kontakt\n', 'x.csv');
+  eq(out.rows[0].FAMILY, 'MELODY');
+  eq(TC.makeTrackName(out.rows[0]), 'MELODY_BANSURI_LEAD_KONTAKT_01');
+});
+check('JSON import accepts objects, {tracks:[]} and {rows:[]}', function () {
+  var rows = [{ FAMILY: 'BASS', INSTRUMENT: 'Sub Bass', ROLE: 'SUB', PLUGIN: 'Serum' }];
+  eq(TC.parseImport(JSON.stringify(rows), 'x.json').rows.length, 1);
+  eq(TC.parseImport(JSON.stringify({ tracks: rows }), 'x.json').rows.length, 1);
+  eq(TC.parseImport(JSON.stringify({ rows: rows }), 'x.json').rows.length, 1);
+});
+check('an exported HTML page is read from its table', function () {
+  var html = '<html><body><table><thead><tr><th>FAMILY</th><th>INSTRUMENT</th><th>ROLE</th><th>PLUGIN</th></tr></thead>' +
+    '<tbody><tr><td>PERCUSSION</td><td>Ghatam &amp; Kanjira</td><td>PERC</td><td>Kontakt</td></tr>' +
+    '<tr><td>WIND</td><td>Bansuri</td><td>LEAD</td><td>Kontakt</td></tr></tbody></table></body></html>';
+  var out = TC.parseImport(html, 'page.html');
+  eq(out.rows.length, 2);
+  eq(out.rows[0].INSTRUMENT, 'Ghatam & Kanjira');
+  eq(TC.makeTrackName(out.rows[1]), 'WIND_BANSURI_LEAD_KONTAKT_01');
+});
+check('an exported HTML page is read from an embedded data array', function () {
+  var html = '<html><body><script>const DATA = [{"FAMILY":"STRINGS","INSTRUMENT":"Cello","ROLE":"ENS","PLUGIN":"EastWest"},' +
+    '{"FAMILY":"STRINGS","INSTRUMENT":"Viola","ROLE":"ENS","PLUGIN":"EastWest"}];</script></body></html>';
+  var out = TC.parseImport(html, 'page.html');
+  eq(out.rows.length, 2);
+  eq(TC.makeTrackName(out.rows[0]), 'STRINGS_CELLO_ENS_EASTWEST_01');
+});
+check('single-quoted JS arrays are read too', function () {
+  var html = "<script>const DATA = [{FAMILY:'DRUMS',INSTRUMENT:'Kick',ROLE:'PERC',PLUGIN:'Kick 2'}];</script>";
+  eq(TC.parseImport(html, 'page.html').rows[0].INSTRUMENT, 'Kick');
+});
+check('imported families get a colour and a place in the order', function () {
+  var rows = TC.parseImport('FAMILY,INSTRUMENT,ROLE,PLUGIN\nKONNAKKOL,Silambu,PERC,Kontakt\nDRONE,Tanpura,DRONE,Kontakt\n', 'x.csv').rows;
+  var list = TC.familiesFromRows(rows, window.TRACKS_COMPOSE_FAMILIES);
+  var names = list.map(function (f) { return f.name; });
+  if (names.indexOf('KONNAKKOL') < 0) throw new Error('imported family missing from the list');
+  list.forEach(function (f) { if (!/^#[0-9a-f]{6}$/i.test(f.color)) throw new Error(f.name + ' has no colour'); });
+  eq(TC.familiesInUse(rows, list).join(','), 'DRONE,KONNAKKOL', 'known families keep their place, new ones follow');
+});
+check('a file with no usable rows is rejected with a clear message', function () {
+  var threw = false;
+  try { TC.parseImport('hello world', 'notes.txt'); } catch (e) { threw = /No track rows/i.test(e.message); }
+  if (!threw) throw new Error('expected a "No track rows" error');
+  threw = false;
+  try { TC.parseImport('', 'empty.csv'); } catch (e) { threw = /empty/i.test(e.message); }
+  if (!threw) throw new Error('expected an empty-file error');
+});
+check('an imported library round-trips through CSV export', function () {
+  var rows = TC.parseImport('FAMILY,INSTRUMENT,ROLE,PLUGIN\nFOLK,Chande,PERC,Kontakt\n', 'x.csv').rows;
+  var csv = TC.toCsv(rows, window.TRACKS_COMPOSE_FAMILIES);
+  eq(csv.split('\n')[1], '1,FOLK,Chande,PERC,Kontakt,FOLK_CHANDE_PERC_KONTAKT_01');
+});
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
+

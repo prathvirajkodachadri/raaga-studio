@@ -23,12 +23,18 @@
   var shownEl = document.getElementById('tc-shown');
   var totalEl = document.getElementById('tc-total');
   var familyCountEl = document.getElementById('tc-family-count');
+  var importBtn = document.getElementById('tc-import-btn');
+  var importInput = document.getElementById('tc-import');
   var flashEl = document.getElementById('tc-flash');
   if (!tbody || !familyEl) return;
 
-  var families = window.TRACKS_COMPOSE_FAMILIES || [];
-  var data = (window.TRACKS_COMPOSE_TRACKS || []).slice();
+  var SHIPPED_FAMILIES = window.TRACKS_COMPOSE_FAMILIES || [];
+  var SHIPPED_TRACKS = window.TRACKS_COMPOSE_TRACKS || [];
+  var STORE_KEY = 'raaga.tracksCompose.library.v1';
+  var families = SHIPPED_FAMILIES.slice();
+  var data = SHIPPED_TRACKS.slice();
   var activeFamily = '';
+  var importedFrom = '';
   var uid = 0;
 
   function esc(v) {
@@ -44,6 +50,61 @@
     flashEl.textContent = msg;
     clearTimeout(flash._t);
     flash._t = setTimeout(function () { flashEl.textContent = ''; }, 2200);
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        version: 1,
+        source: importedFrom,
+        families: families,
+        tracks: data.map(function (row) {
+          var clean = {};
+          Object.keys(row).forEach(function (k) { if (k.indexOf('__') !== 0) clean[k] = row[k]; });
+          return clean;
+        })
+      }));
+    } catch (e) { /* private mode / storage full — the page still works in memory */ }
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return false;
+      var saved = JSON.parse(raw);
+      if (!saved || !Array.isArray(saved.tracks) || !saved.tracks.length) return false;
+      families = (saved.families && saved.families.length ? saved.families : SHIPPED_FAMILIES).slice();
+      data = saved.tracks.slice();
+      importedFrom = saved.source || 'your saved library';
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function clearSaved() {
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* nothing to clear */ }
+  }
+
+  function adoptRows(rows, sourceName) {
+    families = TC.familiesFromRows(rows, SHIPPED_FAMILIES);
+    data = rows.slice();
+    importedFrom = sourceName || '';
+    data.forEach(function (row) {
+      row.__original = {};
+      Object.keys(row).forEach(function (k) { if (k.indexOf('__') !== 0) row.__original[k] = row[k]; });
+    });
+    activeFamily = '';
+    refreshFilters();
+    render();
+    save();
+  }
+
+  function refreshFilters() {
+    fillSelect(familyEl, TC.familiesInUse(data, families), 'All families');
+    fillSelect(roleEl, TC.uniqueValues(data, 'ROLE'), 'All roles');
+    fillSelect(pluginEl, TC.uniqueValues(data, 'PLUGIN').concat(TC.uniqueValues(data, 'PLUGIN EXAMPLE')), 'All plugins');
+    familyEl.value = ''; activeFamily = '';
+    if (roleEl) roleEl.value = '';
+    if (pluginEl) pluginEl.value = '';
   }
 
   function filter() {
@@ -171,16 +232,33 @@
 
   if (resetEl) {
     resetEl.addEventListener('click', function () {
+      var replacing = importedFrom !== '';
+      if (replacing && typeof window.confirm === 'function' &&
+          !window.confirm('Discard the imported library and go back to the shipped Tracks Compose list?')) return;
       if (searchEl) searchEl.value = '';
-      familyEl.value = ''; activeFamily = '';
-      if (roleEl) roleEl.value = '';
-      if (pluginEl) pluginEl.value = '';
+      if (replacing) {
+        clearSaved();
+        families = SHIPPED_FAMILIES.slice();
+        data = SHIPPED_TRACKS.slice();
+        importedFrom = '';
+        data.forEach(function (row) {
+          row.__original = {};
+          Object.keys(row).forEach(function (k) { if (k.indexOf('__') !== 0) row.__original[k] = row[k]; });
+        });
+        refreshFilters();
+        render();
+        flash('Back to the shipped Tracks Compose library.');
+        return;
+      }
       data.forEach(function (row) {
         Object.keys(row.__original || {}).forEach(function (k) { row[k] = row.__original[k]; });
         delete row.__edited;
       });
+      familyEl.value = ''; activeFamily = '';
+      if (roleEl) roleEl.value = '';
+      if (pluginEl) pluginEl.value = '';
       render();
-      flash('Library reset to the original names.');
+      flash('Names reset to the saved values.');
     });
   }
 
@@ -243,19 +321,42 @@
     });
   }
 
+  // ─── import your own library ──────────────────────────────────────────────
+  function handleFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = TC.parseImport(String(reader.result || ''), file.name);
+        adoptRows(parsed.rows, file.name);
+        flash('Imported ' + parsed.rows.length + ' tracks from ' + file.name + '. Saved in this browser.');
+      } catch (err) {
+        flash('Could not read that file: ' + (err && err.message ? err.message : 'unknown error'));
+      }
+    };
+    reader.onerror = function () { flash('Could not read that file.'); };
+    reader.readAsText(file);
+  }
+
+  if (importBtn && importInput) {
+    importBtn.addEventListener('click', function () { importInput.click(); });
+    importInput.addEventListener('change', function () {
+      handleFile(importInput.files && importInput.files[0]);
+      importInput.value = '';
+    });
+  }
+
   // ─── boot ─────────────────────────────────────────────────────────────────
+  var restored = load();
   data.forEach(function (row) {
     row.__original = {};
     Object.keys(row).forEach(function (k) {
       if (k.indexOf('__') !== 0) row.__original[k] = row[k];
     });
   });
-
-  var inUse = TC.familiesInUse(data, families);
-  fillSelect(familyEl, inUse, 'All families');
-  fillSelect(roleEl, TC.uniqueValues(data, 'ROLE'), 'All roles');
-  fillSelect(pluginEl, TC.uniqueValues(data, 'PLUGIN').concat(TC.uniqueValues(data, 'PLUGIN EXAMPLE')), 'All plugins');
+  refreshFilters();
   render();
+  if (restored) flash('Loaded your saved library (' + data.length + ' tracks).');
 
   window.RaagaStudio = window.RaagaStudio || {};
   window.RaagaStudio.tracksCompose = {
@@ -264,6 +365,14 @@
     csv: function () { return TC.toCsv(currentRows(), families); },
     makeTrackName: TC.makeTrackName,
     setSearch: function (v) { if (searchEl) { searchEl.value = v; render(); } },
-    setFamily: function (v) { familyEl.value = v; activeFamily = v; render(); }
+    setFamily: function (v) { familyEl.value = v; activeFamily = v; render(); },
+    importText: function (text, name) {
+      var parsed = TC.parseImport(text, name || 'import.csv');
+      adoptRows(parsed.rows, name || '');
+      return parsed.rows.length;
+    },
+    importFile: handleFile,
+    source: function () { return importedFrom; },
+    resetLibrary: function () { clearSaved(); families = SHIPPED_FAMILIES.slice(); data = SHIPPED_TRACKS.slice(); refreshFilters(); render(); }
   };
 })();

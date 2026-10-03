@@ -47,6 +47,8 @@
         <button class="tc-btn" id="tc-reset" type="button">Reset</button>
         <button class="tc-btn primary" id="tc-copy-all" type="button">Copy all names</button>
         <button class="tc-btn" id="tc-export" type="button">Export CSV</button>
+        <button class="tc-btn" id="tc-import-btn" type="button" title="Load your own CSV, TSV, JSON or exported HTML track list">Import list</button>
+        <input id="tc-import" type="file" accept=".csv,.tsv,.txt,.json,.html,.htm" hidden>
       </div>
 
       <div class="tc-stats">
@@ -67,6 +69,7 @@
         <p class="tc-empty" id="tc-empty" hidden>No matching tracks found.</p>
       </div>
 
+      <p class="tc-note"><b>Use your own list:</b> <b>Import list</b> reads a CSV, TSV, JSON or exported HTML track list — column headings like FAMILY, INSTRUMENT, ROLE, PLUGIN and TRACK NAME are recognised automatically, and your library is kept in this browser.</p>
       <p class="tc-note"><b>Naming format:</b> FAMILY_INSTRUMENT_ROLE_PLUGIN_INSTANCE · Preset names stay outside the track name, so the row never changes when a sound is swapped. Instance numbers keep doubles, harmonies, room mics and DI/amp pairs apart.</p>
       <p class="tc-foot" id="tc-flash" role="status" aria-live="polite"></p>
       <p class="tc-foot">Back to <a href="index.html">Raaga Studio</a> · <a href="index.html#prosody">ಛಂದಸ್ಸು scanner</a> · <a href="audio-calculators.html">Audio Calculators</a> · <a href="key-chords.html">Key &amp; Chords</a></p>

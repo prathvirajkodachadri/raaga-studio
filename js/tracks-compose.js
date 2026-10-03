@@ -180,6 +180,200 @@
     };
   }
 
+  // ─── import: bring in your own studio standard ────────────────────────────
+  var HEADER_ALIASES = {
+    FAMILY: 'FAMILY', FAMILIES: 'FAMILY', FOLDER: 'FAMILY', GROUP: 'FAMILY', 'TRACK GROUP': 'FAMILY',
+    INSTRUMENT: 'INSTRUMENT', INSTRUMENTS: 'INSTRUMENT', 'INSTRUMENT NAME': 'INSTRUMENT', SOURCE: 'INSTRUMENT',
+    ROLE: 'ROLE', ROLES: 'ROLE', TYPE: 'ROLE',
+    PLUGIN: 'PLUGIN', PLUGINS: 'PLUGIN', 'PLUGIN EXAMPLE': 'PLUGIN', VST: 'PLUGIN', INSTRUMENT_PLUGIN: 'PLUGIN',
+    'TRACK NAME': 'TRACK NAME', 'PROFESSIONAL TRACK NAME': 'TRACK NAME', NAME: 'TRACK NAME',
+    SEQ: 'SEQ', 'S.NO': 'SEQ', 'SR NO': 'SEQ', NO: 'SEQ',
+    NOTES: 'NOTES', NOTE: 'NOTES', COMMENT: 'NOTES', COMMENTS: 'NOTES'
+  };
+
+  var POSITIONAL = ['FAMILY', 'INSTRUMENT', 'ROLE', 'PLUGIN', 'TRACK NAME'];
+
+  var PASTEL = ['#E8DFC8', '#DCE9DA', '#F6E2CE', '#D8E4F2', '#EFE3F7',
+    '#F7DCDC', '#DDEBEB', '#E9E4C9', '#E4E8D5', '#F2E4D8'];
+
+  function headerKey(cell) {
+    var k = String(cell == null ? '' : cell).replace(/[_*]+/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
+    return HEADER_ALIASES[k] || '';
+  }
+
+  function decodeEntities(s) {
+    return String(s == null ? '' : s)
+      .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+      .replace(/&#(\d+);/g, function (m, d) { return String.fromCharCode(parseInt(d, 10)); });
+  }
+
+  function stripTags(html) {
+    return decodeEntities(String(html || '')
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<[^>]*>/g, ' '))
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /** Split a CSV/TSV block into a grid, honouring quoted cells. */
+  function parseDelimited(text, delimiter) {
+    var src = String(text == null ? '' : text).replace(/\r\n?/g, '\n');
+    var delim = delimiter;
+    if (!delim) {
+      var tabs = (src.match(/\t/g) || []).length;
+      var commas = (src.match(/,/g) || []).length;
+      delim = tabs > commas ? '\t' : ',';
+    }
+    var grid = [], row = [], cell = '', quoted = false;
+    for (var i = 0; i < src.length; i++) {
+      var c = src[i];
+      if (quoted) {
+        if (c === '"') {
+          if (src[i + 1] === '"') { cell += '"'; i++; }
+          else quoted = false;
+        } else cell += c;
+      } else if (c === '"') {
+        quoted = true;
+      } else if (c === delim) {
+        row.push(cell); cell = '';
+      } else if (c === '\n') {
+        row.push(cell); grid.push(row); row = []; cell = '';
+      } else {
+        cell += c;
+      }
+    }
+    row.push(cell);
+    grid.push(row);
+    return grid
+      .map(function (r) { return r.map(function (v) { return String(v).trim(); }); })
+      .filter(function (r) { return r.some(function (v) { return v !== ''; }); });
+  }
+
+  /** Turn a grid into rows using the header when present, position otherwise. */
+  function rowsFromGrid(grid) {
+    if (!grid || !grid.length) return { rows: [], header: false };
+    var mapped = grid[0].map(headerKey);
+    var hasHeader = mapped.filter(Boolean).length >= 2;
+    var order = hasHeader ? mapped : POSITIONAL.slice();
+    var body = hasHeader ? grid.slice(1) : grid;
+    var rows = [];
+    body.forEach(function (cells) {
+      var row = {};
+      order.forEach(function (key, i) {
+        if (!key) return;
+        var v = cells[i];
+        if (v === undefined || v === '') return;
+        // A supplied TRACK NAME cell that is just the generated name is noise.
+        row[key] = v;
+      });
+      if (row.INSTRUMENT || row.FAMILY || row['TRACK NAME']) rows.push(row);
+    });
+    return { rows: rows, header: hasHeader };
+  }
+
+  /** Pull rows out of an exported HTML page: an embedded array, else a table. */
+  function rowsFromHtml(html) {
+    var src = String(html == null ? '' : html);
+
+    // 1. an embedded JS/JSON array, e.g. const DATA = [{FAMILY:"DRONE", …}]
+    var arrayMatch = src.match(/\[\s*\{[\s\S]*?\}\s*\]/);
+    if (arrayMatch) {
+      var literal = arrayMatch[0];
+      var parsed = null;
+      try {
+        parsed = JSON.parse(literal);
+      } catch (e) {
+        try {
+          parsed = JSON.parse(literal
+            .replace(/([{,]\s*)([A-Za-z_$][\w$\s]*?)\s*:/g, '$1"$2":')
+            .replace(/'/g, '"'));
+        } catch (e2) { parsed = null; }
+      }
+      if (parsed && parsed.length && typeof parsed[0] === 'object') {
+        return { rows: normalizeRows(parsed), header: false };
+      }
+    }
+
+    // 2. a real <table>
+    if (/<t[rd]/i.test(src)) {
+      var grid = [];
+      var rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+      var m;
+      while ((m = rowRe.exec(src))) {
+        var cells = [], cellRe = /<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi, c;
+        while ((c = cellRe.exec(m[1]))) cells.push(stripTags(c[1]));
+        if (cells.length) grid.push(cells);
+      }
+      if (grid.length) {
+        var out = rowsFromGrid(grid);
+        if (out.rows.length) return out;
+      }
+    }
+    return { rows: [], header: false };
+  }
+
+  /** Rename arbitrary object keys onto the canonical columns. */
+  function normalizeRows(rows) {
+    var out = [];
+    (rows || []).forEach(function (row) {
+      if (!row || typeof row !== 'object') return;
+      var mapped = {};
+      Object.keys(row).forEach(function (k) {
+        var key = headerKey(k) || (String(k).trim().toUpperCase() === 'FAMILY' ? 'FAMILY' : '');
+        if (!key) return;
+        var v = row[k];
+        if (v === undefined || v === null || v === '') return;
+        mapped[key] = String(v);
+      });
+      if (mapped.INSTRUMENT || mapped.FAMILY) out.push(mapped);
+    });
+    return out;
+  }
+
+  /**
+   * Read a library from a user's own file: CSV/TSV, JSON, or an exported HTML
+   * page (embedded array or table). Returns { rows, header }.
+   */
+  function parseImport(text, filename) {
+    var name = String(filename || '').toLowerCase();
+    var src = String(text == null ? '' : text);
+    if (!src.trim()) throw new Error('The file is empty.');
+
+    var result;
+    if (/\.json$/.test(name)) {
+      var data = JSON.parse(src);
+      if (Array.isArray(data)) result = { rows: normalizeRows(data), header: false };
+      else if (data && Array.isArray(data.tracks)) result = { rows: normalizeRows(data.tracks), header: false };
+      else if (data && Array.isArray(data.rows)) result = { rows: normalizeRows(data.rows), header: false };
+      else throw new Error('No track rows found in that JSON.');
+    } else if (/\.html?$/.test(name) || /<\/?(table|tr|td|th)[\s>]/i.test(src)) {
+      result = rowsFromHtml(src);
+    } else {
+      result = rowsFromGrid(parseDelimited(src));
+    }
+
+    var rows = (result.rows || []).filter(function (r) { return r.INSTRUMENT || r['TRACK NAME']; });
+    if (!rows.length) throw new Error('No track rows found. Expected columns like FAMILY, INSTRUMENT, ROLE, PLUGIN.');
+    return { rows: rows, header: !!result.header };
+  }
+
+  /** Give every family in an imported library a colour and a place in the order. */
+  function familiesFromRows(rows, knownFamilies) {
+    var list = families(knownFamilies);
+    var colours = {};
+    list.forEach(function (f) { colours[f.name] = f.color; });
+    familiesInUse(rows, list).forEach(function (name) {
+      if (colours[name]) return;
+      list.push({
+        name: name,
+        color: PASTEL[list.length % PASTEL.length],
+        note: 'Imported family'
+      });
+    });
+    return list;
+  }
+
   // ─── export ───────────────────────────────────────────────────────────────
   function rowsForExport(data, list) {
     return arrange(data, list).map(function (row, i) {
@@ -223,6 +417,8 @@
     families: families, familyNames: familyNames, familyMeta: familyMeta,
     familiesInUse: familiesInUse, arrange: arrange,
     uniqueValues: uniqueValues, filterRows: filterRows, stats: stats,
+    parseDelimited: parseDelimited, rowsFromGrid: rowsFromGrid, rowsFromHtml: rowsFromHtml,
+    normalizeRows: normalizeRows, parseImport: parseImport, familiesFromRows: familiesFromRows,
     rowsForExport: rowsForExport, toCsv: toCsv, nameList: nameList
   };
 

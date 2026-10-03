@@ -232,11 +232,16 @@ FAMILY_INSTRUMENT_ROLE_PLUGIN_INSTANCE      →      DRONE_TANPURA_DRONE_KONTAKT
 - **Live renaming** — edit the instrument or plugin and the professional track name updates instantly.
 - **Search + filters** across instrument, role, plugin, family, track name and notes.
 - **Copy any row**, **copy all names** in arrangement order, or **export the filtered list as CSV**.
+- **Import list** — load your own CSV, TSV, JSON or exported HTML track list. Column headings
+  (`FAMILY`, `INSTRUMENT`, `ROLE`, `PLUGIN`, `TRACK NAME` and common aliases such as `Group`,
+  `Source`, `VST`) are matched automatically, families you never declared are added to the
+  arrangement order with their own colour, and the library is kept in the browser.
 - Preset names stay out of the track name, and `_01` / `_DL` instances keep doubles, harmonies,
   room mics and DI/amp pairs apart.
 
-The library lives in `js/tracks-compose-data.js` (families + rows) and the naming/filter/export
-rules in `js/tracks-compose.js`, so a studio standard can be swapped in without touching the page.
+The library lives in `js/tracks-compose-data.js` (families + rows) and the naming/filter/export/import
+rules in `js/tracks-compose.js`, so a studio standard can be swapped in without touching the page —
+edit the data file, or teach the page your own list once with **Import list**.
 
 ## Structure
 
