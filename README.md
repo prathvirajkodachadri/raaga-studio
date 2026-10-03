@@ -215,11 +215,42 @@ build-drop skeleton, then copy the pad or send it to the Suno Prompt tab. Every 
 wording influences output probabilistically — nothing is presented as guaranteed. Three copy-ready
 starter templates (Kannada bhavageete, Carnatic fusion, modern pop with a drop) complete the page.
 
+### 12. Tracks Compose
+
+Its own page (`tracks-compose.html`) — the track-naming library for an Indian song session:
+drone, percussion, drums, bass, rhythm, harmony, melody, strings, wind, synths, vocals, backing
+vocals, folk and FX.
+
+Every row is named to one standard so a Cubase session reads the same in any hand:
+
+```
+FAMILY_INSTRUMENT_ROLE_PLUGIN_INSTANCE      →      DRONE_TANPURA_DRONE_KONTAKT_01
+```
+
+- **Arrangement order sidebar** — folder sequence for composer → mixing engineer handoff; click a
+  family to filter, and the badge colour stays consistent everywhere.
+- **Live renaming** — edit the instrument or plugin and the professional track name updates instantly.
+- **Search + filters** across instrument, role, plugin, family, track name and notes.
+- **Copy any row**, **copy all names** in arrangement order, or **export the filtered list as CSV**.
+- **Import list** — load your own CSV, TSV, JSON or exported HTML track list. Column headings
+  (`FAMILY`, `INSTRUMENT`, `ROLE`, `PLUGIN`, `TRACK NAME` and common aliases such as `Group`,
+  `Source`, `VST`) are matched automatically, families you never declared are added to the
+  arrangement order with their own colour, and the library is kept in the browser.
+- Preset names stay out of the track name, and `_01` / `_DL` instances keep doubles, harmonies,
+  room mics and DI/amp pairs apart.
+
+The library lives in `js/tracks-compose-data.js` (families + rows) and the naming/filter/export/import
+rules in `js/tracks-compose.js`, so a studio standard can be swapped in without touching the page —
+edit the data file, or teach the page your own list once with **Import list**.
+
 ## Structure
 
 ```
 raaga-studio/
 ├── index.html                 # 12-tab UI, including Suno Cheat Codes reference
+├── tracks-compose.html        # Indian song track-naming library (own page)
+├── audio-calculators.html     # music-production calculators (own page)
+├── key-chords.html            # scales, diatonic harmony, transpose (own page)
 ├── css/
 │   ├── style.css              # shared cream studio theme
 │   ├── practical-eq.css       # Practical EQ report + frequency graph (home)
@@ -228,7 +259,8 @@ raaga-studio/
 │   ├── vocal-eq-cheatsheet.css # cheat sheet layout
 │   ├── raga-reference.css     # raga & scale reference cards
 │   ├── lyrics-lab.css         # responsive songwriting workspace
-│   └── suno-cheats.css        # Suno Cheat Codes reference cards + search/filters
+│   ├── suno-cheats.css        # Suno Cheat Codes reference cards + search/filters
+│   └── tracks-compose.css     # Tracks Compose library, arrangement sidebar, table
 ├── js/
 │   ├── practical-eq.js        # Practical EQ analysis engine (home) — STFT, f0, detectors
 │   ├── practical-eq-app.js    # Practical EQ UI controller + frequency graph
@@ -248,6 +280,9 @@ raaga-studio/
 │   ├── lyrics-prompt.js       # pure songwriting-prompt builder and rhyme-scheme data
 │   ├── lyrics-lab.js          # Lyrics Lab prompt form, copy and local draft UI
 │   ├── suno-cheats.js         # Suno Cheat Codes reference data, search, filters, copy
+│   ├── tracks-compose.js      # track-naming engine: names, order, filters, CSV
+│   ├── tracks-compose-data.js # the track library (families + rows)
+│   ├── tracks-compose-app.js  # Tracks Compose page controller
 │   └── nav.js                 # shared tab navigation
 ├── sample_audio/              # optional test fixtures
 ├── docs/
@@ -282,7 +317,13 @@ node test/practical_eq_test.js
 node test/tempo_lab_test.js
 node test/lyrics_prompt_test.js
 node test/ui_smoke_test.js
+node test/tracks_compose_test.js
+node test/index_markup_test.js
 ```
+
+> `index_markup_test.js` is the safety net for the published site: the studio tools
+> keep their markup inline in `index.html`, so a gutted or truncated index would
+> render every tab blank while the Pages build still reports success.
 
 ## Prosody rules implemented
 

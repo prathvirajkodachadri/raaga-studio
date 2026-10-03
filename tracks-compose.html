@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f1e1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Raaga Studio Tracks Compose — Indian song track-naming library: tanpura, mridangam, veena, bansuri, vocals and FX with the FAMILY_INSTRUMENT_ROLE_PLUGIN standard for Cubase handoff.">
+<meta name="keywords" content="tracks compose, Indian song track naming, Cubase track naming, Kannada music, mridangam, tanpura, veena, mixing handoff">
+<title>Raaga Studio · Tracks Compose</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tracks-compose.css">
+<link rel="stylesheet" href="css/artistic-theme.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 14c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/></svg></div>
+  <div class="brand">
+    <h1>Raaga Studio <span class="brand-flow">· Compose → Mix → Master</span></h1>
+    <p class="tag desktop-tag">ಕನ್ನಡ ಸಂಗೀತ · Indian song track naming for Cubase handoff</p>
+    <p class="tag nav-current">Tracks Compose</p>
+  </div>
+  <a class="nav-menu-btn" href="index.html" aria-label="Back to Raaga Studio" style="display:flex!important;text-decoration:none;color:inherit;align-items:center;justify-content:center;">←</a>
+</header>
+
+<main class="tc-page">
+  <section class="tc-hero">
+    <p class="tc-kicker">Raaga Studio · Composer → Mixing Engineer Handoff</p>
+    <h2>Tracks <span>Compose</span></h2>
+    <p class="tc-intro">Every track an Indian song needs — drone, percussion, melody, vocals, folk and FX — named to one standard so a session reads the same in every hand. Edit the instrument or plugin and the professional track name updates instantly; export the list as CSV or paste it straight into Cubase.</p>
+    <p class="tc-format"><b>FAMILY</b>_<b>INSTRUMENT</b>_<b>ROLE</b>_<b>PLUGIN</b>_<b>01</b> <small>— e.g. DRONE_TANPURA_DRONE_KONTAKT_01</small></p>
+  </section>
+
+  <div class="tc-layout">
+    <aside class="tc-order" aria-label="Recommended arrangement order">
+      <h3>Arrangement order</h3>
+      <p>Folder sequence for the composer → mixing engineer handoff. Pick one to filter.</p>
+      <div class="tc-order-list" id="tc-order-list"></div>
+    </aside>
+
+    <section class="tc-main" aria-label="Track library">
+      <div class="tc-toolbar">
+        <input id="tc-search" type="search" placeholder="Search instrument, track name, family, plugin…" aria-label="Search the track library">
+        <select id="tc-family" aria-label="Filter by family"><option value="">All families</option></select>
+        <select id="tc-role" aria-label="Filter by role"><option value="">All roles</option></select>
+        <select id="tc-plugin" aria-label="Filter by plugin"><option value="">All plugins</option></select>
+        <button class="tc-btn" id="tc-reset" type="button">Reset</button>
+        <button class="tc-btn primary" id="tc-copy-all" type="button">Copy all names</button>
+        <button class="tc-btn" id="tc-export" type="button">Export CSV</button>
+        <button class="tc-btn" id="tc-import-btn" type="button" title="Load your own CSV, TSV, JSON or exported HTML track list">Import list</button>
+        <input id="tc-import" type="file" accept=".csv,.tsv,.txt,.json,.html,.htm" hidden>
+      </div>
+
+      <div class="tc-stats">
+        <div class="tc-stat"><b id="tc-shown">0</b><span>Showing</span></div>
+        <div class="tc-stat"><b id="tc-total">0</b><span>Total entries</span></div>
+        <div class="tc-stat"><b id="tc-family-count">0</b><span>Folder families</span></div>
+      </div>
+
+      <div class="tc-table-wrap">
+        <table class="tc-table">
+          <thead>
+            <tr>
+              <th>SEQ</th><th>FAMILY</th><th>INSTRUMENT</th><th>ROLE</th><th>PLUGIN</th><th>PROFESSIONAL TRACK NAME</th><th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="tc-tbody"></tbody>
+        </table>
+        <p class="tc-empty" id="tc-empty" hidden>No matching tracks found.</p>
+      </div>
+
+      <p class="tc-note"><b>Use your own list:</b> <b>Import list</b> reads a CSV, TSV, JSON or exported HTML track list — column headings like FAMILY, INSTRUMENT, ROLE, PLUGIN and TRACK NAME are recognised automatically, and your library is kept in this browser.</p>
+      <p class="tc-note"><b>Naming format:</b> FAMILY_INSTRUMENT_ROLE_PLUGIN_INSTANCE · Preset names stay outside the track name, so the row never changes when a sound is swapped. Instance numbers keep doubles, harmonies, room mics and DI/amp pairs apart.</p>
+      <p class="tc-foot" id="tc-flash" role="status" aria-live="polite"></p>
+      <p class="tc-foot">Back to <a href="index.html">Raaga Studio</a> · <a href="index.html#prosody">ಛಂದಸ್ಸು scanner</a> · <a href="audio-calculators.html">Audio Calculators</a> · <a href="key-chords.html">Key &amp; Chords</a></p>
+    </section>
+  </div>
+</main>
+
+<script src="js/tracks-compose.js"></script>
+<script src="js/tracks-compose-data.js"></script>
+<script src="js/tracks-compose-app.js"></script>
+</body>
+</html>
