@@ -111,7 +111,8 @@ assert(missingAssets.length === 0,
 /* ---- 4. every getElementById() lookup can resolve ---- */
 var jsFiles = ['app.js', 'practical-eq-app.js', 'master-check-app.js', 'mix-check-app.js',
   'tempo-lab-app.js', 'lyrics-lab.js', 'song-studio.js', 'raga-reference.js',
-  'suno-prompts.js', 'suno-cheats.js', 'mix-tools.js', 'cubase-routing.js', 'nav.js'];
+  'suno-prompts.js', 'suno-cheats.js', 'mix-tools.js', 'cubase-routing.js',
+  'tracks-compose-app.js', 'audio-calculators.js', 'key-chords.js', 'nav.js'];
 
 var allHtmlIds = {};
 fs.readdirSync(ROOT).filter(function (f) { return /\.html$/.test(f); }).forEach(function (f) {

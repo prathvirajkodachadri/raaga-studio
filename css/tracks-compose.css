@@ -1,0 +1,136 @@
+/* ==========================================================================
+   TRACKS COMPOSE — Indian song track-naming library, in the Raaga Studio
+   cream theme. Tokens come from css/style.css so the page matches the rest
+   of the studio (rose accent, gold kickers, #fdf9ee cards).
+   ========================================================================== */
+
+.tc-page { padding: 28px 18px 64px; max-width: 1360px; margin: 0 auto; }
+
+/* --- hero ---------------------------------------------------------------- */
+.tc-hero {
+  background: linear-gradient(120deg, #eddfc2, #fdf9ee 72%);
+  border: 1px solid #d5c6a8;
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+}
+.tc-kicker {
+  margin: 0 0 6px; color: #8a5618; font-weight: 800;
+  font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.tc-hero h2 { margin: 0 0 8px; color: #292631; font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.15; }
+.tc-hero h2 span { color: #8a4a1e; }
+.tc-intro { margin: 0; max-width: 900px; color: #3d3630; line-height: 1.6; }
+.tc-format {
+  display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin-top: 14px; padding: 9px 12px; border-radius: 10px;
+  background: #fffdf6; border: 1px solid #d8c9a8; color: #3b3226;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .84rem;
+}
+.tc-format b { color: #b02a52; }
+.tc-format small { font-family: inherit; color: #82755f; }
+
+/* --- layout -------------------------------------------------------------- */
+.tc-layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.tc-order {
+  position: sticky; top: 96px;
+  background: #fdf9ee; border: 1px solid #ddd0b2; border-radius: 14px;
+  padding: 14px; box-shadow: 0 8px 20px rgba(78, 53, 36, .06);
+}
+.tc-order h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: #8a5618; }
+.tc-order p { margin: 0 0 10px; font-size: .76rem; line-height: 1.45; color: #82755f; }
+.tc-seq {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 8px 9px; margin: 3px 0; border: 1px solid transparent; border-left: 4px solid var(--seq-color, #ddd0b2);
+  border-radius: 9px; background: #f8f4e9; cursor: pointer;
+  font: inherit; font-size: .8rem; font-weight: 750; color: #3b3226; text-align: left;
+}
+.tc-seq:hover { background: #f2e9d3; }
+.tc-seq.active { background: var(--seq-color, #f2e9d3); border-color: rgba(78, 53, 36, .16); }
+.tc-num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; color: #82755f; }
+.tc-seq-count { margin-left: auto; font-size: .7rem; font-weight: 700; color: #82755f; }
+
+/* --- main card ----------------------------------------------------------- */
+.tc-main {
+  background: #fdf9ee; border: 1px solid #ddd0b2; border-radius: 14px;
+  padding: 16px; box-shadow: 0 8px 20px rgba(78, 53, 36, .06); min-width: 0;
+}
+.tc-toolbar {
+  display: grid; gap: 9px; margin-bottom: 12px;
+  grid-template-columns: minmax(200px, 2fr) repeat(3, minmax(130px, 1fr)) repeat(3, auto);
+}
+.tc-toolbar input, .tc-toolbar select {
+  width: 100%; min-height: 42px; padding: 0 11px;
+  background: #fffdf6; color: #322a1f;
+  border: 1px solid #c6b48f; border-radius: 9px;
+}
+.tc-toolbar input::placeholder { color: #8d7f68; }
+.tc-btn {
+  min-height: 42px; padding: 0 14px; border-radius: 9px; cursor: pointer; font-weight: 700;
+  border: 1px solid #bfae8e; background: #f2e9d3; color: #322a1f;
+}
+.tc-btn:hover { border-color: #b02a52; color: #b02a52; }
+.tc-btn.primary { border-color: #b02a52; background: #b02a52; color: #fff; }
+.tc-btn.primary:hover { background: #d64570; border-color: #d64570; color: #fff; }
+
+/* --- stats --------------------------------------------------------------- */
+.tc-stats { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 12px; }
+.tc-stat { background: #f8f4e9; border: 1px solid #ddd0b2; border-radius: 10px; padding: 8px 12px; }
+.tc-stat b { display: block; font-size: 1.15rem; color: #b02a52; }
+.tc-stat span { font-size: .72rem; color: #82755f; }
+
+/* --- table --------------------------------------------------------------- */
+.tc-table-wrap { overflow: auto; border: 1px solid #ddd0b2; border-radius: 10px; max-width: 100%; }
+.tc-table { width: 100%; min-width: 1000px; border-collapse: collapse; }
+.tc-table th {
+  position: sticky; top: 0; z-index: 1; background: #f2e9d3; color: #3b3226;
+  text-align: left; padding: 10px; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+}
+.tc-table td { padding: 9px 10px; border-top: 1px solid #ece3d1; font-size: .84rem; color: #3b3226; vertical-align: middle; }
+.tc-table tr:hover td { background: #fffaf0; }
+.tc-badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: .68rem; font-weight: 800; color: #3b3226; white-space: nowrap; }
+.tc-edit {
+  width: 100%; min-width: 130px; min-height: 34px; padding: 0 8px;
+  background: #fffdf6; color: #322a1f; border: 1px solid #c6b48f; border-radius: 7px;
+}
+.tc-track { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; color: #24557d; white-space: nowrap; }
+.tc-copy {
+  min-height: 32px; padding: 0 10px; border-radius: 7px; cursor: pointer; font-weight: 700;
+  border: 1px solid #bfae8e; background: #fffdf6; color: #24557d;
+}
+.tc-copy.copied { background: #e7f3e8; border-color: #2e7d32; color: #2e7d32; }
+.tc-empty { padding: 28px; text-align: center; color: #82755f; }
+.tc-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 9px; background: #f2e9d3; border: 1px solid #d8c9a8; color: #5a534d; font-size: .8rem; line-height: 1.5; }
+.tc-note b { color: #322a1f; }
+.tc-foot { margin: 18px 0 0; font-size: .82rem; color: #82755f; }
+.tc-foot a { color: #b02a52; }
+
+/* --- responsive ---------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .tc-toolbar { grid-template-columns: 1fr 1fr 1fr; }
+  .tc-toolbar input { grid-column: 1 / -1; }
+}
+@media (max-width: 980px) {
+  .tc-layout { grid-template-columns: 1fr; }
+  .tc-order { position: relative; top: auto; }
+  .tc-order-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; }
+  .tc-toolbar { grid-template-columns: 1fr 1fr; }
+  .tc-toolbar input { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .tc-page { padding: 16px 12px 48px; }
+  .tc-hero { padding: 16px; border-radius: 13px; }
+  .tc-hero h2 { font-size: 1.7rem; }
+  .tc-intro, .tc-note, .tc-foot { font-size: .88rem; }
+  .tc-format { font-size: .76rem; }
+  .tc-main { padding: 13px; }
+  .tc-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tc-table { min-width: 900px; }
+  .tc-table th, .tc-table td { padding: 8px; }
+}
+@media (max-width: 560px) {
+  .tc-order-list { grid-template-columns: 1fr; }
+  .tc-toolbar { grid-template-columns: 1fr; }
+  .tc-toolbar input { grid-column: auto; }
+}

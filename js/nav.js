@@ -74,6 +74,13 @@
         var acTab = tabnav.querySelector('a[data-tool="audio-calculators"]');
         if (acTab && acTab.parentNode) acTab.parentNode.insertBefore(k, acTab.nextSibling); else tabnav.appendChild(k);
       }
+      if (!tabnav.querySelector('a[data-tool="tracks-compose"]')) {
+        var t = document.createElement('a');
+        t.className = 'tab'; t.href = sitePath('tracks-compose.html'); t.setAttribute('data-tool', 'tracks-compose'); t.setAttribute('aria-label', 'Tracks Compose');
+        t.innerHTML = '<span class="tab-icon" aria-hidden="true">▤</span><span class="tab-label desktop">Tracks Compose</span><span class="tab-label mobile">Tracks</span>';
+        var rcTab = tabnav.querySelector('[data-tab="cubase-routing"]');
+        if (rcTab && rcTab.parentNode) rcTab.parentNode.insertBefore(t, rcTab.nextSibling); else tabnav.appendChild(t);
+      }
     }
     var grid = drawer && drawer.querySelector('.nav-drawer-grid');
     if (grid) {
@@ -88,6 +95,12 @@
         kd.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">♫</span><span class="nav-drawer-copy"><b>Key &amp; Chords</b><small>Scales, diatonic harmony &amp; transpose</small></span>';
         var calcItem = grid.querySelector('a[data-tool="audio-calculators"]');
         if (calcItem && calcItem.parentNode) calcItem.parentNode.insertBefore(kd, calcItem.nextSibling); else grid.appendChild(kd);
+      }
+      if (!grid.querySelector('a[data-tool="tracks-compose"]')) {
+        var td = document.createElement('a'); td.className = 'nav-drawer-item'; td.href = sitePath('tracks-compose.html'); td.setAttribute('data-tool', 'tracks-compose');
+        td.innerHTML = '<span class="nav-drawer-ico" aria-hidden="true">▤</span><span class="nav-drawer-copy"><b>Tracks Compose</b><small>Indian song track naming library</small></span>';
+        var rcItem = grid.querySelector('[data-tab="cubase-routing"]');
+        if (rcItem && rcItem.parentNode) rcItem.parentNode.insertBefore(td, rcItem.nextSibling); else grid.appendChild(td);
       }
     }
   }
